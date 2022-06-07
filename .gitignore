@@ -1,0 +1,2 @@
+# Ignore all Simplecov files
+/coverage/**
