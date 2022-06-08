@@ -22,12 +22,12 @@ DROP TABLE IF EXISTS users CASCADE;
 
 
 CREATE TABLE users (
-  user_id      integer     PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  first_name   varchar(50) NOT NULL,
-  last_name    varchar(50) NOT NULL,
-  display_name varchar(50) NOT NULL,
-  email        varchar(50) NOT NULL,
-  pword        varchar(50) NOT NULL
+  user_id      integer      PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  first_name   varchar(50)  NOT NULL,
+  last_name    varchar(50)  NOT NULL,
+  display_name varchar(50)  NOT NULL,
+  email        varchar(50)  NOT NULL,
+  pword        varchar(100) NOT NULL
 );
 
 CREATE TABLE remember_me (

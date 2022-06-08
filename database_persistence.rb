@@ -2,7 +2,11 @@ require 'pg'
 	
 class DatabasePersistence
   def initialize(logger)
-    @db = PG.connect(dbname: 'jrpl')
+    @db = if ENV['RACK_ENV'] == 'test'
+            PG.connect(dbname: 'jrpl_test')
+          else
+            PG.connect(dbname: 'jrpl')
+          end
     @logger = logger
   end
 

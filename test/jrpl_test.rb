@@ -15,17 +15,26 @@ class CMSTest < Minitest::Test
     Sinatra::Application
   end
 
-  def setup    
+  def setup
+    sql = File.read('test/test_data.sql')
+    PG.connect(dbname: 'jrpl_test').exec(sql)
   end
 
   def teardown  
   end
  
-def test_homepage
+  def test_homepage
     get '/'
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Julian Rimet Prediction League'
+  end
+ 
+  def test_all_users_list
+    get '/all_users_list'
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Clare Mac'
   end
 end
 
