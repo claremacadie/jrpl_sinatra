@@ -80,27 +80,11 @@ def extract_user_details(params)
 end
 
 # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
-def edit_login_error(user_details, current_password)
-  if user_details[:user_name] == ''
-    'New username cannot be blank! Please enter a username.'
-  elsif session[:user_name] == 'admin' && user_details[:user_name] != 'admin'
-    'Admin cannot change their username.'
-  elsif user_details[:user_name] == 'admin'
-    "New username cannot be 'admin'! Please choose a different username."
-  elsif @storage.load_user_credentials.keys.include?(user_details[:user_name]) && session[:user_name] != user_details[:user_name]
-    'That username already exists. Please choose a different username.'
-  elsif !valid_credentials?(session[:user_name], current_password)
-    'That is not the correct current password. Try again!'
-  elsif user_details[:password] != user_details[:reenter_password]
-    'The passwords do not match.'
-  end
-end
-# rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
-
-# rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 def edit_login_error(new_user_details, current_password)
   if new_user_details[:user_name] == ''
     'New username cannot be blank! Please enter a username.'
+  elsif session[:user_name] == 'admin' && new_user_details[:user_name] != 'admin'
+    'Admin cannot change their username.'
   elsif new_user_details[:user_name] == 'admin'
     "New username cannot be 'admin'! Please choose a different username."
   elsif @storage.load_user_credentials.keys.include?(new_user_details[:user_name]) && session[:user_name] != new_user_details[:user_name]

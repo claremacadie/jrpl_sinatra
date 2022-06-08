@@ -275,6 +275,13 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'That is not the correct current password. Try again!'
   end
 
+  def test_change_admin_username
+    post '/user/edit_credentials', {current_password: 'secret', new_user_name: 'Clare Mac', new_email: '', new_password: '', reenter_password: ''}, admin_session
+    assert_equal 422, last_response.status
+    assert_equal 'admin', session[:user_name]
+    assert_includes last_response.body, 'Admin cannot change their username.'
+  end
+
   # def test_reset_password_admin
   #   post '/users/reset_password', {user_name: 'Clare MacAdie'}, admin_session
   #   assert_equal 302, last_response.status
