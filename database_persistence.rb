@@ -1,5 +1,5 @@
 require 'pg'
-	
+
 class DatabasePersistence
   def initialize(logger)
     @db = if ENV['RACK_ENV'] == 'test'
@@ -13,10 +13,10 @@ class DatabasePersistence
   def disconnect
     @db.close
   end
-  
+
   def all_users_list
     sql = <<~SQL
-      SELECT 
+      SELECT
         user_id,
         first_name,
         last_name,
@@ -31,14 +31,14 @@ class DatabasePersistence
       tuple_to_user_list_hash(tuple)
     end
   end
-  
+
   private
-  
+
   def query(statement, *params)
     @logger.info "#{statement}: #{params}"
     @db.exec_params(statement, params)
   end
-  
+
   def convert_string_to_integer(str)
     # This is needed because nil.to_i returns 0!!!
     str ? str.to_i : nil

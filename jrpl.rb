@@ -2,7 +2,7 @@ require 'pry'
 require 'sinatra'
 require 'tilt/erubis'
 require_relative 'database_persistence'
-  
+
 configure do
   enable :sessions
   set :session_secret, 'secret'
