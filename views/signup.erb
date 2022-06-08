@@ -1,0 +1,19 @@
+<h1>Create a new account</h1>
+<form method="post" action="/users/signup">
+  <div>
+    <label for="new_username"> Enter a username:
+      <input name="new_username" id="new_username" value="<%= params[:new_username] %>"/>
+    </label>
+  </div>
+  <div>
+    <label for="password"> Enter a password:
+      <input type="password" id="password" name="password" />
+    </label>
+  </div>
+  <div>
+    <label for="reenter_password"> Reenter password:
+      <input type="password" id="reenter_password" name="reenter_password" />
+    </label>
+  </div>
+  <button type="submit">Sign Up</button>
+</form>
