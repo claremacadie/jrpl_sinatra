@@ -195,106 +195,85 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_username_strip_input
-    post '/user/edit_login', {current_password: '   a ', new_user_name: '   joe ', new_email: '',  new_password: '', reenter_password: ''}, user_2_session
+    post '/user/edit_credentials', {current_password: '   a ', new_user_name: '   joe ', new_email: '',  new_password: '', reenter_password: ''}, user_2_session
     assert_equal 302, last_response.status
-    assert_equal 'Clare Mac', session[:user_name]
-    # assert_equal 'Your username has been updated.', session[:message]
+    assert_equal 'joe', session[:user_name]
+    assert_equal 'Your username has been updated.', session[:message]
   
     get '/'
     assert_includes last_response.body, 'Signed in as joe.'
   end
   
-  # def test_change_username_to_blank
-  #   post '/user/edit_login', {new_username: '', current_password: 'a', new_password: '', reenter_password: ''}, user_2_session
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  #   assert_includes last_response.body, 'New username cannot be blank! Please enter a username.'
-  # end
+  def test_change_username_to_blank
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: '', new_email: '', new_password: '', reenter_password: ''}, user_2_session
+    assert_equal 422, last_response.status
+    assert_equal 'Clare Mac', session[:user_name]
+    assert_includes last_response.body, 'New username cannot be blank! Please enter a username.'
+  end
   
-  # def test_change_username_to_admin
-  #   post '/user/edit_login', {new_username: 'admin', current_password: 'a', new_password: '', reenter_password: ''}, user_2_session
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  #   assert_includes last_response.body, 'New username cannot be 'admin'! Please choose a different username.'
-  # end
+  def test_change_username_to_admin
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'admin', new_email: '', new_password: '', reenter_password: ''}, user_2_session
+    assert_equal 422, last_response.status
+    assert_equal 'Clare Mac', session[:user_name]
+    assert_includes last_response.body, "New username cannot be 'admin'! Please choose a different username."
+  end
   
-  # def test_change_username_to_existing_username
-  #   post '/user/edit_login', {new_username: 'Alice Allbright', current_password: 'a', new_password: '', reenter_password: ''}, user_2_session
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  #   assert_includes last_response.body, 'That username already exists. Please choose a different username.'
-  # end
+  def test_change_username_to_existing_username
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'Maccas', new_email: '', new_password: '', reenter_password: ''}, user_2_session
+    assert_equal 422, last_response.status
+    assert_equal 'Clare Mac', session[:user_name]
+    assert_includes last_response.body, 'That username already exists. Please choose a different username.'
+  end
   
-  # def test_change_password
-  #   post '/user/edit_login', {new_username: 'Clare MacAdie', current_password: 'a', new_password: 'Qwerty90', reenter_password: 'Qwerty90'}, user_2_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  #   assert_equal 'Your password has been updated.', session[:message]
+  def test_change_password
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'Clare Mac', new_email: '', new_password: 'Qwerty90', reenter_password: 'Qwerty90'}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'Clare Mac', session[:user_name]
+    assert_equal 'Your password has been updated.', session[:message]
   
-  #   post '/users/signin', {user_name: 'Clare MacAdie', password: 'Qwerty90'}, {}
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'Welcome!', session[:message]
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  # end
+    post '/users/signin', {user_name: 'Clare Mac', password: 'Qwerty90'}, {}
+    assert_equal 302, last_response.status
+    assert_equal 'Welcome!', session[:message]
+    assert_equal 'Clare Mac', session[:user_name]
+  end
   
-  # def test_change_password_strip_input
-  #   post '/user/edit_login', {new_username: 'Clare MacAdie', current_password: ' a   ', new_password: ' Qwerty90 ', reenter_password: '   Qwerty90 '}, user_2_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  #   assert_equal 'Your password has been updated.', session[:message]
+  def test_change_password_strip_input
+    post '/user/edit_credentials', {current_password: ' a   ', new_user_name: 'Clare Mac', new_email: '', new_password: ' Qwerty90 ', reenter_password: '   Qwerty90 '}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'Clare Mac', session[:user_name]
+    assert_equal 'Your password has been updated.', session[:message]
   
-  #   post '/users/signin', {user_name: 'Clare MacAdie', password: 'Qwerty90'}, {}
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'Welcome!', session[:message]
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  # end
+    post '/users/signin', {user_name: 'Clare Mac', password: 'Qwerty90'}, {}
+    assert_equal 302, last_response.status
+    assert_equal 'Welcome!', session[:message]
+    assert_equal 'Clare Mac', session[:user_name]
+  end
   
-  # def test_change_password_mismatched
-  #   post '/user/edit_login', {new_username: 'Clare MacAdie', current_password: 'a', new_password: 'b', reenter_password: 'c'}, user_2_session
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  #   assert_includes last_response.body, 'The passwords do not match.'
-  # end
+  def test_change_password_mismatched
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'Clare Mac', new_email: '', new_password: 'b', reenter_password: 'c'}, user_2_session
+    assert_equal 422, last_response.status
+    assert_equal 'Clare Mac', session[:user_name]
+    assert_includes last_response.body, 'The passwords do not match.'
+  end
   
-  # def test_change_password_no_capital
-  #   post '/user/edit_login', {new_username: 'Clare MacAdie', current_password: 'a', new_password: 'qwerty90', reenter_password: 'qwerty90'}, user_2_session
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  #   assert_includes last_response.body, 'Password must contain at least: 8 characters, one uppercase letter, one lowercase letter and one number.'
-  # end
+  def test_change_username_and_password
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'joe', new_email: '', new_password: 'Qwerty90', reenter_password: 'Qwerty90'}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'joe', session[:user_name]
+    assert_equal 'Your username and password have been updated.', session[:message]
   
-  # def test_change_password_no_number
-  #   post '/user/edit_login', {new_username: 'Clare MacAdie', current_password: 'a', new_password: 'Qwertyuio', reenter_password: 'Qwertyuio'}, user_2_session
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  #   assert_includes last_response.body, 'Password must contain at least: 8 characters, one uppercase letter, one lowercase letter and one number.'
-  # end
+    post '/users/signin', {user_name: 'joe', password: 'Qwerty90'}, {}
+    assert_equal 302, last_response.status
+    assert_equal 'Welcome!', session[:message]
+    assert_equal 'joe', session[:user_name]
+  end
   
-  # def test_change_password_too_short
-  #   post '/user/edit_login', {new_username: 'Clare MacAdie', current_password: 'a', new_password: 'Qwer90', reenter_password: 'Qwer90'}, user_2_session
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  #   assert_includes last_response.body, 'Password must contain at least: 8 characters, one uppercase letter, one lowercase letter and one number.'
-  # end
-  
-  # def test_change_username_and_password
-  #   post '/user/edit_login', {new_username: 'joe', current_password: 'a', new_password: 'Qwerty90', reenter_password: 'Qwerty90'}, user_2_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'joe', session[:user_name]
-  #   assert_equal 'Your username and password have been updated.', session[:message]
-  
-  #   post '/users/signin', {user_name: 'joe', password: 'Qwerty90'}, {}
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'Welcome!', session[:message]
-  #   assert_equal 'joe', session[:user_name]
-  # end
-  
-  # def test_change_user_credentials_password_mismatched
-  #   post '/user/edit_login', {new_username: 'joe', current_password: 'wrong_password', new_password: 'b', reenter_password: 'b'}, user_2_session
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  #   assert_includes last_response.body, 'That is not the correct current password. Try again!'
-  # end
+  def test_change_user_credentials_password_mismatched
+    post '/user/edit_credentials', {current_password: 'wrong_password', new_user_name: 'joe', new_email: '', new_password: 'b', reenter_password: 'b'}, user_2_session
+    assert_equal 422, last_response.status
+    assert_equal 'Clare Mac', session[:user_name]
+    assert_includes last_response.body, 'That is not the correct current password. Try again!'
+  end
 
   # def test_reset_password_admin
   #   post '/users/reset_password', {user_name: 'Clare MacAdie'}, admin_session
