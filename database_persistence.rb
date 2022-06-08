@@ -16,71 +16,69 @@ class DatabasePersistence
 
   def upload_new_user_credentials(user_details)
     hashed_password = BCrypt::Password.create(user_details[:password]).to_s
-    sql = 'INSERT INTO users (first_name, last_name, display_name, email, pword) VALUES ($1, $2, $3, $4, $5)'
-    query(sql, user_details[:first_name], user_details[:last_name], user_details[:display_name], user_details[:user_name], hashed_password)
+    sql = 'INSERT INTO users (user_name, email, pword) VALUES ($1, $2, $3)'
+    query(sql, user_details[:user_name], user_details[:email], hashed_password)
   end
 
   def change_user_details(old_username, user_details)
     hashed_password = BCrypt::Password.create(user_details[:password]).to_s
-    sql = 'UPDATE users SET 
-      first_name = $1, 
-      last_name = $2, 
-      display_name = $3,
-      email = $4, 
-      pword = $5 
-      WHERE email = $6'
-    query(sql, user_details[:first_name], user_details[:last_name], user_details[:display_name], user_details[:user_name], hashed_password, old_username)
+    sql = 'UPDATE users SET user_name = $1, email = $2, pword = $3 WHERE user_name = $4'
+    query(sql, user_details[:user_name], user_details[:email], hashed_password, old_username)
   end
 
   def change_username_and_password(old_username, new_username, new_password)
     hashed_password = BCrypt::Password.create(new_password).to_s
-    sql = 'UPDATE users SET email = $1, pword = $2 WHERE email = $3'
+    sql = 'UPDATE users SET user_name = $1, pword = $2 WHERE user_name = $3'
     query(sql, new_username, hashed_password, old_username)
   end
 
   def change_username(old_username, new_username)
-    sql = 'UPDATE users SET email = $1 WHERE email = $2'
+    sql = 'UPDATE users SET user_name = $1 WHERE user_name = $2'
     query(sql, new_username, old_username)
   end
 
   def change_password(old_username, new_password)
     hashed_password = BCrypt::Password.create(new_password).to_s
-    sql = 'UPDATE users SET pword = $1 WHERE email = $2'
+    sql = 'UPDATE users SET pword = $1 WHERE user_name = $2'
     query(sql, hashed_password, old_username)
   end
 
   def reset_password(username)
     new_password = BCrypt::Password.create('jrpl').to_s
-    sql = 'UPDATE users SET pword = $1 WHERE email = $2'
+    sql = 'UPDATE users SET pword = $1 WHERE user_name = $2'
     query(sql, new_password, username)
   end
 
   def load_user_credentials
-    sql = 'SELECT email, pword FROM users'
+    sql = 'SELECT user_name, pword FROM users'
     result = query(sql)
 
     result.each_with_object({}) do |tuple, hash|
-      hash[tuple['email']] = tuple['pword']
+      hash[tuple['user_name']] = tuple['pword']
     end
   end
 
   def user_id(user_name)
-    sql = 'SELECT user_id FROM users WHERE email = $1'
+    sql = 'SELECT user_id FROM users WHERE user_name = $1'
     result = query(sql, user_name)
     result.first['user_id'].to_i
+  end
+
+  def user_email(user_name)
+    sql = 'SELECT email FROM users WHERE user_name = $1'
+    result = query(sql, user_name)
+    result.first['email']
   end
 
   def all_users_list
     sql = <<~SQL
       SELECT
         user_id,
-        first_name,
-        last_name,
-        display_name,
+        user_name,
         email,
         pword
       FROM users
-      ORDER BY display_name;
+      ORDER BY user_name;
     SQL
     result = query(sql)
     result.map do |tuple|
@@ -102,9 +100,7 @@ class DatabasePersistence
 
   def tuple_to_user_list_hash(tuple)
     { user_id: tuple['user_id'].to_i,
-      first_name: tuple['first_name'],
-      last_name: tuple['last_name'],
-      display_name: tuple['display_name'],
+      user_name: tuple['user_name'],
       email: tuple['email'],
       pword: tuple['pword'] }
   end

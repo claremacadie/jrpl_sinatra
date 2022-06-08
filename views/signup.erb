@@ -1,23 +1,13 @@
 <h1>Create a new account</h1>
 <form method="post" action="/users/signup">
   <div>
-    <label for="new_username"> Enter your email address:
-      <input name="new_username" id="new_username" value="<%= params[:new_username] %>"/>
+    <label for="new_user_name"> Enter your user name (this will be the name that is displayed):
+      <input name="new_user_name" id="new_user_name" value="<%= params[:new_user_name] %>"/>
     </label>
   </div>
   <div>
-    <label for="new_firstname"> Enter your first name:
-      <input name="new_firstname" id="new_firstname" value="<%= params[:new_firstname] %>"/>
-    </label>
-  </div>
-  <div>
-    <label for="new_lastname"> Enter your last name:
-      <input name="new_lastname" id="new_lastname" value="<%= params[:new_lastname] %>"/>
-    </label>
-  </div>
-  <div>
-    <label for="new_displayname"> Enter your display name:
-      <input name="new_displayname" id="new_displayname" value="<%= params[:new_displayname] %>"/>
+    <label for="new_email"> Enter your email address:
+      <input name="new_email" id="new_email" value="<%= params[:new_email] %>"/>
     </label>
   </div>
   <div>

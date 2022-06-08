@@ -45,10 +45,10 @@ def require_signed_out_user
   end
 end
 
-def valid_credentials?(username, password)
+def valid_credentials?(user_name, password)
   credentials = @storage.load_user_credentials
-  if credentials.key?(username)
-    bcrypt_password = BCrypt::Password.new(credentials[username])
+  if credentials.key?(user_name)
+    bcrypt_password = BCrypt::Password.new(credentials[user_name])
     bcrypt_password == password
   else
     false
@@ -57,13 +57,13 @@ end
 
 # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 def signup_input_error(user_details)
-  if user_details[:username] == '' && user_details[:new_password] == ''
+  if user_details[:user_name] == '' && user_details[:new_password] == ''
     'Username and password cannot be blank! Please enter a username and password.'
-  elsif user_details[:username] == ''
+  elsif user_details[:user_name] == ''
     'Username cannot be blank! Please enter a username.'
-  elsif user_details[:username] == 'admin'
+  elsif user_details[:user_name] == 'admin'
     "Username cannot be 'admin'! Please choose a different username."
-  elsif @storage.load_user_credentials.keys.include?(user_details[:username])
+  elsif @storage.load_user_credentials.keys.include?(user_details[:user_name])
     'That username already exists.'
   elsif user_details[:password] != user_details[:reenter_password]
     'The passwords do not match.'
@@ -73,21 +73,19 @@ def signup_input_error(user_details)
 end
 
 def extract_user_details(params)
-  {first_name: params[:new_firstname].strip,
-  last_name: params[:new_lastname].strip,
-  display_name: params[:new_displayname].strip,
-  user_name: params[:new_username].strip,
+  {user_name: params[:new_user_name].strip,
+  email: params[:new_email].strip,
   password: params[:new_password].strip,
   reenter_password: params[:reenter_password].strip}
 end
 
 # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 def edit_login_error(user_details, current_password)
-  if user_details[:username] == ''
+  if user_details[:user_name] == ''
     'New username cannot be blank! Please enter a username.'
-  elsif user_details[:username] == 'admin'
+  elsif user_details[:user_name] == 'admin'
     "New username cannot be 'admin'! Please choose a different username."
-  elsif @storage.load_user_credentials.keys.include?(user_details[:username]) && session[:user_name] != user_details[:username]
+  elsif @storage.load_user_credentials.keys.include?(user_details[:user_name]) && session[:user_name] != user_details[:user_name]
     'That username already exists. Please choose a different username.'
   elsif !valid_credentials?(session[:user_name], current_password)
     'That is not the correct current password. Try again!'
@@ -122,6 +120,8 @@ post '/users/signin' do
   if valid_credentials?(user_name, password)
     session[:user_name] = user_name
     session[:user_id] = @storage.user_id(user_name)
+    session[:user_email] = @storage.user_email(user_name)
+    session[:user_email]
     session[:message] = 'Welcome!'
     redirect(session[:intended_route])
   else
@@ -134,6 +134,7 @@ end
 post '/users/signout' do
   session.delete(:user_name)
   session.delete(:user_id)
+  session.delete(:user_email)
   session[:message] = 'You have been signed out.'
   redirect '/'
 end
@@ -157,7 +158,7 @@ post '/users/signup' do
   else
     @storage.upload_new_user_credentials(new_user_details)
     session[:user_name] = new_user_details[:user_name]
-    session[:user_id] = @storage.user_id(new_user_details[:email])
+    session[:user_id] = @storage.user_id(new_user_details[:user_name])
     session[:message] = 'Your account has been created.'
     redirect(session[:intended_route])
   end
