@@ -1,3 +1,4 @@
+require 'bcrypt'
 require 'pry'
 require 'sinatra'
 require 'tilt/erubis'
@@ -115,6 +116,7 @@ end
 
 post '/users/signin' do
   session[:intended_route] = params['intended_route']
+  params[:user_name]
   user_name = params[:user_name].strip
   password = params[:password].strip
   if valid_credentials?(user_name, password)
