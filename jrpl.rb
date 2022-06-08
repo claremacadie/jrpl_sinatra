@@ -89,7 +89,7 @@ end
 # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 
 # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
-def update_user_credentials(new_username, current_password, new_password)
+def update_user_credentials(new_firstname, new_lastname, new_display_name, new_username, current_password, new_password)
   if session[:user_name] != new_username && new_password == ''
     @storage.change_username(session[:user_name], new_username)
     session[:user_name] = new_username
@@ -175,8 +175,11 @@ end
 
 post '/user/edit_credentials' do
   require_signed_in_user
-  new_username = params[:new_username].strip
   current_password = params[:current_password].strip
+  new_username = params[:new_username].strip
+  new_firstname = params[:new_firstname].strip
+  new_lastname = params[:new_lastname].strip
+  new_displayname = params[:new_displayname].strip
   new_password = params[:new_password].strip
   reenter_password = params[:reenter_password].strip
 
@@ -189,7 +192,7 @@ post '/user/edit_credentials' do
     status 422
     erb :edit_credentials
   else
-    update_user_credentials(new_username, current_password, new_password)
+    update_user_credentials(new_firstname, new_lastname, new_displayname, new_username, current_password, new_password)
     redirect '/'
   end
 end
