@@ -28,7 +28,7 @@ end
 
 # Helper methods for routes
 def user_signed_in?
-  session.key?(:username)
+  session.key?(:user_name)
 end
 
 def require_signed_in_user
@@ -167,6 +167,33 @@ post '/users/signup' do
     redirect(session[:intended_route])
   end
 end
+
+get '/user/edit_credentials' do
+  require_signed_in_user
+  erb :edit_credentials
+end
+
+post '/user/edit_credentials' do
+  require_signed_in_user
+  new_username = params[:new_username].strip
+  current_password = params[:current_password].strip
+  new_password = params[:new_password].strip
+  reenter_password = params[:reenter_password].strip
+
+  # rubocop:disable Style/ParenthesesAroundCondition
+  if (session[:message] =
+        edit_login_error(new_username, current_password,
+                         new_password, reenter_password)
+     )
+    # rubocop:enable Style/ParenthesesAroundCondition
+    status 422
+    erb :edit_credentials
+  else
+    update_user_credentials(new_username, current_password, new_password)
+    redirect '/'
+  end
+end
+
 
 get '/all_users_list' do
   @users = @storage.all_users_list
