@@ -30,6 +30,10 @@ class CMSTest < Minitest::Test
   def admin_session
     { 'rack.session' => { user_name: 'admin' , user_id: 1, user_email: 'admin@julianrimet.com'} }
   end
+
+  def user_2_session
+    { 'rack.session' => { user_name: 'Clare Mac', user_id: 12, user_email: 'clare@macadie.co.uk'} }
+  end
  
   def test_homepage
     get '/'
@@ -164,40 +168,41 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'The passwords do not match.'
   end
   
-  # def test_view_administer_account_form_signed_out
-  #   get '/user'
-  #   assert_equal 302, last_response.status
-  #   assert_includes session[:message], 'You must be signed in to do that. Sign in below or'
-  # end
+  def test_view_administer_account_form_signed_out
+    get '/user/edit_credentials'
+    assert_equal 302, last_response.status
+    assert_includes session[:message], 'You must be signed in to do that.'
+  end
   
-  # def test_view_administer_account_form_signed_in
-  #   get '/user', {}, admin_session
-  #   assert_equal 200, last_response.status
-  #   assert_includes last_response.body, 'Enter new username'
-  #   assert_includes last_response.body, 'Enter current password'
-  #   assert_includes last_response.body, 'Enter new password'
-  #   assert_includes last_response.body, 'Reenter new password'
-  # end
+  def test_view_administer_account_form_signed_in
+    get '/user/edit_credentials', {}, admin_session
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, 'Enter new username'
+    assert_includes last_response.body, 'Enter your new email address'
+    assert_includes last_response.body, 'Enter current password'
+    assert_includes last_response.body, 'Enter new password'
+    assert_includes last_response.body, 'Reenter new password'
+  end
   
-  # def test_change_username
-  #   post '/user/edit_login', {new_username: 'joe', current_password: 'a', new_password: '', reenter_password: ''}, user_2_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'joe', session[:user_name]
-  #   assert_equal 'Your username has been updated.', session[:message]
+  def test_change_username
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'joe', new_email: '', new_password: '', reenter_password: ''}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'joe', session[:user_name]
+    # assert_equal 'Your username has been updated.', session[:message]
   
-  #   get '/'
-  #   assert_includes last_response.body, 'Signed in as joe.'
-  # end
+    get '/'
+    assert_includes last_response.body, 'Signed in as joe.'
+  end
   
-  # def test_change_username_strip_input
-  #   post '/user/edit_login', {new_username: '   joe ', current_password: '   a ', new_password: '', reenter_password: ''}, user_2_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'joe', session[:user_name]
-  #   assert_equal 'Your username has been updated.', session[:message]
+  def test_change_username_strip_input
+    post '/user/edit_login', {current_password: '   a ', new_user_name: '   joe ', new_email: '',  new_password: '', reenter_password: ''}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'Clare Mac', session[:user_name]
+    # assert_equal 'Your username has been updated.', session[:message]
   
-  #   get '/'
-  #   assert_includes last_response.body, 'Signed in as joe.'
-  # end
+    get '/'
+    assert_includes last_response.body, 'Signed in as joe.'
+  end
   
   # def test_change_username_to_blank
   #   post '/user/edit_login', {new_username: '', current_password: 'a', new_password: '', reenter_password: ''}, user_2_session
