@@ -57,7 +57,7 @@ end
 
 # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 def signup_input_error(user_details)
-  if user_details[:user_name] == '' && user_details[:new_password] == ''
+  if user_details[:user_name] == '' && user_details[:password] == ''
     'Username and password cannot be blank! Please enter a username and password.'
   elsif user_details[:user_name] == ''
     'Username cannot be blank! Please enter a username.'

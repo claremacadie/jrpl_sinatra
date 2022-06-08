@@ -92,95 +92,77 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Sign In'
   end
   
-  # def test_view_signup_form_signed_out
-  #   get '/users/signup'
-  #   assert_equal 200, last_response.status
-  #   assert_includes last_response.body, 'Reenter password'
-  # end
+  def test_view_signup_form_signed_out
+    get '/users/signup'
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, 'Reenter password'
+  end
   
-  # def test_view_signup_form_signed_in
-  #   get '/users/signup', {}, admin_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'You must be signed out to do that.', session[:message]
-  # end
+  def test_view_signup_form_signed_in
+    get '/users/signup', {}, admin_session
+    assert_equal 302, last_response.status
+    assert_equal 'You must be signed out to do that.', session[:message]
+  end
   
-  # def test_signup_signed_out
-  #   post '/users/signup', {new_username: 'joe', password: 'Dfghiewo34334', reenter_password: 'Dfghiewo34334'}
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'Your account has been created.', session[:message]
+  def test_signup_signed_out
+    post '/users/signup', {new_user_name: 'joe', new_email: 'joe@joe.com', new_password: 'Dfghiewo34334', reenter_password: 'Dfghiewo34334'}
+    assert_equal 302, last_response.status
+    assert_equal 'Your account has been created.', session[:message]
   
-  #   get '/'
-  #   assert_includes last_response.body, 'Signed in as joe.'
-  # end
+    get '/'
+    assert_includes last_response.body, 'Signed in as joe.'
+  end
   
-  # def test_signup_signed_out_strip_input
-  #   post '/users/signup', {new_username: '   joe  ', password: ' Dfghiewo34334    ', reenter_password: '  Dfghiewo34334 '}
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'Your account has been created.', session[:message]
+  def test_signup_signed_out_strip_input
+    post '/users/signup', {new_user_name: '   joe  ', new_email: 'joe@joe.com', new_password: ' Dfghiewo34334    ', reenter_password: '  Dfghiewo34334 '}
+    assert_equal 302, last_response.status
+    assert_equal 'Your account has been created.', session[:message]
   
-  #   get '/'
-  #   assert_includes last_response.body, 'Signed in as joe.'
-  # end
+    get '/'
+    assert_includes last_response.body, 'Signed in as joe.'
+  end
   
-  # def test_signup_signed_in
-  #   post '/users/signup', {new_username: 'joe', password: 'dfghiewo34334', reenter_password: 'dfghiewo34334'}, admin_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'You must be signed out to do that.', session[:message]
-  # end
+  def test_signup_signed_in
+    post '/users/signup', {new_user_name: 'joe', new_email: 'joe@joe.com', new_password: 'dfghiewo34334', reenter_password: 'dfghiewo34334'}, admin_session
+    assert_equal 302, last_response.status
+    assert_equal 'You must be signed out to do that.', session[:message]
+  end
   
-  # def test_signup_existing_username
-  #   post '/users/signup', {new_username: 'Clare MacAdie', password: 'dfghiewo34334', reenter_password: 'dfghiewo34334'}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'That username already exists.'
-  # end
+  def test_signup_existing_username
+    post '/users/signup', {new_user_name: 'Clare Mac', new_email: 'joe@joe.com', new_password: 'dfghiewo34334', reenter_password: 'dfghiewo34334'}
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'That username already exists.'
+  end
   
-  # def test_signup_blank_username
-  #   post '/users/signup', {new_username: '', password: 'dfghiewo34334', reenter_password: 'dfghiewo34334'}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'Username cannot be blank! Please enter a username.'
-  # end
+  def test_signup_blank_username
+    post '/users/signup', {new_user_name: '', new_email: 'joe@joe.com', new_password: 'dfghiewo34334', reenter_password: 'dfghiewo34334'}
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Username cannot be blank! Please enter a username.'
+  end
   
-  # def test_signup_admin_username
-  #   post '/users/signup', {new_username: 'admin', password: 'dfghiewo34334', reenter_password: 'dfghiewo34334'}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'Username cannot be 'admin'! Please choose a different username.'
-  # end
+  def test_signup_admin_username
+    post '/users/signup', {new_user_name: 'admin', new_email: 'joe@joe.com', new_password: 'dfghiewo34334', reenter_password: 'dfghiewo34334'}
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "Username cannot be 'admin'! Please choose a different username."
+  end
   
-  # def test_signup_blank_password
-  #   post '/users/signup', {new_username: 'joanna', password: '', reenter_password: ''}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'Password cannot be blank! Please enter a password.'
-  # end
+  def test_signup_blank_password
+    post '/users/signup', {new_user_name: 'joanna', new_email: 'joe@joe.com', new_password: '', reenter_password: ''}
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Password cannot be blank! Please enter a password.'
+  end
   
-  # def test_signup_blank_username_and_password
-  #   post '/users/signup', {new_username: '', password: '', reenter_password: ''}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'Username and password cannot be blank! Please enter a username and password.'
-  # end
+  def test_signup_blank_username_and_password
+    post '/users/signup', {new_user_name: '', new_email: 'joe@joe.com', new_password: '', reenter_password: ''}
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Username and password cannot be blank! Please enter a username and password.'
+  end
   
-  # def test_signup_mismatched_passwords
-  #   post '/users/signup', {new_username: 'joanna', password: 'dfghiewo34334', reenter_password: 'mismatched'}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'The passwords do not match.'
-  # end
-  
-  # def test_signup_weak_password_no_capital
-  #   post '/users/signup', {new_username: 'joanna', password: 'dfghiewo34334', reenter_password: 'dfghiewo34334'}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'Password must contain at least: 8 characters, one uppercase letter, one lowercase letter and one number.'
-  # end
-  
-  # def test_signup_weak_password_no_number
-  #   post '/users/signup', {new_username: 'joanna', password: 'Dfghiewo', reenter_password: 'Dfghiewo'}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'Password must contain at least: 8 characters, one uppercase letter, one lowercase letter and one number.'
-  # end
-  
-  # def test_signup_weak_password_too_short
-  #   post '/users/signup', {new_username: 'joanna', password: 'Dfg90', reenter_password: 'Dfg90'}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'Password must contain at least: 8 characters, one uppercase letter, one lowercase letter and one number.'
-  # end
+  def test_signup_mismatched_passwords
+    post '/users/signup', {new_user_name: 'joanna', new_email: 'joe@joe.com', new_password: 'dfghiewo34334', reenter_password: 'mismatched'}
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'The passwords do not match.'
+  end
   
   # def test_view_administer_account_form_signed_out
   #   get '/user'
