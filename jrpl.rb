@@ -95,11 +95,36 @@ def edit_login_error(user_details, current_password)
 end
 # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 
+# rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
+def edit_login_error(new_user_details, current_password)
+  if new_user_details[:user_name] == ''
+    'New username cannot be blank! Please enter a username.'
+  elsif new_user_details[:user_name] == 'admin'
+    "New username cannot be 'admin'! Please choose a different username."
+  elsif @storage.load_user_credentials.keys.include?(new_user_details[:user_name]) && session[:user_name] != new_user_details[:user_name]
+    'That username already exists. Please choose a different username.'
+  elsif !valid_credentials?(session[:user_name], current_password)
+    'That is not the correct current password. Try again!'
+  elsif new_user_details[:password] != new_user_details[:reenter_password]
+    'The passwords do not match.'
+  end
+end
+# rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
+
 # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
-def update_user_credentials(user_details)
-  @storage.change_user_details(session[:user_name], user_details)
-  session[:user_name] = user_details[:user_name]
-  session[:message] = 'Your account has been updated.'
+def update_user_credentials(new_user_details, current_password)
+  if session[:user_name] != new_user_details[:user_name] && new_user_details[:password] == ''
+    @storage.change_username(session[:user_name], new_user_details[:user_name])
+    session[:user_name] = new_user_details[:user_name]
+    session[:message] = 'Your username has been updated.'
+  elsif session[:user_name] == new_user_details[:user_name] && current_password != new_user_details[:password]
+    @storage.change_password(session[:user_name], new_user_details[:password])
+    session[:message] = 'Your password has been updated.'
+  else
+    @storage.change_username_and_password(session[:user_name], new_user_details[:user_name], new_user_details[:password])
+    session[:user_name] = new_user_details[:user_name]
+    session[:message] = 'Your username and password have been updated.'
+  end
 end
 # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
 
@@ -182,7 +207,7 @@ post '/user/edit_credentials' do
     status 422
     erb :edit_credentials
   else
-    update_user_credentials(new_user_details)
+    update_user_credentials(new_user_details, current_password)
     redirect '/'
   end
 end
