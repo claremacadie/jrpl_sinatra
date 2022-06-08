@@ -85,7 +85,7 @@ def edit_login_error(new_user_details, current_password)
     'New username cannot be blank! Please enter a username.'
   elsif session[:user_name] == 'admin' && new_user_details[:user_name] != 'admin'
     'Admin cannot change their username.'
-  elsif new_user_details[:user_name] == 'admin'
+  elsif new_user_details[:user_name] == 'admin' && session[:user_name] != 'admin'
     "New username cannot be 'admin'! Please choose a different username."
   elsif @storage.load_user_credentials.keys.include?(new_user_details[:user_name]) && session[:user_name] != new_user_details[:user_name]
     'That username already exists. Please choose a different username.'
