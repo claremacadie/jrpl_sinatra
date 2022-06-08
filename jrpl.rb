@@ -77,45 +77,31 @@ def extract_user_details(params)
   last_name: params[:new_lastname].strip,
   display_name: params[:new_displayname].strip,
   user_name: params[:new_username].strip,
-  password: params[:password].strip,
+  password: params[:new_password].strip,
   reenter_password: params[:reenter_password].strip}
 end
 
 # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
-def edit_login_error(new_username, current_password, new_password, reenter_password)
-  if new_username == ''
+def edit_login_error(user_details, current_password)
+  if user_details[:username] == ''
     'New username cannot be blank! Please enter a username.'
-  elsif new_username == 'admin'
+  elsif user_details[:username] == 'admin'
     "New username cannot be 'admin'! Please choose a different username."
-  elsif @storage.load_user_credentials.keys.include?(new_username) && session[:user_name] != new_username
+  elsif @storage.load_user_credentials.keys.include?(user_details[:username]) && session[:user_name] != user_details[:username]
     'That username already exists. Please choose a different username.'
   elsif !valid_credentials?(session[:user_name], current_password)
     'That is not the correct current password. Try again!'
-  elsif new_password != reenter_password
+  elsif user_details[:password] != user_details[:reenter_password]
     'The passwords do not match.'
   end
 end
 # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 
 # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
-def update_user_credentials(new_firstname, new_lastname, new_display_name, new_username, current_password, new_password)
-  @storage.change_user_details(session[:user_name], new_firstname, new_lastname, new_display_name, new_username, current_password, new_password)
-  session[:user_name] = new_username
-  session[:message] = 'Your username has been updated.'
-
-  
-  # if session[:user_name] != new_username && new_password == ''
-  #   @storage.change_username(session[:user_name], new_username)
-  #   session[:user_name] = new_username
-  #   session[:message] = 'Your username has been updated.'
-  # elsif session[:user_name] == new_username && current_password != new_password
-  #   @storage.change_password(session[:user_name], new_password)
-  #   session[:message] = 'Your password has been updated.'
-  # else
-  #   @storage.change_username_and_password(session[:user_name], new_username, new_password)
-  #   session[:user_name] = new_username
-  #   session[:message] = 'Your username and password have been updated.'
-  # end
+def update_user_credentials(user_details)
+  @storage.change_user_details(session[:user_name], user_details)
+  session[:user_name] = user_details[:user_name]
+  session[:message] = 'Your account has been updated.'
 end
 # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
 
@@ -171,7 +157,7 @@ post '/users/signup' do
   else
     @storage.upload_new_user_credentials(new_user_details)
     session[:user_name] = new_user_details[:user_name]
-    session[:user_id] = @storage.user_id(new_user_details[:user_name])
+    session[:user_id] = @storage.user_id(new_user_details[:email])
     session[:message] = 'Your account has been created.'
     redirect(session[:intended_route])
   end
@@ -185,23 +171,17 @@ end
 post '/user/edit_credentials' do
   require_signed_in_user
   current_password = params[:current_password].strip
-  new_username = params[:new_username].strip
-  new_firstname = params[:new_firstname].strip
-  new_lastname = params[:new_lastname].strip
-  new_displayname = params[:new_displayname].strip
-  new_password = params[:new_password].strip
-  reenter_password = params[:reenter_password].strip
+  new_user_details = extract_user_details(params)
 
   # rubocop:disable Style/ParenthesesAroundCondition
   if (session[:message] =
-        edit_login_error(new_username, current_password,
-                         new_password, reenter_password)
+        edit_login_error(new_user_details, current_password)
      )
     # rubocop:enable Style/ParenthesesAroundCondition
     status 422
     erb :edit_credentials
   else
-    update_user_credentials(new_firstname, new_lastname, new_displayname, new_username, current_password, new_password)
+    update_user_credentials(new_user_details)
     redirect '/'
   end
 end
