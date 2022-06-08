@@ -18,7 +18,7 @@ TRUNCATE users RESTART IDENTITY CASCADE;
 
 INSERT INTO users
     (user_name,    email,                                  pword) VALUES
-    ('Ms. Admin',  'msadmin@julianrimet.com',              '$2a$12$RDlwS.8sAOWA74qZYYe4yO2rHsO3ZKx2JohYcx5Ectd.Kul2JtGQi'),
+    ('admin',      'admin@julianrimet.com',                '$2a$12$RDlwS.8sAOWA74qZYYe4yO2rHsO3ZKx2JohYcx5Ectd.Kul2JtGQi'),
     ('Mr. Mean',   'mrmean@julianrimet.com',               '$2a$12$bEpZUdqQkgZpNe2wKL3vkO1xsCJzjTDNwolKVSMpKHMhtV6xm4vD6'),
     ('Mr. Median', 'mrmedian@julianrimet.com',             '$2a$12$bEpZUdqQkgZpNe2wKL3vkO1xsCJzjTDNwolKVSMpKHMhtV6xm4vD6'),
     ('Mr. Mode',   'mrmode@julianrimet.com',               '$2a$12$bEpZUdqQkgZpNe2wKL3vkO1xsCJzjTDNwolKVSMpKHMhtV6xm4vD6'),
