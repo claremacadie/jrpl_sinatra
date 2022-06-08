@@ -11,6 +11,9 @@
 	      <h1>Julian Rimet Prediction League</h1>
 	    </header>
 	    <main>
+        <% if session[:message] %>
+          <p class='message'><%= session.delete(:message) %></p>
+        <% end %>
 	      <%= yield %>
 	    </main>
 	  </body>

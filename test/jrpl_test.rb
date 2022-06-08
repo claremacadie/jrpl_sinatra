@@ -22,6 +22,10 @@ class CMSTest < Minitest::Test
 
   def teardown  
   end
+
+  def session
+    last_request.env['rack.session']
+  end
  
   def test_homepage
     get '/'
@@ -35,6 +39,7 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Clare Mac'
+    assert_includes last_response.body, 'This is a list of the display names of all users.'
   end
 end
 
