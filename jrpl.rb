@@ -56,20 +56,29 @@ def valid_credentials?(username, password)
 end
 
 # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
-def signup_input_error(new_username, new_password, reenter_password)
-  if new_username == '' && new_password == ''
+def signup_input_error(user_details)
+  if user_details[:username] == '' && user_details[:new_password] == ''
     'Username and password cannot be blank! Please enter a username and password.'
-  elsif new_username == ''
+  elsif user_details[:username] == ''
     'Username cannot be blank! Please enter a username.'
-  elsif new_username == 'admin'
+  elsif user_details[:username] == 'admin'
     "Username cannot be 'admin'! Please choose a different username."
-  elsif @storage.load_user_credentials.keys.include?(new_username)
+  elsif @storage.load_user_credentials.keys.include?(user_details[:username])
     'That username already exists.'
-  elsif new_password != reenter_password
+  elsif user_details[:password] != user_details[:reenter_password]
     'The passwords do not match.'
-  elsif new_password == ''
+  elsif user_details[:password] == ''
     'Password cannot be blank! Please enter a password.'
   end
+end
+
+def extract_user_details(params)
+  {first_name: params[:new_firstname].strip,
+  last_name: params[:new_lastname].strip,
+  display_name: params[:new_displayname].strip,
+  user_name: params[:new_username].strip,
+  password: params[:password].strip,
+  reenter_password: params[:reenter_password].strip}
 end
 
 # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
@@ -90,18 +99,23 @@ end
 
 # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
 def update_user_credentials(new_firstname, new_lastname, new_display_name, new_username, current_password, new_password)
-  if session[:user_name] != new_username && new_password == ''
-    @storage.change_username(session[:user_name], new_username)
-    session[:user_name] = new_username
-    session[:message] = 'Your username has been updated.'
-  elsif session[:user_name] == new_username && current_password != new_password
-    @storage.change_password(session[:user_name], new_password)
-    session[:message] = 'Your password has been updated.'
-  else
-    @storage.change_username_and_password(session[:user_name], new_username, new_password)
-    session[:user_name] = new_username
-    session[:message] = 'Your username and password have been updated.'
-  end
+  @storage.change_user_details(session[:user_name], new_firstname, new_lastname, new_display_name, new_username, current_password, new_password)
+  session[:user_name] = new_username
+  session[:message] = 'Your username has been updated.'
+
+  
+  # if session[:user_name] != new_username && new_password == ''
+  #   @storage.change_username(session[:user_name], new_username)
+  #   session[:user_name] = new_username
+  #   session[:message] = 'Your username has been updated.'
+  # elsif session[:user_name] == new_username && current_password != new_password
+  #   @storage.change_password(session[:user_name], new_password)
+  #   session[:message] = 'Your password has been updated.'
+  # else
+  #   @storage.change_username_and_password(session[:user_name], new_username, new_password)
+  #   session[:user_name] = new_username
+  #   session[:message] = 'Your username and password have been updated.'
+  # end
 end
 # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
 
@@ -146,23 +160,18 @@ end
 post '/users/signup' do
   require_signed_out_user
   session[:intended_route] = params[:intended_route]
-  new_firstname = params[:new_firstname].strip
-  new_lastname = params[:new_lastname].strip
-  new_displayname = params[:new_displayname].strip
-  new_username = params[:new_username].strip
-  new_password = params[:password].strip
-  reenter_password = params[:reenter_password].strip
+  new_user_details = extract_user_details(params)
   # rubocop:disable Style/ParenthesesAroundCondition
   if (session[:message] =
-        signup_input_error(new_username, new_password, reenter_password)
+        signup_input_error(new_user_details)
      )
     # rubocop:enable Style/ParenthesesAroundCondition
     status 422
     erb :signup
   else
-    @storage.upload_new_user_credentials(new_firstname, new_lastname, new_displayname, new_username, new_password)
-    session[:user_name] = new_username
-    session[:user_id] = @storage.user_id(new_username)
+    @storage.upload_new_user_credentials(new_user_details)
+    session[:user_name] = new_user_details[:user_name]
+    session[:user_id] = @storage.user_id(new_user_details[:user_name])
     session[:message] = 'Your account has been created.'
     redirect(session[:intended_route])
   end

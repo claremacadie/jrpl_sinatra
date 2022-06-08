@@ -14,10 +14,10 @@ class DatabasePersistence
     @db.close
   end
 
-  def upload_new_user_credentials(first_name, last_name, display_name, user_name, password)
-    hashed_password = BCrypt::Password.create(password).to_s
+  def upload_new_user_credentials(user_details)
+    hashed_password = BCrypt::Password.create(user_details[:password]).to_s
     sql = 'INSERT INTO users (first_name, last_name, display_name, email, pword) VALUES ($1, $2, $3, $4, $5)'
-    query(sql, first_name, last_name, display_name, user_name, hashed_password)
+    query(sql, user_details[:first_name], user_details[:last_name], user_details[:display_name], user_details[:user_name], hashed_password)
   end
 
   def change_username_and_password(old_username, new_username, new_password)
