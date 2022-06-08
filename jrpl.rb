@@ -146,6 +146,9 @@ end
 post '/users/signup' do
   require_signed_out_user
   session[:intended_route] = params[:intended_route]
+  new_firstname = params[:new_firstname].strip
+  new_lastname = params[:new_lastname].strip
+  new_displayname = params[:new_displayname].strip
   new_username = params[:new_username].strip
   new_password = params[:password].strip
   reenter_password = params[:reenter_password].strip
@@ -157,7 +160,7 @@ post '/users/signup' do
     status 422
     erb :signup
   else
-    @storage.upload_new_user_credentials(new_username, new_password)
+    @storage.upload_new_user_credentials(new_firstname, new_lastname, new_displayname, new_username, new_password)
     session[:user_name] = new_username
     session[:user_id] = @storage.user_id(new_username)
     session[:message] = 'Your account has been created.'
