@@ -55,6 +55,19 @@ def valid_credentials?(user_name, pword)
   end
 end
 
+def email_list
+  @storage.load_user_credentials.values.each_with_object([]) do |hash, arr|
+    arr << hash[:email]
+  end
+end
+
+def extract_user_details(params)
+  { user_name: params[:new_user_name].strip,
+    email: params[:new_email].strip,
+    pword: params[:new_pword].strip,
+    reenter_pword: params[:reenter_pword].strip }
+end
+
 def input_username_error(user_name)
   if user_name == 'admin' && session[:user_name] != 'admin'
     "Username cannot be 'admin'! Please choose a different username."
@@ -72,12 +85,6 @@ def signup_pword_error(user_details)
     'The passwords do not match.'
   elsif user_details[:pword] == ''
     'Password cannot be blank! Please enter a password.'
-  end
-end
-
-def email_list
-  @storage.load_user_credentials.values.each_with_object([]) do |hash, arr|
-    arr << hash[:email]
   end
 end
 
@@ -99,13 +106,6 @@ def signup_input_error(user_details)
   error << input_email_error(user_details[:email])
   error.delete(nil)
   error.empty? ? '' : error.join(' ')
-end
-
-def extract_user_details(params)
-  { user_name: params[:new_user_name].strip,
-    email: params[:new_email].strip,
-    pword: params[:new_pword].strip,
-    reenter_pword: params[:reenter_pword].strip }
 end
 
 def edit_username_error(user_name)
