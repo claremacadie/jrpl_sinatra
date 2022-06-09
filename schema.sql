@@ -23,9 +23,9 @@ DROP TABLE IF EXISTS users CASCADE;
 
 CREATE TABLE users (
   user_id      integer      PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  user_name    varchar(50)  NOT NULL,
-  email        varchar(50)  NOT NULL,
-  pword        varchar(100) NOT NULL
+  user_name    varchar(50)  NOT NULL UNIQUE CHECK(user_name != ''),
+  email        varchar(50)  NOT NULL UNIQUE CHECK(email != ''),
+  pword        varchar(100) NOT NULL check(pword != '')
 );
 
 CREATE TABLE remember_me (
