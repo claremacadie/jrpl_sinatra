@@ -410,41 +410,41 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '<button type="submit" class="reset_pword">Reset password</button>'
   end
 
-  # def test_reset_pword_admin
-  #   post '/users/reset_pword', {user_name: 'Clare MacAdie'}, admin_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_equal 'The password has been reset to 'bookle' for Clare MacAdie.', session[:message]
+  def test_reset_pword_admin
+    post '/users/reset_pword', {user_name: 'Clare Mac'}, admin_session
+    assert_equal 302, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_equal "The password has been reset to 'jrpl' for Clare Mac.", session[:message]
     
-  #   post '/users/signin', {user_name: 'Clare MacAdie', pword: 'bookle'}, {}
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'Welcome!', session[:message]
-  #   assert_equal 'Clare MacAdie', session[:user_name]
-  # end
+    post '/users/signin', {user_name: 'Clare Mac', pword: 'jrpl'}, {}
+    assert_equal 302, last_response.status
+    assert_equal 'Welcome!', session[:message]
+    assert_equal 'Clare Mac', session[:user_name]
+  end
   
-  # def test_reset_pword_not_admin
-  #   post '/users/reset_pword', {user_name: 'Beth Broom'}, user_2_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_equal 'You must be an administrator to do that.', session[:message]
-  #   refute_includes last_response.body, 'The password has been reset to 'bookle' for Clare MacAdie.'
+  def test_reset_pword_not_admin
+    post '/users/reset_pword', {user_name: 'Maccas'}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_equal 'You must be an administrator to do that.', session[:message]
+    refute_includes last_response.body, "The password has been reset to 'jrpl' for Clare Mac."
     
-  #   post '/users/signin', {user_name: 'Clare MacAdie', pword: 'bookle'}, {}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'Invalid credentials'
-  # end
+    post '/users/signin', {user_name: 'Clare Mac', pword: 'jrpl'}, {}
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Invalid credentials'
+  end
   
-  # def test_reset_pword_signed_out
-  #   post '/users/reset_pword', {user_name: 'Beth Broom'}
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_equal 'You must be an administrator to do that.', session[:message]
-  #   refute_includes last_response.body, 'The password has been reset to 'bookle' for Clare MacAdie.'
+  def test_reset_pword_signed_out
+    post '/users/reset_pword', {user_name: 'Maccas'}
+    assert_equal 302, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_equal 'You must be an administrator to do that.', session[:message]
+    refute_includes last_response.body, "The password has been reset to 'jrpl' for Clare MacAdie."
     
-  #   post '/users/signin', {user_name: 'Clare MacAdie', pword: 'bookle'}, {}
-  #   assert_equal 422, last_response.status
-  #   assert_includes last_response.body, 'Invalid credentials'
-  # end
+    post '/users/signin', {user_name: 'Clare Mac', pword: 'jrpl'}, {}
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Invalid credentials'
+  end
   
 end
 

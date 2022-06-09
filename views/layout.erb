@@ -19,7 +19,9 @@
             <a href="/users/signin">Sign In</a>
             <a href="/users/signup">Create Account</a>
           <% end %>
-          <a href="/all_users_list">List of users</a>
+          <% if session[:user_name] == 'admin' %>
+            <a href="/all_users_list">List of users</a>
+          <% end %>
         </nav>
         <% if session[:user_id] %>
             <form method="post" action="/users/signout">

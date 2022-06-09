@@ -31,6 +31,14 @@ def user_signed_in?
   session.key?(:user_name)
 end
 
+def require_signed_in_as_admin
+  return if session[:user_name] == 'admin'
+
+  session[:intended_route] = request.path_info
+  session[:message] = 'You must be an administrator to do that.'
+  redirect '/users/signin'
+end
+
 def require_signed_in_user
   return if user_signed_in?
 
@@ -265,10 +273,10 @@ get '/all_users_list' do
   erb :all_users_list
 end
 
-post '/users/reset_password' do
+post '/users/reset_pword' do
   require_signed_in_as_admin
   user_name = params[:user_name]
-  @storage.reset_password(user_name)
+  @storage.reset_pword(user_name)
   session[:message] =
     "The password has been reset to 'jrpl' for #{user_name}."
   if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
