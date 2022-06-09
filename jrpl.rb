@@ -32,17 +32,17 @@ def user_signed_in?
 end
 
 def require_signed_in_user
-  unless user_signed_in?
-    session[:message] = 'You must be signed in to do that.'
-    redirect '/'
-  end
+  return if user_signed_in?
+
+  session[:message] = 'You must be signed in to do that.'
+  redirect '/'
 end
 
 def require_signed_out_user
-  if user_signed_in?
-    session[:message] = 'You must be signed out to do that.'
-    redirect '/'
-  end
+  return unless user_signed_in?
+
+  session[:message] = 'You must be signed out to do that.'
+  redirect '/'
 end
 
 def valid_credentials?(user_name, password)
@@ -55,10 +55,10 @@ def valid_credentials?(user_name, password)
   end
 end
 
-# rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 def signup_input_error(user_details)
   if user_details[:user_name] == '' && user_details[:password] == ''
-    'Username and password cannot be blank! Please enter a username and password.'
+    'Username and password cannot be blank! ' \
+    'Please enter a username and password.'
   elsif user_details[:user_name] == ''
     'Username cannot be blank! Please enter a username.'
   elsif user_details[:user_name] == 'admin'
@@ -73,13 +73,12 @@ def signup_input_error(user_details)
 end
 
 def extract_user_details(params)
-  {user_name: params[:new_user_name].strip,
-  email: params[:new_email].strip,
-  password: params[:new_password].strip,
-  reenter_password: params[:reenter_password].strip}
+  { user_name: params[:new_user_name].strip,
+    email: params[:new_email].strip,
+    password: params[:new_password].strip,
+    reenter_password: params[:reenter_password].strip }
 end
 
-# rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 def edit_login_error(new_user_details, current_password)
   if new_user_details[:user_name] == ''
     'New username cannot be blank! Please enter a username.'
@@ -97,7 +96,6 @@ def edit_login_error(new_user_details, current_password)
     'You have not changed any of your details.'
   end
 end
-# rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 
 def details_changed(new_user_details)
   changes = []
@@ -107,8 +105,7 @@ def details_changed(new_user_details)
   changes.empty? ? 'none' : changes.join(', ')
 end
 
-# rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
-def update_user_credentials(new_user_details, current_password)
+def update_user_credentials(new_user_details)
   changed_details = details_changed(new_user_details)
   if changed_details.include?('username')
     @storage.change_username(session[:user_name], new_user_details[:user_name])
@@ -123,7 +120,6 @@ def update_user_credentials(new_user_details, current_password)
   end
   session[:message] = "The following have been updated: #{changed_details}."
 end
-# rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
 
 # Routes
 get "/" do
@@ -203,11 +199,10 @@ post '/user/edit_credentials' do
     status 422
     erb :edit_credentials
   else
-    update_user_credentials(new_user_details, current_password)
+    update_user_credentials(new_user_details)
     redirect '/'
   end
 end
-
 
 get '/all_users_list' do
   @users = @storage.all_users_list
