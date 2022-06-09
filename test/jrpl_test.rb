@@ -174,6 +174,12 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'That is not a valid email address.'
   end
   
+  def test_signup_blank_email
+    post '/users/signup', {new_user_name: 'joanna', new_email: '', new_pword: 'dfghiewo34334', reenter_pword: 'dfghiewo34334'}
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Email cannot be blank! Please enter an email.'
+  end
+  
   def test_view_administer_account_form_signed_out
     get '/user/edit_credentials'
     assert_equal 302, last_response.status
