@@ -185,7 +185,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_username
-    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'joe', new_email: '', new_password: '', reenter_password: ''}, user_2_session
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'joe', new_email: 'clare@macadie.co.uk', new_password: '', reenter_password: ''}, user_2_session
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     # assert_equal 'Your username has been updated.', session[:message]

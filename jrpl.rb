@@ -93,23 +93,23 @@ def edit_login_error(new_user_details, current_password)
     'That is not the correct current password. Try again!'
   elsif new_user_details[:password] != new_user_details[:reenter_password]
     'The passwords do not match.'
-  elsif details_changed(new_user_details, current_password) == 'none'
+  elsif details_changed(new_user_details) == 'none'
     'You have not changed any of your details.'
   end
 end
 # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 
-def details_changed(new_user_details, current_password)
+def details_changed(new_user_details)
   changes = []
   changes << 'username' if session[:user_name] != new_user_details[:user_name]
-  changes << 'password' if current_password != new_user_details[:password]
-  changes << 'email' if session[:email] != new_user_details[:email]
+  changes << 'password' if new_user_details[:password] != ''
+  changes << 'email' if session[:user_email] != new_user_details[:email]
   changes.empty? ? 'none' : changes.join(', ')
 end
 
 # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
 def update_user_credentials(new_user_details, current_password)
-  changed_details = details_changed(new_user_details, current_password)
+  changed_details = details_changed(new_user_details)
   case changed_details
   when /username/
     @storage.change_username(session[:user_name], new_user_details[:user_name])
@@ -118,6 +118,7 @@ def update_user_credentials(new_user_details, current_password)
     @storage.change_password(session[:user_name], new_user_details[:password])
   when /email/
     @storage.change_email(session[:user_name], new_user_details[:email])
+    session[:user_email] = new_user_details[:email]
   end
   session[:message] = "The following have been updated: #{changed_details}."
 end
@@ -141,7 +142,6 @@ post '/users/signin' do
     session[:user_name] = user_name
     session[:user_id] = @storage.user_id(user_name)
     session[:user_email] = @storage.user_email(user_name)
-    session[:user_email]
     session[:message] = 'Welcome!'
     redirect(session[:intended_route])
   else
