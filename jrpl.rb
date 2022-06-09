@@ -118,6 +118,7 @@ def edit_pword_error(pword, reenter_pword)
 def edit_email_error(email)
   # elsif @storage.load_user_email_addresses.include?(email)
   #   'That email address already exists.'
+  # remember to use session[:user_email]
   if email == ''
     'Email cannot be blank! Please enter an email.'
   end
@@ -129,14 +130,23 @@ def credentials_error(current_pword)
   'That is not the correct current password. Try again!'
 end
 
+def no_change_error(user_details, current_pword)
+  return unless 
+    session[:user_name] == user_details[:user_name] &&
+    (current_pword == user_details[:pword] || user_details[:pword] == '') &&
+    session[:user_email] == user_details[:email]
+  'You have not changed any of your details.'
+end
+
 def edit_login_error(user_details, current_pword)
   error = []
   error << edit_username_error(user_details[:user_name])
   error << edit_pword_error(user_details[:pword], user_details[:reenter_pword])
   error << edit_email_error(user_details[:email])
   error << credentials_error(current_pword)
+  error << no_change_error(user_details, current_pword)
   error.delete(nil)
-  error.empty? ? 'You have not changed any of your details.' : error.join(' ')
+  error.empty? ? '' : error.join(' ')
 end
 
 def details_changed(new_user_details)
@@ -229,12 +239,8 @@ post '/user/edit_credentials' do
   require_signed_in_user
   current_pword = params[:current_pword].strip
   new_user_details = extract_user_details(params)
-
-  # rubocop:disable Style/ParenthesesAroundCondition
-  if (session[:message] =
-        edit_login_error(new_user_details, current_pword)
-     )
-    # rubocop:enable Style/ParenthesesAroundCondition
+  session[:message] = edit_login_error(new_user_details, current_pword)
+  unless session[:message].empty?
     status 422
     erb :edit_credentials
   else
