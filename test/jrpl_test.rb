@@ -256,17 +256,29 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'The passwords do not match.'
   end
   
-  # def test_change_username_and_password
-  #   post '/user/edit_credentials', {current_password: 'a', new_user_name: 'joe', new_email: 'clare@macadie.co.uk', new_password: 'Qwerty90', reenter_password: 'Qwerty90'}, user_2_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'joe', session[:user_name]
-  #   assert_equal 'The following have been updated: username, password.', session[:message]
+  def test_change_username_and_password
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'joe', new_email: 'clare@macadie.co.uk', new_password: 'Qwerty90', reenter_password: 'Qwerty90'}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'joe', session[:user_name]
+    assert_equal 'The following have been updated: username, password.', session[:message]
   
-  #   post '/users/signin', {user_name: 'joe', password: 'Qwerty90'}, {}
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'Welcome!', session[:message]
-  #   assert_equal 'joe', session[:user_name]
-  # end
+    post '/users/signin', {user_name: 'joe', password: 'Qwerty90'}, {}
+    assert_equal 302, last_response.status
+    assert_equal 'Welcome!', session[:message]
+    assert_equal 'joe', session[:user_name]
+  end
+  
+  def test_change_username_and_password_strip
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: '   joe   ', new_email: 'clare@macadie.co.uk', new_password: ' Qwerty90', reenter_password: '   Qwerty90 '}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'joe', session[:user_name]
+    assert_equal 'The following have been updated: username, password.', session[:message]
+  
+    post '/users/signin', {user_name: 'joe', password: 'Qwerty90'}, {}
+    assert_equal 302, last_response.status
+    assert_equal 'Welcome!', session[:message]
+    assert_equal 'joe', session[:user_name]
+  end
   
   def test_change_user_credentials_password_mismatched
     post '/user/edit_credentials', {current_password: 'wrong_password', new_user_name: 'joe', new_email: '', new_password: 'b', reenter_password: 'b'}, user_2_session

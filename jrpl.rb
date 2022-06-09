@@ -110,13 +110,14 @@ end
 # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
 def update_user_credentials(new_user_details, current_password)
   changed_details = details_changed(new_user_details)
-  case changed_details
-  when /username/
+  if changed_details.include?('username')
     @storage.change_username(session[:user_name], new_user_details[:user_name])
     session[:user_name] = new_user_details[:user_name]
-  when /password/
+  end
+  if changed_details.include?('password')
     @storage.change_password(session[:user_name], new_user_details[:password])
-  when /email/
+  end
+  if changed_details.include?('email')
     @storage.change_email(session[:user_name], new_user_details[:email])
     session[:user_email] = new_user_details[:email]
   end
