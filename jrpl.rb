@@ -45,11 +45,11 @@ def require_signed_out_user
   redirect '/'
 end
 
-def valid_credentials?(user_name, password)
+def valid_credentials?(user_name, pword)
   credentials = @storage.load_user_credentials
   if credentials.key?(user_name)
-    bcrypt_password = BCrypt::Password.new(credentials[user_name])
-    bcrypt_password == password
+    bcrypt_pword = BCrypt::Password.new(credentials[user_name])
+    bcrypt_pword == pword
   else
     false
   end
@@ -65,10 +65,10 @@ def username_error(user_name)
   end
 end
 
-def password_error(password, reenter_password)
-  if password != reenter_password && password != ''
+def pword_error(pword, reenter_pword)
+  if pword != reenter_pword && pword != ''
     'The passwords do not match.'
-  elsif password == ''
+  elsif pword == ''
     'Password cannot be blank! Please enter a password.'
   end
 end
@@ -84,7 +84,7 @@ end
 def signup_input_error(user_details)
   error = []
   error << username_error(user_details[:user_name])
-  error << password_error(user_details[:password], user_details[:reenter_password])
+  error << pword_error(user_details[:pword], user_details[:reenter_pword])
   error << email_error(user_details[:email])
   error.delete(nil)
   error.empty? ? '' : error.join(' ')
@@ -93,11 +93,11 @@ end
 def extract_user_details(params)
   { user_name: params[:new_user_name].strip,
     email: params[:new_email].strip,
-    password: params[:new_password].strip,
-    reenter_password: params[:reenter_password].strip }
+    pword: params[:new_pword].strip,
+    reenter_pword: params[:reenter_pword].strip }
 end
 
-def edit_login_error(new_user_details, current_password)
+def edit_login_error(new_user_details, current_pword)
   if new_user_details[:user_name] == ''
     'New username cannot be blank! Please enter a username.'
   elsif session[:user_name] == 'admin' && new_user_details[:user_name] != 'admin'
@@ -106,9 +106,9 @@ def edit_login_error(new_user_details, current_password)
     "New username cannot be 'admin'! Please choose a different username."
   elsif @storage.load_user_credentials.keys.include?(new_user_details[:user_name]) && session[:user_name] != new_user_details[:user_name]
     'That username already exists. Please choose a different username.'
-  elsif !valid_credentials?(session[:user_name], current_password)
+  elsif !valid_credentials?(session[:user_name], current_pword)
     'That is not the correct current password. Try again!'
-  elsif new_user_details[:password] != new_user_details[:reenter_password]
+  elsif new_user_details[:pword] != new_user_details[:reenter_pword]
     'The passwords do not match.'
   elsif details_changed(new_user_details) == 'none'
     'You have not changed any of your details.'
@@ -118,7 +118,7 @@ end
 def details_changed(new_user_details)
   changes = []
   changes << 'username' if session[:user_name] != new_user_details[:user_name]
-  changes << 'password' if new_user_details[:password] != ''
+  changes << 'password' if new_user_details[:pword] != ''
   changes << 'email' if session[:user_email] != new_user_details[:email]
   changes.empty? ? 'none' : changes.join(', ')
 end
@@ -130,7 +130,7 @@ def update_user_credentials(new_user_details)
     session[:user_name] = new_user_details[:user_name]
   end
   if changed_details.include?('password')
-    @storage.change_password(session[:user_name], new_user_details[:password])
+    @storage.change_pword(session[:user_name], new_user_details[:pword])
   end
   if changed_details.include?('email')
     @storage.change_email(session[:user_name], new_user_details[:email])
@@ -152,8 +152,8 @@ post '/users/signin' do
   session[:intended_route] = params['intended_route']
   params[:user_name]
   user_name = params[:user_name].strip
-  password = params[:password].strip
-  if valid_credentials?(user_name, password)
+  pword = params[:pword].strip
+  if valid_credentials?(user_name, pword)
     session[:user_name] = user_name
     session[:user_id] = @storage.user_id(user_name)
     session[:user_email] = @storage.user_email(user_name)
@@ -203,12 +203,12 @@ end
 
 post '/user/edit_credentials' do
   require_signed_in_user
-  current_password = params[:current_password].strip
+  current_pword = params[:current_pword].strip
   new_user_details = extract_user_details(params)
 
   # rubocop:disable Style/ParenthesesAroundCondition
   if (session[:message] =
-        edit_login_error(new_user_details, current_password)
+        edit_login_error(new_user_details, current_pword)
      )
     # rubocop:enable Style/ParenthesesAroundCondition
     status 422
