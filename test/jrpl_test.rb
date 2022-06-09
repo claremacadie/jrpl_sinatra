@@ -298,6 +298,13 @@ class CMSTest < Minitest::Test
     assert_equal 'Clare Mac', session[:user_name]
     assert_includes last_response.body, 'That is not the correct current password. Try again!'
   end
+  
+  def test_change_user_credentials_nothing_changed
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'Clare Mac', new_email: 'clare@macadie.co.uk', new_password: '', reenter_password: ''}, user_2_session
+    assert_equal 422, last_response.status
+    assert_equal 'Clare Mac', session[:user_name]
+    assert_includes last_response.body, 'You have not changed any of your details.'
+  end
 
   def test_change_admin_username
     post '/user/edit_credentials', {current_password: 'secret', new_user_name: 'Clare Mac', new_email: '', new_password: '', reenter_password: ''}, admin_session
