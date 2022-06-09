@@ -112,9 +112,9 @@ end
 
 def edit_pword_error(pword, reenter_pword)
   return unless pword != reenter_pword && pword != ''
-  
+
   'The passwords do not match.'
- end
+end
 
 def edit_email_error(email)
   # elsif @storage.load_user_email_addresses.include?(email)
@@ -132,7 +132,7 @@ def credentials_error(current_pword)
 end
 
 def no_change_error(user_details, current_pword)
-  return unless 
+  return unless
     session[:user_name] == user_details[:user_name] &&
     (current_pword == user_details[:pword] || user_details[:pword] == '') &&
     session[:user_email] == user_details[:email]
@@ -219,15 +219,15 @@ post '/users/signup' do
   session[:intended_route] = params[:intended_route]
   new_user_details = extract_user_details(params)
   session[:message] = signup_input_error(new_user_details)
-  unless session[:message].empty?
-    status 422
-    erb :signup
-  else
+  if session[:message].empty?
     @storage.upload_new_user_credentials(new_user_details)
     session[:user_name] = new_user_details[:user_name]
     session[:user_id] = @storage.user_id(new_user_details[:user_name])
     session[:message] = 'Your account has been created.'
     redirect(session[:intended_route])
+  else
+    status 422
+    erb :signup
   end
 end
 
@@ -241,12 +241,12 @@ post '/user/edit_credentials' do
   current_pword = params[:current_pword].strip
   new_user_details = extract_user_details(params)
   session[:message] = edit_login_error(new_user_details, current_pword)
-  unless session[:message].empty?
-    status 422
-    erb :edit_credentials
-  else
+  if session[:message].empty?
     update_user_credentials(new_user_details)
     redirect '/'
+  else
+    status 422
+    erb :edit_credentials
   end
 end
 
