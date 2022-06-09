@@ -43,20 +43,11 @@ class DatabasePersistence
   end
 
   def load_user_credentials
-    sql = 'SELECT user_name, pword FROM users'
+    sql = 'SELECT user_name, pword, email FROM users'
     result = query(sql)
 
     result.each_with_object({}) do |tuple, hash|
-      hash[tuple['user_name']] = tuple['pword']
-    end
-  end
-  
-  def load_user_email_addresses
-    sql = 'SELECT user_name, email FROM users'
-    result = query(sql)
-
-    result.each_with_object({}) do |tuple, hash|
-      hash[tuple['user_name']] = tuple['email']
+      hash[tuple['user_name']] = {pword: tuple['pword'], email: tuple['email']}
     end
   end
 

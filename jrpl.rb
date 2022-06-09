@@ -48,7 +48,7 @@ end
 def valid_credentials?(user_name, pword)
   credentials = @storage.load_user_credentials
   if credentials.key?(user_name)
-    bcrypt_pword = BCrypt::Password.new(credentials[user_name])
+    bcrypt_pword = BCrypt::Password.new(credentials[user_name][:pword])
     bcrypt_pword == pword
   else
     false
@@ -75,12 +75,18 @@ def signup_pword_error(user_details)
   end
 end
 
+def email_list
+  @storage.load_user_credentials.values.each_with_object([]) do |hash, arr|
+    arr << hash[:email]
+  end
+end
+
 def input_email_error(email)
   if email == ''
     'Email cannot be blank! Please enter an email.'
   elsif email !~ URI::MailTo::EMAIL_REGEXP
     'That is not a valid email address.'
-  elsif @storage.load_user_email_addresses.values.include?(email) &&
+  elsif email_list.include?(email) &&
         session[:user_email] != email
     'That email address already exists.'
   end
