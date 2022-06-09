@@ -65,10 +65,11 @@ def signup_username_error(user_name)
   end
 end
 
-def signup_pword_error(pword, reenter_pword)
-  if pword != reenter_pword && pword != ''
+def signup_pword_error(user_details)
+  if user_details[:pword] != user_details[:reenter_pword] &&
+     user_details[:pword] != ''
     'The passwords do not match.'
-  elsif pword == ''
+  elsif user_details[:pword] == ''
     'Password cannot be blank! Please enter a password.'
   end
 end
@@ -84,7 +85,7 @@ end
 def signup_input_error(user_details)
   error = []
   error << signup_username_error(user_details[:user_name])
-  error << signup_pword_error(user_details[:pword], user_details[:reenter_pword])
+  error << signup_pword_error(user_details)
   error << signup_email_error(user_details[:email])
   error.delete(nil)
   error.empty? ? '' : error.join(' ')
