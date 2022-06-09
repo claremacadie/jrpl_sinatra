@@ -101,7 +101,7 @@ end
 
 def edit_username_error(user_name)
   if session[:user_name] == 'admin' && user_name != 'admin'
-    return 'Admin cannot change their username.'
+    'Admin cannot change their username.'
   else
     signup_username_error(user_name)
   end
