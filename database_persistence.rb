@@ -50,6 +50,15 @@ class DatabasePersistence
       hash[tuple['user_name']] = tuple['pword']
     end
   end
+  
+  def load_user_email_addresses
+    sql = 'SELECT user_name, email FROM users'
+    result = query(sql)
+
+    result.each_with_object({}) do |tuple, hash|
+      hash[tuple['user_name']] = tuple['email']
+    end
+  end
 
   def user_id(user_name)
     sql = 'SELECT user_id FROM users WHERE user_name = $1'
