@@ -261,8 +261,7 @@ post '/user/edit_credentials' do
 end
 
 get '/all_users_list' do
-  @users = @storage.all_users_list
-  session[:message] = 'This is a list of the display names of all users.'
+  @users = @storage.load_user_credentials
   erb :all_users_list
 end
 

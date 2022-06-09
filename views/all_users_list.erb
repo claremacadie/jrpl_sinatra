@@ -1,3 +1,22 @@
-<% @users.each do |user| %>
-  <%= user[:user_name] %>
-<% end %>
+<h1>Reset passwords</h1>
+<table>
+  <thead>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Reset Password?</th>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user[0] %></td>
+        <td><%= user[1][:email] %></td>
+        <td>
+          <form class="reset_pword" action="/users/reset_pword" method="post">
+            <input type="hidden" name="user_name" value="<%= user[0] %>"/>
+            <button type="submit" class="reset_pword">Reset password</button>
+          </form>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
