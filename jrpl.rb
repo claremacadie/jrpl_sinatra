@@ -93,24 +93,33 @@ def edit_login_error(new_user_details, current_password)
     'That is not the correct current password. Try again!'
   elsif new_user_details[:password] != new_user_details[:reenter_password]
     'The passwords do not match.'
+  elsif details_changed(new_user_details, current_password) == 'none'
+    'You have not changed any of your details.'
   end
 end
 # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/MethodLength, Layout/LineLength
 
+def details_changed(new_user_details, current_password)
+  changes = []
+  changes << 'username' if session[:user_name] != new_user_details[:user_name]
+  changes << 'password' if current_password != new_user_details[:password]
+  changes << 'email' if session[:email] != new_user_details[:email]
+  changes.empty? ? 'none' : changes.join(', ')
+end
+
 # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
 def update_user_credentials(new_user_details, current_password)
-  if session[:user_name] != new_user_details[:user_name] && new_user_details[:password] == ''
+  changed_details = details_changed(new_user_details, current_password)
+  case changed_details
+  when /username/
     @storage.change_username(session[:user_name], new_user_details[:user_name])
     session[:user_name] = new_user_details[:user_name]
-    session[:message] = 'Your username has been updated.'
-  elsif session[:user_name] == new_user_details[:user_name] && current_password != new_user_details[:password]
+  when /password/
     @storage.change_password(session[:user_name], new_user_details[:password])
-    session[:message] = 'Your password has been updated.'
-  else
-    @storage.change_username_and_password(session[:user_name], new_user_details[:user_name], new_user_details[:password])
-    session[:user_name] = new_user_details[:user_name]
-    session[:message] = 'Your username and password have been updated.'
+  when /email/
+    @storage.change_email(session[:user_name], new_user_details[:email])
   end
+  session[:message] = "The following have been updated: #{changed_details}."
 end
 # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Layout/LineLength
 
