@@ -55,15 +55,15 @@ def valid_credentials?(user_name, pword)
   end
 end
 
-# def signup_username_error(user_name)
-#   if user_name == 'admin'
-#     "Username cannot be 'admin'! Please choose a different username."
-#   elsif @storage.load_user_credentials.keys.include?(user_name)
-#     'That username already exists. Please choose a different username.'
-#   elsif user_name == ''
-#     'Username cannot be blank! Please enter a username.'
-#   end
-# end
+def signup_username_error(user_name)
+  if user_name == 'admin' && session[:user_name] != 'admin'
+    "Username cannot be 'admin'! Please choose a different username."
+  elsif @storage.load_user_credentials.keys.include?(user_name) && session[:user_name] != user_name
+    'That username already exists. Please choose a different username.'
+  elsif user_name == ''
+    'Username cannot be blank! Please enter a username.'
+  end
+end
 
 def signup_pword_error(user_details)
   if user_details[:pword] != user_details[:reenter_pword] &&
@@ -98,33 +98,11 @@ def extract_user_details(params)
     reenter_pword: params[:reenter_pword].strip }
 end
 
-def signup_username_error(user_name)
-  if user_name == 'admin' && session[:user_name] != 'admin'
-    "Username cannot be 'admin'! Please choose a different username."
-  elsif @storage.load_user_credentials.keys.include?(user_name)
-    'That username already exists. Please choose a different username.'
-  elsif user_name == ''
-    'Username cannot be blank! Please enter a username.'
-  end
-end
-
-# def edit_username_error(user_name)
-#   if signup_username_error(user_name) 
-#     signup_username_error(user_name)
-#   elsif session[:user_name] == 'admin' && user_name != 'admin'
-#     'Admin cannot change their username.'
-#   end
-# end
-
 def edit_username_error(user_name)
-  if user_name == 'admin' && session[:user_name] != 'admin'
-    "Username cannot be 'admin'! Please choose a different username."
-  elsif session[:user_name] == 'admin' && user_name != 'admin'
-    'Admin cannot change their username.'
-  elsif @storage.load_user_credentials.keys.include?(user_name) && session[:user_name] != user_name
-    'That username already exists. Please choose a different username.'
-  elsif user_name == ''
-    'Username cannot be blank! Please enter a username.'
+  if session[:user_name] == 'admin' && user_name != 'admin'
+    return 'Admin cannot change their username.'
+  else
+    signup_username_error(user_name)
   end
 end
 
