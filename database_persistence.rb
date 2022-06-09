@@ -20,18 +20,6 @@ class DatabasePersistence
     query(sql, user_details[:user_name], user_details[:email], hashed_password)
   end
 
-  def change_user_details(old_username, user_details)
-    hashed_password = BCrypt::Password.create(user_details[:password]).to_s
-    sql = 'UPDATE users SET user_name = $1, email = $2, pword = $3 WHERE user_name = $4'
-    query(sql, user_details[:user_name], user_details[:email], hashed_password, old_username)
-  end
-
-  def change_username_and_password(old_user_name, new_user_name, new_password)
-    hashed_password = BCrypt::Password.create(new_password).to_s
-    sql = 'UPDATE users SET user_name = $1, pword = $2 WHERE user_name = $3'
-    query(sql, new_user_name, hashed_password, old_user_name)
-  end
-
   def change_username(old_user_name, new_user_name)
     sql = 'UPDATE users SET user_name = $1 WHERE user_name = $2'
     query(sql, new_user_name, old_user_name)
@@ -41,6 +29,11 @@ class DatabasePersistence
     hashed_password = BCrypt::Password.create(new_password).to_s
     sql = 'UPDATE users SET pword = $1 WHERE user_name = $2'
     query(sql, hashed_password, old_user_name)
+  end
+
+  def change_email(old_user_name, new_email)
+    sql = 'UPDATE users SET email = $1 WHERE user_name = $2'
+    query(sql, new_email, old_user_name)
   end
 
   def reset_password(username)
