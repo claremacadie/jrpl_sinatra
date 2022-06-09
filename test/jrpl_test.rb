@@ -353,6 +353,24 @@ class CMSTest < Minitest::Test
     get '/'
     assert_includes last_response.body, 'Signed in as Clare Mac.'
   end
+ 
+  def test_change_invalid_email
+    post '/user/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'joe', new_pword: '', reenter_pword: ''}, user_2_session
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'That is not a valid email address.'
+  end
+  
+  def test_change_blank_email
+    post '/user/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: '', new_pword: '', reenter_pword: ''}, user_2_session
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Email cannot be blank! Please enter an email.'
+  end
+  
+  def test_change_duplicate_email
+    post '/user/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'mrmean@julianrimet.com', new_pword: '', reenter_pword: ''}, user_2_session
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'That email address already exists.'
+  end
 
   def test_change_username_and_email
     post '/user/edit_credentials', {current_pword: 'a', new_user_name: 'joe', new_email: 'new@email.com', new_pword: '', reenter_pword: ''}, user_2_session
