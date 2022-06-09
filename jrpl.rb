@@ -55,7 +55,7 @@ def valid_credentials?(user_name, pword)
   end
 end
 
-def signup_username_error(user_name)
+def input_username_error(user_name)
   if user_name == 'admin' && session[:user_name] != 'admin'
     "Username cannot be 'admin'! Please choose a different username."
   elsif @storage.load_user_credentials.keys.include?(user_name) &&
@@ -75,21 +75,21 @@ def signup_pword_error(user_details)
   end
 end
 
-def signup_email_error(email)
+def input_email_error(email)
   if email == ''
     'Email cannot be blank! Please enter an email.'
   elsif email !~ URI::MailTo::EMAIL_REGEXP
     'That is not a valid email address.'
-  elsif @storage.load_user_email_addresses.values.include?(email)
+  elsif @storage.load_user_email_addresses.values.include?(email) && session[:user_email] != email
     'That email address already exists.'
   end
 end
 
 def signup_input_error(user_details)
   error = []
-  error << signup_username_error(user_details[:user_name])
+  error << input_username_error(user_details[:user_name])
   error << signup_pword_error(user_details)
-  error << signup_email_error(user_details[:email])
+  error << input_email_error(user_details[:email])
   error.delete(nil)
   error.empty? ? '' : error.join(' ')
 end
@@ -105,7 +105,7 @@ def edit_username_error(user_name)
   if session[:user_name] == 'admin' && user_name != 'admin'
     'Admin cannot change their username.'
   else
-    signup_username_error(user_name)
+    input_username_error(user_name)
   end
 end
 
@@ -113,15 +113,6 @@ def edit_pword_error(pword, reenter_pword)
   return unless pword != reenter_pword && pword != ''
 
   'The passwords do not match.'
-end
-
-def edit_email_error(email)
-  # elsif @storage.load_user_email_addresses.include?(email)
-  #   'That email address already exists.'
-  # remember to use session[:user_email]
-  if email == ''
-    'Email cannot be blank! Please enter an email.'
-  end
 end
 
 def credentials_error(current_pword)
@@ -142,7 +133,7 @@ def edit_login_error(user_details, current_pword)
   error = []
   error << edit_username_error(user_details[:user_name])
   error << edit_pword_error(user_details[:pword], user_details[:reenter_pword])
-  error << edit_email_error(user_details[:email])
+  error << input_email_error(user_details[:email])
   error << credentials_error(current_pword)
   error << no_change_error(user_details, current_pword)
   error.delete(nil)
