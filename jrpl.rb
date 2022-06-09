@@ -82,9 +82,12 @@ def email_error(email)
 end
 
 def signup_input_error(user_details)
-  [username_error(user_details[:user_name]),
-   password_error(user_details[:password], user_details[:reenteer_password]),
-   email_error(user_details[:email])].join(' ')
+  error = []
+  error << username_error(user_details[:user_name])
+  error << password_error(user_details[:password], user_details[:reenter_password])
+  error << email_error(user_details[:email])
+  error.delete(nil)
+  error.empty? ? '' : error.join(' ')
 end
 
 def extract_user_details(params)
