@@ -155,19 +155,32 @@ def details_changed(new_user_details)
   changes.empty? ? 'none' : changes.join(', ')
 end
 
+def change_username(new_user_name)
+  @storage.change_username(session[:user_name], new_user_name)
+  session[:user_name] = new_user_name
+end
+
+def change_pword(new_pword)
+  @storage.change_pword(session[:user_name], new_pword)
+end
+
+def change_email(new_email)
+  @storage.change_email(session[:user_name], new_email)
+  session[:user_email] = new_email
+end
+
 def update_user_credentials(new_user_details)
   changed_details = details_changed(new_user_details)
-  if changed_details.include?('username')
-    @storage.change_username(session[:user_name], new_user_details[:user_name])
-    session[:user_name] = new_user_details[:user_name]
-  end
-  if changed_details.include?('password')
-    @storage.change_pword(session[:user_name], new_user_details[:pword])
-  end
-  if changed_details.include?('email')
-    @storage.change_email(session[:user_name], new_user_details[:email])
-    session[:user_email] = new_user_details[:email]
-  end
+
+  change_username(new_user_details[:user_name]) if
+    changed_details.include?('username')
+
+  change_pword(new_user_details[:pword]) if
+    changed_details.include?('password')
+
+  change_email(new_user_details[:email]) if
+    changed_details.include?('email')
+
   session[:message] = "The following have been updated: #{changed_details}."
 end
 
