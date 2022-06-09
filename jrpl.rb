@@ -98,12 +98,12 @@ def extract_user_details(params)
 end
 
 def edit_username_error(user_name)
-  if user_name == 'admin'
+  if user_name == 'admin' && session[:user_name] != 'admin'
     "Username cannot be 'admin'! Please choose a different username."
   elsif session[:user_name] == 'admin' && user_name != 'admin'
     'Admin cannot change their username.'
   elsif @storage.load_user_credentials.keys.include?(user_name) && session[:user_name] != user_name
-    'That username already exists.'
+    'That username already exists. Please choose a different username.'
   elsif user_name == ''
     'Username cannot be blank! Please enter a username.'
   end
