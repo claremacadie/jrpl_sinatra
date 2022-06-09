@@ -325,6 +325,54 @@ class CMSTest < Minitest::Test
     assert_equal 'admin', session[:user_name]
   end
 
+  def test_change_email
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'Clare Mac', new_email: 'new@email.com', new_password: '', reenter_password: ''}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'Clare Mac', session[:user_name]
+    assert_equal 'new@email.com', session[:user_email]
+    assert_equal 'The following have been updated: email.', session[:message]
+    
+    get '/'
+    assert_includes last_response.body, 'Signed in as Clare Mac.'
+  end
+
+  def test_change_username_and_email
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'joe', new_email: 'new@email.com', new_password: '', reenter_password: ''}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'joe', session[:user_name]
+    assert_equal 'new@email.com', session[:user_email]
+    assert_equal 'The following have been updated: username, email.', session[:message]
+    
+    get '/'
+    assert_includes last_response.body, 'Signed in as joe.'
+  end
+  
+  def test_change_username_password_and_email
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: 'joe', new_email: 'new@email.com', new_password: 'Qwerty90', reenter_password: 'Qwerty90'}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'joe', session[:user_name]
+    assert_equal 'new@email.com', session[:user_email]
+    assert_equal 'The following have been updated: username, password, email.', session[:message]
+  
+    post '/users/signin', {user_name: 'joe', password: 'Qwerty90'}, {}
+    assert_equal 302, last_response.status
+    assert_equal 'Welcome!', session[:message]
+    assert_equal 'joe', session[:user_name]
+  end
+  
+  def test_change_username_password_and_email_strip
+    post '/user/edit_credentials', {current_password: 'a', new_user_name: '   joe ', new_email: '  new@email.com ', new_password: 'Qwerty90  ', reenter_password: ' Qwerty90 '}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'joe', session[:user_name]
+    assert_equal 'new@email.com', session[:user_email]
+    assert_equal 'The following have been updated: username, password, email.', session[:message]
+  
+    post '/users/signin', {user_name: 'joe', password: 'Qwerty90'}, {}
+    assert_equal 302, last_response.status
+    assert_equal 'Welcome!', session[:message]
+    assert_equal 'joe', session[:user_name]
+  end
+
   # def test_reset_password_admin
   #   post '/users/reset_password', {user_name: 'Clare MacAdie'}, admin_session
   #   assert_equal 302, last_response.status
