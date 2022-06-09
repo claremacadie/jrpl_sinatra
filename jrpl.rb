@@ -55,21 +55,36 @@ def valid_credentials?(user_name, password)
   end
 end
 
-def signup_input_error(user_details)
-  if user_details[:user_name] == '' && user_details[:password] == ''
-    'Username and password cannot be blank! ' \
-    'Please enter a username and password.'
-  elsif user_details[:user_name] == ''
-    'Username cannot be blank! Please enter a username.'
-  elsif user_details[:user_name] == 'admin'
+def username_error(user_name)
+  if user_name == 'admin'
     "Username cannot be 'admin'! Please choose a different username."
-  elsif @storage.load_user_credentials.keys.include?(user_details[:user_name])
+  elsif @storage.load_user_credentials.keys.include?(user_name)
     'That username already exists.'
-  elsif user_details[:password] != user_details[:reenter_password]
+  elsif user_name == ''
+    'Username cannot be blank! Please enter a username.'
+  end
+end
+
+def password_error(password, reenter_password)
+  if password != reenter_password && password != ''
     'The passwords do not match.'
-  elsif user_details[:password] == ''
+  elsif password == ''
     'Password cannot be blank! Please enter a password.'
   end
+end
+
+def email_error(email)
+  # elsif @storage.load_user_email_addresses.include?(email)
+  #   'That email address already exists.'
+  if email == ''
+    'Email cannot be blank! Please enter an email.'
+  end
+end
+
+def signup_input_error(user_details)
+  [username_error(user_details[:user_name]),
+   password_error(user_details[:password], user_details[:reenteer_password]),
+   email_error(user_details[:email])].join(' ')
 end
 
 def extract_user_details(params)
@@ -165,11 +180,8 @@ post '/users/signup' do
   require_signed_out_user
   session[:intended_route] = params[:intended_route]
   new_user_details = extract_user_details(params)
-  # rubocop:disable Style/ParenthesesAroundCondition
-  if (session[:message] =
-        signup_input_error(new_user_details)
-     )
-    # rubocop:enable Style/ParenthesesAroundCondition
+  session[:message] = signup_input_error(new_user_details)
+  unless session[:message].empty?
     status 422
     erb :signup
   else

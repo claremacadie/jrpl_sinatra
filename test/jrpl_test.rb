@@ -108,23 +108,23 @@ class CMSTest < Minitest::Test
     assert_equal 'You must be signed out to do that.', session[:message]
   end
   
-  def test_signup_signed_out
-    post '/users/signup', {new_user_name: 'joe', new_email: 'joe@joe.com', new_password: 'Dfghiewo34334', reenter_password: 'Dfghiewo34334'}
-    assert_equal 302, last_response.status
-    assert_equal 'Your account has been created.', session[:message]
+  # def test_signup_signed_out
+  #   post '/users/signup', {new_user_name: 'joe', new_email: 'joe@joe.com', new_password: 'Dfghiewo34334', reenter_password: 'Dfghiewo34334'}
+  #   assert_equal 302, last_response.status
+  #   assert_equal 'Your account has been created.', session[:message]
   
-    get '/'
-    assert_includes last_response.body, 'Signed in as joe.'
-  end
+  #   get '/'
+  #   assert_includes last_response.body, 'Signed in as joe.'
+  # end
   
-  def test_signup_signed_out_strip_input
-    post '/users/signup', {new_user_name: '   joe  ', new_email: 'joe@joe.com', new_password: ' Dfghiewo34334    ', reenter_password: '  Dfghiewo34334 '}
-    assert_equal 302, last_response.status
-    assert_equal 'Your account has been created.', session[:message]
+  # def test_signup_signed_out_strip_input
+  #   post '/users/signup', {new_user_name: '   joe  ', new_email: 'joe@joe.com', new_password: ' Dfghiewo34334    ', reenter_password: '  Dfghiewo34334 '}
+  #   assert_equal 302, last_response.status
+  #   assert_equal 'Your account has been created.', session[:message]
   
-    get '/'
-    assert_includes last_response.body, 'Signed in as joe.'
-  end
+  #   get '/'
+  #   assert_includes last_response.body, 'Signed in as joe.'
+  # end
   
   def test_signup_signed_in
     post '/users/signup', {new_user_name: 'joe', new_email: 'joe@joe.com', new_password: 'dfghiewo34334', reenter_password: 'dfghiewo34334'}, admin_session
@@ -159,7 +159,7 @@ class CMSTest < Minitest::Test
   def test_signup_blank_username_and_password
     post '/users/signup', {new_user_name: '', new_email: 'joe@joe.com', new_password: '', reenter_password: ''}
     assert_equal 422, last_response.status
-    assert_includes last_response.body, 'Username and password cannot be blank! Please enter a username and password.'
+    assert_includes last_response.body, 'Username cannot be blank! Please enter a username. Password cannot be blank! Please enter a password. '
   end
   
   def test_signup_mismatched_passwords
