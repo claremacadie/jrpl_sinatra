@@ -265,6 +265,19 @@ get '/all_users_list' do
   erb :all_users_list
 end
 
+post '/users/reset_password' do
+  require_signed_in_as_admin
+  user_name = params[:user_name]
+  @storage.reset_password(user_name)
+  session[:message] =
+    "The password has been reset to 'jrpl' for #{user_name}."
+  if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+    '/'
+  else
+    redirect '/'
+  end
+end
+
 not_found do
   redirect "/"
 end

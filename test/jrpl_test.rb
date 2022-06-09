@@ -41,14 +41,6 @@ class CMSTest < Minitest::Test
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Julian Rimet Prediction League'
   end
- 
-  def test_all_users_list
-    get '/all_users_list'
-    assert_equal 200, last_response.status
-    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, 'Clare Mac'
-    assert_includes last_response.body, 'This is a list of the display names of all users.'
-  end
   
   def test_signin_form
     get '/users/signin'
@@ -407,6 +399,15 @@ class CMSTest < Minitest::Test
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'joe', session[:user_name]
+  end
+
+  def test_all_users_list
+    get '/all_users_list'
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Clare Mac'
+    assert_includes last_response.body, 'Reset passwords'
+    assert_includes last_response.body, '<button type="submit" class="reset_pword">Reset password</button>'
   end
 
   # def test_reset_pword_admin
