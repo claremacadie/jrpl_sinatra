@@ -80,7 +80,8 @@ def input_email_error(email)
     'Email cannot be blank! Please enter an email.'
   elsif email !~ URI::MailTo::EMAIL_REGEXP
     'That is not a valid email address.'
-  elsif @storage.load_user_email_addresses.values.include?(email) && session[:user_email] != email
+  elsif @storage.load_user_email_addresses.values.include?(email) &&
+        session[:user_email] != email
     'That email address already exists.'
   end
 end
