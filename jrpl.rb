@@ -55,7 +55,7 @@ def valid_credentials?(user_name, pword)
   end
 end
 
-def username_error(user_name)
+def signup_username_error(user_name)
   if user_name == 'admin'
     "Username cannot be 'admin'! Please choose a different username."
   elsif @storage.load_user_credentials.keys.include?(user_name)
@@ -65,7 +65,7 @@ def username_error(user_name)
   end
 end
 
-def pword_error(pword, reenter_pword)
+def signup_pword_error(pword, reenter_pword)
   if pword != reenter_pword && pword != ''
     'The passwords do not match.'
   elsif pword == ''
@@ -73,7 +73,7 @@ def pword_error(pword, reenter_pword)
   end
 end
 
-def email_error(email)
+def signup_email_error(email)
   # elsif @storage.load_user_email_addresses.include?(email)
   #   'That email address already exists.'
   if email == ''
@@ -83,9 +83,9 @@ end
 
 def signup_input_error(user_details)
   error = []
-  error << username_error(user_details[:user_name])
-  error << pword_error(user_details[:pword], user_details[:reenter_pword])
-  error << email_error(user_details[:email])
+  error << signup_username_error(user_details[:user_name])
+  error << signup_pword_error(user_details[:pword], user_details[:reenter_pword])
+  error << signup_email_error(user_details[:email])
   error.delete(nil)
   error.empty? ? '' : error.join(' ')
 end
@@ -97,22 +97,46 @@ def extract_user_details(params)
     reenter_pword: params[:reenter_pword].strip }
 end
 
-def edit_login_error(new_user_details, current_pword)
-  if new_user_details[:user_name] == ''
-    'New username cannot be blank! Please enter a username.'
-  elsif session[:user_name] == 'admin' && new_user_details[:user_name] != 'admin'
+def edit_username_error(user_name)
+  if user_name == 'admin'
+    "Username cannot be 'admin'! Please choose a different username."
+  elsif session[:user_name] == 'admin' && user_name != 'admin'
     'Admin cannot change their username.'
-  elsif new_user_details[:user_name] == 'admin' && session[:user_name] != 'admin'
-    "New username cannot be 'admin'! Please choose a different username."
-  elsif @storage.load_user_credentials.keys.include?(new_user_details[:user_name]) && session[:user_name] != new_user_details[:user_name]
-    'That username already exists. Please choose a different username.'
-  elsif !valid_credentials?(session[:user_name], current_pword)
-    'That is not the correct current password. Try again!'
-  elsif new_user_details[:pword] != new_user_details[:reenter_pword]
-    'The passwords do not match.'
-  elsif details_changed(new_user_details) == 'none'
-    'You have not changed any of your details.'
+  elsif @storage.load_user_credentials.keys.include?(user_name) && session[:user_name] != user_name
+    'That username already exists.'
+  elsif user_name == ''
+    'Username cannot be blank! Please enter a username.'
   end
+end
+
+def edit_pword_error(pword, reenter_pword)
+  return unless pword != reenter_pword && pword != ''
+  
+  'The passwords do not match.'
+ end
+
+def edit_email_error(email)
+  # elsif @storage.load_user_email_addresses.include?(email)
+  #   'That email address already exists.'
+  if email == ''
+    'Email cannot be blank! Please enter an email.'
+  end
+end
+
+def credentials_error(current_pword)
+  return unless !valid_credentials?(session[:user_name], current_pword)
+
+  'That is not the correct current password. Try again!'
+end
+
+def edit_login_error(user_details, current_pword)
+  error = []
+  error << edit_username_error(user_details[:user_name])
+  error << edit_pword_error(user_details[:pword], user_details[:reenter_pword])
+  error << edit_email_error(user_details[:email])
+  error << credentials_error(current_pword)
+  error.delete(nil)
+  error.empty? ? 'You have not changed any of your details.' : error.join(' ')
 end
 
 def details_changed(new_user_details)
