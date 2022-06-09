@@ -168,6 +168,12 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'The passwords do not match.'
   end
   
+  def test_signup_invalid_email
+    post '/users/signup', {new_user_name: 'joanna', new_email: 'joe', new_pword: 'dfghiewo34334', reenter_pword: 'dfghiewo34334'}
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'That is not a valid email address.'
+  end
+  
   def test_view_administer_account_form_signed_out
     get '/user/edit_credentials'
     assert_equal 302, last_response.status
