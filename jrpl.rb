@@ -60,11 +60,7 @@ def email_list
 end
 
 def extract_user_name(login)
-  if @storage.user_name_from_email(login)
-    @storage.user_name_from_email(login)
-  else
-    login
-  end
+  @storage.user_name_from_email(login) || login
 end
 
 def valid_credentials?(user_name, pword)
