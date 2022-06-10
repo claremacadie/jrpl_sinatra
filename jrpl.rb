@@ -85,9 +85,7 @@ def extract_user_details(params)
 end
 
 def input_username_error(user_name)
-  if user_name == 'admin' && session[:user_name] != 'admin'
-    "Username cannot be 'admin'! Please choose a different username."
-  elsif @storage.load_user_credentials.keys.include?(user_name) &&
+  if @storage.load_user_credentials.keys.include?(user_name) &&
         session[:user_name] != user_name
     'That username already exists. Please choose a different username.'
   elsif user_name == ''
@@ -124,14 +122,6 @@ def signup_input_error(user_details)
   error.empty? ? '' : error.join(' ')
 end
 
-def edit_username_error(user_name)
-  if session[:user_name] == 'admin' && user_name != 'admin'
-    'Admin cannot change their username.'
-  else
-    input_username_error(user_name)
-  end
-end
-
 def edit_pword_error(pword, reenter_pword)
   return unless pword != reenter_pword && pword != ''
   'The passwords do not match.'
@@ -152,7 +142,7 @@ end
 
 def edit_login_error(user_details, current_pword)
   error = []
-  error << edit_username_error(user_details[:user_name])
+  error << input_username_error(user_details[:user_name])
   error << edit_pword_error(user_details[:pword], user_details[:reenter_pword])
   error << input_email_error(user_details[:email])
   error << credentials_error(current_pword)
