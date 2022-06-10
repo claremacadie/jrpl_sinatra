@@ -60,11 +60,10 @@ def email_list
 end
 
 def extract_user_name(login)
-  credentials = @storage.load_user_credentials
-  if credentials.key?(login)
-    login
-  elsif @storage.user_name_from_email(login)
+  if @storage.user_name_from_email(login)
     user_name_from_email(login)
+  else
+    login
   end
 end
 
