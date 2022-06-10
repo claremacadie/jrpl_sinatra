@@ -50,7 +50,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_signin
-    post '/users/signin', {user_name: 'admin', pword: 'secret'}, {}
+    post '/users/signin', {login: 'admin', pword: 'secret'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'admin', session[:user_name]
@@ -60,7 +60,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_signin_strip_input
-    post '/users/signin', {user_name: '   admin  ', pword: ' secret '}, {}
+    post '/users/signin', {login: '   admin  ', pword: ' secret '}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'admin', session[:user_name]
@@ -70,7 +70,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_signin_with_bad_credentials
-    post '/users/signin', {user_name: 'guest', pword: 'shhhh'}, {}
+    post '/users/signin', {login: 'guest', pword: 'shhhh'}, {}
     assert_equal 422, last_response.status
     assert_nil session[:user_name]
     assert_includes last_response.body, 'Invalid credentials.'
@@ -241,7 +241,7 @@ class CMSTest < Minitest::Test
     assert_equal 'Clare Mac', session[:user_name]
     assert_equal 'The following have been updated: password.', session[:message]
     
-    post '/users/signin', {user_name: 'Clare Mac', pword: 'Qwerty90'}, {}
+    post '/users/signin', {login: 'Clare Mac', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'Clare Mac', session[:user_name]
@@ -253,7 +253,7 @@ class CMSTest < Minitest::Test
     assert_equal 'Clare Mac', session[:user_name]
     assert_equal 'The following have been updated: password.', session[:message]
     
-    post '/users/signin', {user_name: 'Clare Mac', pword: 'Qwerty90'}, {}
+    post '/users/signin', {login: 'Clare Mac', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'Clare Mac', session[:user_name]
@@ -272,7 +272,7 @@ class CMSTest < Minitest::Test
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username, password.', session[:message]
   
-    post '/users/signin', {user_name: 'joe', pword: 'Qwerty90'}, {}
+    post '/users/signin', {login: 'joe', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'joe', session[:user_name]
@@ -284,7 +284,7 @@ class CMSTest < Minitest::Test
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username, password.', session[:message]
   
-    post '/users/signin', {user_name: 'joe', pword: 'Qwerty90'}, {}
+    post '/users/signin', {login: 'joe', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'joe', session[:user_name]
@@ -296,7 +296,7 @@ class CMSTest < Minitest::Test
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username.', session[:message]
   
-    post '/users/signin', {user_name: 'joe', pword: 'a'}, {}
+    post '/users/signin', {login: 'joe', pword: 'a'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'joe', session[:user_name]
@@ -329,7 +329,7 @@ class CMSTest < Minitest::Test
     assert_equal 'admin', session[:user_name]
     assert_equal 'The following have been updated: password.', session[:message]
   
-    post '/users/signin', {user_name: 'admin', pword: 'a'}, {}
+    post '/users/signin', {login: 'admin', pword: 'a'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'admin', session[:user_name]
@@ -382,7 +382,7 @@ class CMSTest < Minitest::Test
     assert_equal 'new@email.com', session[:user_email]
     assert_equal 'The following have been updated: username, password, email.', session[:message]
   
-    post '/users/signin', {user_name: 'joe', pword: 'Qwerty90'}, {}
+    post '/users/signin', {login: 'joe', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'joe', session[:user_name]
@@ -395,7 +395,7 @@ class CMSTest < Minitest::Test
     assert_equal 'new@email.com', session[:user_email]
     assert_equal 'The following have been updated: username, password, email.', session[:message]
   
-    post '/users/signin', {user_name: 'joe', pword: 'Qwerty90'}, {}
+    post '/users/signin', {login: 'joe', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'joe', session[:user_name]
@@ -416,7 +416,7 @@ class CMSTest < Minitest::Test
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal "The password has been reset to 'jrpl' for Clare Mac.", session[:message]
     
-    post '/users/signin', {user_name: 'Clare Mac', pword: 'jrpl'}, {}
+    post '/users/signin', {login: 'Clare Mac', pword: 'jrpl'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
     assert_equal 'Clare Mac', session[:user_name]
@@ -429,7 +429,7 @@ class CMSTest < Minitest::Test
     assert_equal 'You must be an administrator to do that.', session[:message]
     refute_includes last_response.body, "The password has been reset to 'jrpl' for Clare Mac."
     
-    post '/users/signin', {user_name: 'Clare Mac', pword: 'jrpl'}, {}
+    post '/users/signin', {login: 'Clare Mac', pword: 'jrpl'}, {}
     assert_equal 422, last_response.status
     assert_includes last_response.body, 'Invalid credentials'
   end
@@ -441,7 +441,7 @@ class CMSTest < Minitest::Test
     assert_equal 'You must be an administrator to do that.', session[:message]
     refute_includes last_response.body, "The password has been reset to 'jrpl' for Clare MacAdie."
     
-    post '/users/signin', {user_name: 'Clare Mac', pword: 'jrpl'}, {}
+    post '/users/signin', {login: 'Clare Mac', pword: 'jrpl'}, {}
     assert_equal 422, last_response.status
     assert_includes last_response.body, 'Invalid credentials'
   end

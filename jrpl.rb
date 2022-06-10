@@ -203,7 +203,7 @@ end
 
 post '/users/signin' do
   session[:intended_route] = params['intended_route']
-  user_name = params[:user_name].strip
+  user_name = params[:login].strip
   pword = params[:pword].strip
   if valid_credentials?(user_name, pword)
     session[:user_name] = user_name
