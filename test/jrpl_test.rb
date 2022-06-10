@@ -136,12 +136,6 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Username cannot be blank! Please enter a username.'
   end
   
-  def test_signup_admin_username
-    post '/users/signup', {new_user_name: 'admin', new_email: 'joe@joe.com', new_pword: 'dfghiewo34334', reenter_pword: 'dfghiewo34334'}
-    assert_equal 422, last_response.status
-    assert_includes last_response.body, "Username cannot be 'admin'! Please choose a different username."
-  end
-  
   def test_signup_blank_pword
     post '/users/signup', {new_user_name: 'joanna', new_email: 'joe@joe.com', new_pword: '', reenter_pword: ''}
     assert_equal 422, last_response.status
@@ -219,13 +213,6 @@ class CMSTest < Minitest::Test
     assert_equal 422, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_includes last_response.body, 'Username cannot be blank! Please enter a username.'
-  end
-  
-  def test_change_username_to_admin
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'admin', new_email: 'clare@macadie.co.uk', new_pword: '', reenter_pword: ''}, user_2_session
-    assert_equal 422, last_response.status
-    assert_equal 'Clare Mac', session[:user_name]
-    assert_includes last_response.body, "Username cannot be 'admin'! Please choose a different username."
   end
   
   def test_change_username_to_existing_username
