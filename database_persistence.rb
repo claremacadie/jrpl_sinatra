@@ -67,6 +67,9 @@ class DatabasePersistence
   def user_name_from_email(email)
     sql = 'SELECT user_name FROM users WHERE email = $1'
     result = query(sql, email)
+    
+    return nil if result.ntuples == 0
+    
     result.first['user_name']
   end
 
