@@ -63,6 +63,12 @@ class DatabasePersistence
     result = query(sql, user_name)
     result.first['email']
   end
+  
+  def user_name_from_email(email)
+    sql = 'SELECT user_name FROM users WHERE email = $1'
+    result = query(sql, email)
+    result.first['user_name']
+  end
 
   def all_users_list
     sql = <<~SQL
