@@ -33,7 +33,6 @@ end
 
 def require_signed_in_as_admin
   return if session[:user_name] == 'admin'
-
   session[:intended_route] = request.path_info
   session[:message] = 'You must be an administrator to do that.'
   redirect '/users/signin'
@@ -41,14 +40,12 @@ end
 
 def require_signed_in_user
   return if user_signed_in?
-
   session[:message] = 'You must be signed in to do that.'
   redirect '/'
 end
 
 def require_signed_out_user
   return unless user_signed_in?
-
   session[:message] = 'You must be signed out to do that.'
   redirect '/'
 end
@@ -130,13 +127,11 @@ end
 
 def edit_pword_error(pword, reenter_pword)
   return unless pword != reenter_pword && pword != ''
-
   'The passwords do not match.'
 end
 
 def credentials_error(current_pword)
   return unless !valid_credentials?(session[:user_name], current_pword)
-
   'That is not the correct current password. Try again!'
 end
 
