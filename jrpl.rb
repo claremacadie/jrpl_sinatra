@@ -249,12 +249,12 @@ post '/users/signup' do
   end
 end
 
-get '/user/edit_credentials' do
+get '/users/edit_credentials' do
   require_signed_in_user
   erb :edit_credentials
 end
 
-post '/user/edit_credentials' do
+post '/users/edit_credentials' do
   require_signed_in_user
   current_pword = params[:current_pword].strip
   new_user_details = extract_user_details(params)
