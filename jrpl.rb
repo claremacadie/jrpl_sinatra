@@ -74,6 +74,7 @@ def set_session_data(user_name)
   session[:user_name] = user_name
   session[:user_id] = @storage.user_id(user_name)
   session[:user_email] = @storage.user_email(user_name)
+  session[:user_role] = @storage.user_role(session[:user_id])
 end
 
 def extract_user_details(params)

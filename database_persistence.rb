@@ -63,6 +63,18 @@ class DatabasePersistence
     result = query(sql, user_name)
     result.first['email']
   end
+  
+  def user_role(user_id)
+    sql = <<~SQL
+      SELECT role.name FROM role
+      INNER JOIN user_role ON role.role_id = user_role.role_id
+      INNER JOIN users ON user_role.user_id = users.user_id
+      WHERE users.user_id = $1
+    SQL
+    result = query(sql, user_id)
+    return '' if result.ntuples == 0
+    result.first['name']
+  end
 
   def user_name_from_email(email)
     sql = 'SELECT user_name FROM users WHERE email = $1'
