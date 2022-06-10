@@ -61,8 +61,8 @@ end
 
 def extract_user_name(login)
   credentials = @storage.load_user_credentials
-  user_name_email_hash = 
-    credentials.each_with_object({}) do |(user_name, details), h| 
+  user_name_email_hash =
+    credentials.each_with_object({}) do |(user_name, details), h|
       h[user_name] = details[:email]
     end
   if credentials.key?(login)
