@@ -1,5 +1,5 @@
 $(function() {
-  $("form.reset_password").submit(function(event) {
+  $("form.reset_pword").submit(function(event) {
     event.preventDefault();
     event.stopPropagation();
     var ok = confirm("Are you sure you want to reset the password? This cannot be undone!");
