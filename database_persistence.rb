@@ -47,7 +47,8 @@ class DatabasePersistence
     result = query(sql)
 
     result.each_with_object({}) do |tuple, hash|
-      hash[tuple['user_name']] = {pword: tuple['pword'], email: tuple['email']}
+      hash[tuple['user_name']] =
+        { pword: tuple['pword'], email: tuple['email'] }
     end
   end
 
@@ -65,11 +66,7 @@ class DatabasePersistence
 
   def all_users_list
     sql = <<~SQL
-      SELECT
-        user_id,
-        user_name,
-        email,
-        pword
+      SELECT user_id, user_name, email, pword
       FROM users
       ORDER BY user_name;
     SQL
