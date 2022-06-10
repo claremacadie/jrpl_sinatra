@@ -70,7 +70,7 @@ def valid_credentials?(user_name, pword)
   end
 end
 
-def set_session_data(user_name)
+def setup_user_session_data(user_name)
   session[:user_name] = user_name
   session[:user_id] = @storage.user_id(user_name)
   session[:user_email] = @storage.user_email(user_name)
@@ -212,7 +212,7 @@ post '/users/signin' do
   user_name = extract_user_name(params[:login].strip)
   pword = params[:pword].strip
   if valid_credentials?(user_name, pword)
-    set_session_data(user_name)
+    setup_user_session_data(user_name)
     session[:message] = 'Welcome!'
     redirect(session[:intended_route])
   else

@@ -63,7 +63,7 @@ class DatabasePersistence
     result = query(sql, user_name)
     result.first['email']
   end
-  
+
   def user_role(user_id)
     sql = <<~SQL
       SELECT role.name FROM role
