@@ -265,11 +265,6 @@ post '/users/edit_credentials' do
   end
 end
 
-get '/all_users_list' do
-  @users = @storage.load_user_credentials
-  erb :all_users_list
-end
-
 post '/users/reset_pword' do
   require_signed_in_as_admin
   user_name = params[:user_name]
@@ -281,6 +276,11 @@ post '/users/reset_pword' do
   else
     redirect '/'
   end
+end
+
+get '/all_users_list' do
+  @users = @storage.load_users_details
+  erb :all_users_list
 end
 
 not_found do

@@ -83,15 +83,18 @@ class DatabasePersistence
     result.first['user_name']
   end
 
-  def all_users_list
+  def load_users_details
     sql = <<~SQL
-      SELECT user_id, user_name, email, pword
+      SELECT users.user_name, users.email, string_agg(role.name, ', ') AS roles
       FROM users
-      ORDER BY user_name;
+      FULL OUTER JOIN user_role ON users.user_id = user_role.user_id
+      FULL OUTER JOIN role ON user_role.role_id = role.role_id
+      GROUP BY users.user_name, users.email
+      ORDER BY users.user_name;
     SQL
     result = query(sql)
     result.map do |tuple|
-      tuple_to_user_list_hash(tuple)
+      tuple_to_users_details_hash(tuple)
     end
   end
 
@@ -107,10 +110,9 @@ class DatabasePersistence
     str ? str.to_i : nil
   end
 
-  def tuple_to_user_list_hash(tuple)
-    { user_id: tuple['user_id'].to_i,
-      user_name: tuple['user_name'],
+  def tuple_to_users_details_hash(tuple)
+    { user_name: tuple['user_name'],
       email: tuple['email'],
-      pword: tuple['pword'] }
+      roles: tuple['roles'] }
   end
 end
