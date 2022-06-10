@@ -53,6 +53,25 @@ def require_signed_out_user
   redirect '/'
 end
 
+def email_list
+  @storage.load_user_credentials.values.each_with_object([]) do |hash, arr|
+    arr << hash[:email]
+  end
+end
+
+def extract_user_name(login)
+  credentials = @storage.load_user_credentials
+  user_name_email_hash = 
+    credentials.each_with_object({}) do |(user_name, details), h| 
+      h[user_name] = details[:email]
+    end
+  if credentials.key?(login)
+    login
+  elsif user_name_email_hash.values.include?(login)
+    user_name_email_hash.key(login)
+  end
+end
+
 def valid_credentials?(user_name, pword)
   credentials = @storage.load_user_credentials
   if credentials.key?(user_name)
@@ -60,12 +79,6 @@ def valid_credentials?(user_name, pword)
     bcrypt_pword == pword
   else
     false
-  end
-end
-
-def email_list
-  @storage.load_user_credentials.values.each_with_object([]) do |hash, arr|
-    arr << hash[:email]
   end
 end
 
@@ -203,7 +216,7 @@ end
 
 post '/users/signin' do
   session[:intended_route] = params['intended_route']
-  user_name = params[:login].strip
+  user_name = extract_user_name(params[:login].strip)
   pword = params[:pword].strip
   if valid_credentials?(user_name, pword)
     session[:user_name] = user_name
