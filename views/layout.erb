@@ -5,6 +5,8 @@
 	    <meta charset="UTF-8">
 	    <%# <link rel="stylesheet" href="/stylesheets/whitespace-reset.css"> %>
 	    <link rel="stylesheet" href="/stylesheets/application.css">
+      <script src="/javascripts/jquery-2.1.4.js"></script>
+      <script src="/javascripts/application.js"></script>
 	  </head>
 	  <body>
 	    <header>
@@ -24,7 +26,7 @@
           <% end %>
         </nav>
         <% if session[:user_id] %>
-            <form method="post" action="/users/signout">
+            <form class="signout" method="post" action="/users/signout">
               Signed in as <%= session[:user_name] %>.
               <button type="submit">Sign Out</button>
             </form>
