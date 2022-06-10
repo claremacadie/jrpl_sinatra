@@ -28,11 +28,11 @@ class CMSTest < Minitest::Test
   end
 
   def admin_session
-    { 'rack.session' => { user_name: 'admin' , user_id: 1, user_email: 'admin@julianrimet.com', user_role: 'Admin'} }
+    { 'rack.session' => { user_name: 'Maccas' , user_id: 4, user_email: 'james.macadie@telerealtrillium.com', user_role: 'Admin'} }
   end
 
   def user_2_session
-    { 'rack.session' => { user_name: 'Clare Mac', user_id: 12, user_email: 'clare@macadie.co.uk'} }
+    { 'rack.session' => { user_name: 'Clare Mac', user_id: 11, user_email: 'clare@macadie.co.uk'} }
   end
  
   def test_homepage
@@ -50,23 +50,23 @@ class CMSTest < Minitest::Test
   end
   
   def test_signin
-    post '/users/signin', {login: 'admin', pword: 'secret'}, {}
+    post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
-    assert_equal 'admin', session[:user_name]
+    assert_equal 'Maccas', session[:user_name]
   
     get last_response['Location']
-    assert_includes last_response.body, 'Signed in as admin.'
+    assert_includes last_response.body, 'Signed in as Maccas.'
   end
   
   def test_signin_strip_input
-    post '/users/signin', {login: '   admin  ', pword: ' secret '}, {}
+    post '/users/signin', {login: '   Maccas  ', pword: ' a '}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
-    assert_equal 'admin', session[:user_name]
-  
+    assert_equal 'Maccas', session[:user_name]
+    
     get last_response['Location']
-    assert_includes last_response.body, 'Signed in as admin.'
+    assert_includes last_response.body, 'Signed in as Maccas.'
   end
   
   def test_signin_with_bad_credentials
@@ -78,7 +78,7 @@ class CMSTest < Minitest::Test
   
   def test_signout
     get '/', {}, admin_session
-    assert_includes last_response.body, 'Signed in as admin.'
+    assert_equal 'Admin', session[:user_role]
   
     post '/users/signout'
     assert_equal 'You have been signed out.', session[:message]
@@ -316,23 +316,16 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'You have not changed any of your details.'
   end
 
-  def test_change_admin_username
-    post '/users/edit_credentials', {current_pword: 'secret', new_user_name: 'Clare Mac', new_email: 'clare@macadie.co.uk', new_pword: '', reenter_pword: ''}, admin_session
-    assert_equal 422, last_response.status
-    assert_equal 'admin', session[:user_name]
-    assert_includes last_response.body, 'Admin cannot change their username.'
-  end
-
   def test_change_admin_pword
-    post '/users/edit_credentials', {current_pword: 'secret', new_user_name: 'admin', new_email: 'admin@julianrimet.com', new_pword: 'a', reenter_pword: 'a'}, admin_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Maccas', new_email: 'james.macadie@telerealtrillium.com', new_pword: 'b', reenter_pword: 'b'}, admin_session
     assert_equal 302, last_response.status
-    assert_equal 'admin', session[:user_name]
+    assert_equal 'Maccas', session[:user_name]
     assert_equal 'The following have been updated: password.', session[:message]
   
-    post '/users/signin', {login: 'admin', pword: 'a'}, {}
+    post '/users/signin', {login: 'Maccas', pword: 'b'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
-    assert_equal 'admin', session[:user_name]
+    assert_equal 'Maccas', session[:user_name]
   end
 
   def test_change_email

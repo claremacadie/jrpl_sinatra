@@ -18,7 +18,6 @@ TRUNCATE users RESTART IDENTITY CASCADE;
 
 INSERT INTO users
     (user_name,    email,                                  pword) VALUES
-    ('admin',      'admin@julianrimet.com',                '$2a$12$RDlwS.8sAOWA74qZYYe4yO2rHsO3ZKx2JohYcx5Ectd.Kul2JtGQi'),
     ('Mr. Mean',   'mrmean@julianrimet.com',               '$2a$12$bEpZUdqQkgZpNe2wKL3vkO1xsCJzjTDNwolKVSMpKHMhtV6xm4vD6'),
     ('Mr. Median', 'mrmedian@julianrimet.com',             '$2a$12$bEpZUdqQkgZpNe2wKL3vkO1xsCJzjTDNwolKVSMpKHMhtV6xm4vD6'),
     ('Mr. Mode',   'mrmode@julianrimet.com',               '$2a$12$bEpZUdqQkgZpNe2wKL3vkO1xsCJzjTDNwolKVSMpKHMhtV6xm4vD6'),
@@ -61,10 +60,10 @@ INSERT INTO role (name) VALUES
     ('Mr Mode');
     
 INSERT INTO user_role (user_id, role_id) VALUES
-    (1, 1),
-    (2, 2),
-    (3, 3),
-    (4, 4);
+    (1, 2),
+    (2, 3),
+    (3, 4),
+    (4, 1);
 
 INSERT INTO broadcaster (name) VALUES
     ('BBC'),
