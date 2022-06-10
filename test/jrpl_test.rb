@@ -28,7 +28,7 @@ class CMSTest < Minitest::Test
   end
 
   def admin_session
-    { 'rack.session' => { user_name: 'admin' , user_id: 1, user_email: 'admin@julianrimet.com'} }
+    { 'rack.session' => { user_name: 'admin' , user_id: 1, user_email: 'admin@julianrimet.com', user_role: 'Admin'} }
   end
 
   def user_2_session
