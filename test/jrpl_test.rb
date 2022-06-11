@@ -436,16 +436,12 @@ class CMSTest < Minitest::Test
   def test_make_user_admin
     post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
     
-    get '/users/administer_accounts', {}, user_2_session
-    assert_equal 200, last_response.status
-    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, 'Clare Mac'
-    assert_includes last_response.body, 'Administer users'
-    assert_includes last_response.body, '<button type="submit" class="reset_pword">Reset password</button>'
+    post '/users/signin', {login: 'Clare Mac', pword: 's'}, {}
+    assert_equal 'Admin', session[:user_role]
   end
   
   # def test_make_user_not_admin
-  #   post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
+  #   # post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
   #   post '/users/toggle_admin', {user_id: '11'}, admin_session
 
   #   get '/users/administer_accounts', {}, user_2_session
