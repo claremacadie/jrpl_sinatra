@@ -433,17 +433,9 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Invalid credentials'
   end
 
-    
-  # def test_view_administer_accounts_not_admin
-  #   get '/users/administer_accounts', {}, user_2_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_equal 'You must be an administrator to do that.', session[:message]
-  # end
-
   def test_make_user_admin
     post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
-
+    
     get '/users/administer_accounts', {}, user_2_session
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
@@ -451,9 +443,15 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Administer users'
     assert_includes last_response.body, '<button type="submit" class="reset_pword">Reset password</button>'
   end
-
+  
   # def test_make_user_not_admin
-  #   post '/users/toggle_admin'
+  #   post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
+  #   post '/users/toggle_admin', {user_id: '11'}, admin_session
+
+  #   get '/users/administer_accounts', {}, user_2_session
+  #   assert_equal 302, last_response.status
+  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+  #   assert_equal 'You must be an administrator to do that.', session[:message]
   # end
 
   # def test_make_user_admin_already_admin

@@ -24,6 +24,9 @@ end
 
 # Helper methods for view templates
 helpers do
+  def signed_in_as_admin?
+    !!session[:user_role] == 'Admin'
+  end
 end
 
 # Helper methods for routes
@@ -35,13 +38,13 @@ def require_signed_in_as_admin
   return if session[:user_role] == 'Admin'
   session[:intended_route] = request.path_info
   session[:message] = 'You must be an administrator to do that.'
-  redirect '/users/signin'
+  redirect '/'
 end
 
 def require_signed_in_user
   return if user_signed_in?
   session[:message] = 'You must be signed in to do that.'
-  redirect '/'
+  redirect '/users/signin'
 end
 
 def require_signed_out_user
@@ -292,9 +295,9 @@ post '/users/toggle_admin' do
   elsif !params.keys.include?('admin') && @storage.user_admin?(user_id)
     @storage.unassign_admin(user_id)
   end
-  redirect '/all_users_list'
+  redirect '/users/administer_accounts'
 end
 
 not_found do
-  redirect "/"
+  redirect '/'
 end

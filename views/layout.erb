@@ -21,7 +21,7 @@
             <a href="/users/signin">Sign In</a>
             <a href="/users/signup">Create Account</a>
           <% end %>
-          <% if session[:user_name] == 'admin' %>
+          <% if signed_in_as_admin?() %>
             <a href="/users/administer_accounts">Administer users</a>
           <% end %>
         </nav>
