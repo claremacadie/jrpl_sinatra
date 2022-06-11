@@ -1,6 +1,7 @@
 require 'bcrypt'
 require 'pry'
 require 'sinatra'
+require 'sinatra/cookies'
 require 'tilt/erubis'
 require_relative 'database_persistence'
 
