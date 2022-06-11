@@ -447,14 +447,21 @@ class CMSTest < Minitest::Test
     post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
     assert_equal '', session[:user_role]
   end
-
-  # def test_make_user_admin_already_admin
-  #   post '/users/toggle_admin'
-  # end
-
-  # def test_make_user_not_admin_already_not_admin
-  #   post '/users/toggle_admin'
-  # end
+  
+  def test_make_user_admin_already_admin
+    post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
+    post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
+    
+    post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
+    assert_equal 'Admin', session[:user_role]
+  end
+  
+  def test_make_user_not_admin_already_not_admin
+    post '/users/toggle_admin', {user_id: '11'}, admin_session
+    
+    post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
+    assert_equal '', session[:user_role]
+  end
   
 end
 
