@@ -204,15 +204,15 @@ post '/users/signin' do
   pword = params[:pword].strip
   if valid_credentials?(user_name, pword)
     setup_user_session_data(user_name)
-    session[:message] = 'Welcome!'
     response.set_cookie('serial_id', {:value => "abc",
       :path => '/',
       :expires => Time.now + (30*24*60*60)})
-    
-    response.set_cookie('token', {:value => "xyz",
-      :path => '/',
-      :expires => Time.now + (30*24*60*60)})
-    
+      
+      response.set_cookie('token', {:value => "xyz",
+        :path => '/',
+        :expires => Time.now + (30*24*60*60)})
+        
+    session[:message] = 'Welcome!'
     redirect(session[:intended_route])
   else
     session[:message] = 'Invalid credentials.'
