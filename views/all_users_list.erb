@@ -18,10 +18,12 @@
           </form>
         </td>
         <td>
-          <form  action="/users/toggle_admin" method="post">
-            <input type="hidden" name="user_name" value="<%= user[:user_name] %>"/>
+          <form action="/users/toggle_admin" method="post">
+            <input type="hidden" name="user_id" value="<%= user[:user_id] %>"/>
             <input 
               type="checkbox"
+              value="true" 
+              name="admin"
               <% if !user[:roles].nil? && user[:roles].include?('Admin') %>
                 checked
               <% end %>

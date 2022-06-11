@@ -84,18 +84,27 @@ class DatabasePersistence
   end
 
   def load_users_details
-    sql = <<~SQL
-      SELECT users.user_name, users.email, string_agg(role.name, ', ') AS roles
-      FROM users
-      FULL OUTER JOIN user_role ON users.user_id = user_role.user_id
-      FULL OUTER JOIN role ON user_role.role_id = role.role_id
-      GROUP BY users.user_name, users.email
-      ORDER BY users.user_name;
-    SQL
+    sql = select_query_users_details()
     result = query(sql)
     result.map do |tuple|
       tuple_to_users_details_hash(tuple)
     end
+  end
+
+  def user_admin?(user_id)
+    sql = 'SELECT * FROM user_role WHERE user_id = $1 AND role_id = $2;'
+    result = query(sql, user_id, admin_id())
+    !(result.ntuples == 0)
+  end
+
+  def assign_admin(user_id)
+    sql = 'INSERT INTO user_role VALUES ($1, $2);'
+    query(sql, user_id, admin_id())
+  end
+
+  def unassign_admin(user_id)
+    sql = 'DELETE FROM user_role WHERE user_id = $1 AND role_id = $2;'
+    query(sql, user_id, admin_id())
   end
 
   private
@@ -110,9 +119,27 @@ class DatabasePersistence
     str ? str.to_i : nil
   end
 
+  def select_query_users_details
+    <<~SQL
+      SELECT users.user_id, users.user_name, users.email, string_agg(role.name, ', ') AS roles
+      FROM users
+      FULL OUTER JOIN user_role ON users.user_id = user_role.user_id
+      FULL OUTER JOIN role ON user_role.role_id = role.role_id
+      GROUP BY users.user_id, users.user_name, users.email
+      ORDER BY users.user_name;
+    SQL
+  end
+
   def tuple_to_users_details_hash(tuple)
-    { user_name: tuple['user_name'],
+    { user_id: tuple['user_id'].to_i,
+      user_name: tuple['user_name'],
       email: tuple['email'],
       roles: tuple['roles'] }
+  end
+
+  def admin_id
+    sql = 'SELECT role_id FROM role WHERE name = $1;'
+    result = query(sql, 'Admin')
+    result.first['role_id'].to_i
   end
 end

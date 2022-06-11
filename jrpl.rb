@@ -283,6 +283,16 @@ get '/all_users_list' do
   erb :all_users_list
 end
 
+post '/users/toggle_admin' do
+  user_id = params[:user_id].to_i
+  if params.keys.include?('admin') && !@storage.user_admin?(user_id)
+    @storage.assign_admin(user_id)
+  elsif !params.keys.include?('admin') && @storage.user_admin?(user_id)
+    @storage.unassign_admin(user_id)
+  end
+  redirect '/all_users_list'
+end
+
 not_found do
   redirect "/"
 end
