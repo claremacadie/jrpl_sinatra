@@ -31,7 +31,7 @@ class CMSTest < Minitest::Test
     { 'rack.session' => { user_name: 'Maccas' , user_id: 4, user_email: 'james.macadie@telerealtrillium.com', user_role: 'Admin'} }
   end
 
-  def user_2_session
+  def user_11_session
     { 'rack.session' => { user_name: 'Clare Mac', user_id: 11, user_email: 'clare@macadie.co.uk'} }
   end
  
@@ -189,7 +189,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_username
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'joe', new_email: 'clare@macadie.co.uk', new_pword: '', reenter_pword: ''}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'joe', new_email: 'clare@macadie.co.uk', new_pword: '', reenter_pword: ''}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username.', session[:message]
@@ -199,7 +199,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_username_strip_input
-    post '/users/edit_credentials', {current_pword: '   a ', new_user_name: '   joe ', new_email: 'clare@macadie.co.uk',  new_pword: '', reenter_pword: ''}, user_2_session
+    post '/users/edit_credentials', {current_pword: '   a ', new_user_name: '   joe ', new_email: 'clare@macadie.co.uk',  new_pword: '', reenter_pword: ''}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username.', session[:message]
@@ -209,21 +209,21 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_username_to_blank
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: '', new_email: 'clare@macadie.co.uk', new_pword: '', reenter_pword: ''}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: '', new_email: 'clare@macadie.co.uk', new_pword: '', reenter_pword: ''}, user_11_session
     assert_equal 422, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_includes last_response.body, 'Username cannot be blank! Please enter a username.'
   end
   
   def test_change_username_to_existing_username
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Maccas', new_email: 'clare@macadie.co.uk', new_pword: '', reenter_pword: ''}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Maccas', new_email: 'clare@macadie.co.uk', new_pword: '', reenter_pword: ''}, user_11_session
     assert_equal 422, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_includes last_response.body, 'That username already exists. Please choose a different username.'
   end
   
   def test_change_pword
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'clare@macadie.co.uk', new_pword: 'Qwerty90', reenter_pword: 'Qwerty90'}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'clare@macadie.co.uk', new_pword: 'Qwerty90', reenter_pword: 'Qwerty90'}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_equal 'The following have been updated: password.', session[:message]
@@ -235,7 +235,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_pword_strip_input
-    post '/users/edit_credentials', {current_pword: ' a   ', new_user_name: 'Clare Mac', new_email: 'clare@macadie.co.uk', new_pword: ' Qwerty90 ', reenter_pword: '   Qwerty90 '}, user_2_session
+    post '/users/edit_credentials', {current_pword: ' a   ', new_user_name: 'Clare Mac', new_email: 'clare@macadie.co.uk', new_pword: ' Qwerty90 ', reenter_pword: '   Qwerty90 '}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_equal 'The following have been updated: password.', session[:message]
@@ -247,14 +247,14 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_pword_mismatched
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'clare@macadie.co.uk', new_pword: 'b', reenter_pword: 'c'}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'clare@macadie.co.uk', new_pword: 'b', reenter_pword: 'c'}, user_11_session
     assert_equal 422, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_includes last_response.body, 'The passwords do not match.'
   end
   
   def test_change_username_and_pword
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'joe', new_email: 'clare@macadie.co.uk', new_pword: 'Qwerty90', reenter_pword: 'Qwerty90'}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'joe', new_email: 'clare@macadie.co.uk', new_pword: 'Qwerty90', reenter_pword: 'Qwerty90'}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username, password.', session[:message]
@@ -266,7 +266,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_username_and_pword_strip
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: '   joe   ', new_email: 'clare@macadie.co.uk', new_pword: ' Qwerty90', reenter_pword: '   Qwerty90 '}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: '   joe   ', new_email: 'clare@macadie.co.uk', new_pword: ' Qwerty90', reenter_pword: '   Qwerty90 '}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username, password.', session[:message]
@@ -278,7 +278,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_username_and_pword_empty
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: '   joe   ', new_email: 'clare@macadie.co.uk', new_pword: '   ', reenter_pword: '   '}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: '   joe   ', new_email: 'clare@macadie.co.uk', new_pword: '   ', reenter_pword: '   '}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username.', session[:message]
@@ -290,14 +290,14 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_user_credentials_pword_mismatched
-    post '/users/edit_credentials', {current_pword: 'wrong_pword', new_user_name: 'joe', new_email: 'clare@macadie.co.uk', new_pword: 'b', reenter_pword: 'b'}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'wrong_pword', new_user_name: 'joe', new_email: 'clare@macadie.co.uk', new_pword: 'b', reenter_pword: 'b'}, user_11_session
     assert_equal 422, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_includes last_response.body, 'That is not the correct current password. Try again!'
   end
   
   def test_change_user_credentials_nothing_changed
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'clare@macadie.co.uk', new_pword: '', reenter_pword: ''}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'clare@macadie.co.uk', new_pword: '', reenter_pword: ''}, user_11_session
     assert_equal 422, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_includes last_response.body, 'You have not changed any of your details.'
@@ -316,7 +316,7 @@ class CMSTest < Minitest::Test
   end
 
   def test_change_email
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'new@email.com', new_pword: '', reenter_pword: ''}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'new@email.com', new_pword: '', reenter_pword: ''}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_equal 'new@email.com', session[:user_email]
@@ -327,25 +327,25 @@ class CMSTest < Minitest::Test
   end
  
   def test_change_invalid_email
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'joe', new_pword: '', reenter_pword: ''}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'joe', new_pword: '', reenter_pword: ''}, user_11_session
     assert_equal 422, last_response.status
     assert_includes last_response.body, 'That is not a valid email address.'
   end
   
   def test_change_blank_email
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: '', new_pword: '', reenter_pword: ''}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: '', new_pword: '', reenter_pword: ''}, user_11_session
     assert_equal 422, last_response.status
     assert_includes last_response.body, 'Email cannot be blank! Please enter an email.'
   end
   
   def test_change_duplicate_email
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'mrmean@julianrimet.com', new_pword: '', reenter_pword: ''}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'Clare Mac', new_email: 'mrmean@julianrimet.com', new_pword: '', reenter_pword: ''}, user_11_session
     assert_equal 422, last_response.status
     assert_includes last_response.body, 'That email address already exists.'
   end
 
   def test_change_username_and_email
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'joe', new_email: 'new@email.com', new_pword: '', reenter_pword: ''}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'joe', new_email: 'new@email.com', new_pword: '', reenter_pword: ''}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'new@email.com', session[:user_email]
@@ -356,7 +356,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_username_pword_and_email
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'joe', new_email: 'new@email.com', new_pword: 'Qwerty90', reenter_pword: 'Qwerty90'}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: 'joe', new_email: 'new@email.com', new_pword: 'Qwerty90', reenter_pword: 'Qwerty90'}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'new@email.com', session[:user_email]
@@ -369,7 +369,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_username_pword_and_email_strip
-    post '/users/edit_credentials', {current_pword: 'a', new_user_name: '   joe ', new_email: '  new@email.com ', new_pword: 'Qwerty90  ', reenter_pword: ' Qwerty90 '}, user_2_session
+    post '/users/edit_credentials', {current_pword: 'a', new_user_name: '   joe ', new_email: '  new@email.com ', new_pword: 'Qwerty90  ', reenter_pword: ' Qwerty90 '}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'new@email.com', session[:user_email]
@@ -391,7 +391,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_view_administer_accounts_not_admin
-    get '/users/administer_accounts', {}, user_2_session
+    get '/users/administer_accounts', {}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal 'You must be an administrator to do that.', session[:message]
@@ -410,7 +410,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_reset_pword_not_admin
-    post '/users/reset_pword', {user_name: 'Maccas'}, user_2_session
+    post '/users/reset_pword', {user_name: 'Maccas'}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal 'You must be an administrator to do that.', session[:message]
