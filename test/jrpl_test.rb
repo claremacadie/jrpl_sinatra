@@ -387,7 +387,7 @@ class CMSTest < Minitest::Test
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Clare Mac'
     assert_includes last_response.body, 'Administer users'
-    assert_includes last_response.body, '<button type="submit" class="reset_pword">Reset password</button>'
+    assert_includes last_response.body, '<button type="submit">Reset password</button>'
   end
   
   def test_view_administer_accounts_not_admin
