@@ -381,8 +381,8 @@ class CMSTest < Minitest::Test
     assert_equal 'joe', session[:user_name]
   end
 
-  def test_all_users_list
-    get '/all_users_list'
+  def test_view_administer_accounts
+    get '/users/administer_accounts', {}, admin_session
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Clare Mac'
@@ -390,12 +390,12 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '<button type="submit" class="reset_pword">Reset password</button>'
   end
   
-  # def test_view_all_users_list_not_admin
-  #   get '/all_users_list', {}, user_2_session
-  #   assert_equal 302, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_equal 'You must be an administrator to do that.', session[:message]
-  # end
+  def test_view_administer_accounts_not_admin
+    get '/users/administer_accounts', {}, user_2_session
+    assert_equal 302, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_equal 'You must be an administrator to do that.', session[:message]
+  end
 
   def test_reset_pword_admin
     post '/users/reset_pword', {user_name: 'Clare Mac'}, admin_session

@@ -22,7 +22,7 @@
             <a href="/users/signup">Create Account</a>
           <% end %>
           <% if session[:user_name] == 'admin' %>
-            <a href="/all_users_list">List of users</a>
+            <a href="/users/administer_accounts">Administer users</a>
           <% end %>
         </nav>
         <% if session[:user_id] %>

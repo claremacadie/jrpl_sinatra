@@ -278,12 +278,14 @@ post '/users/reset_pword' do
   end
 end
 
-get '/all_users_list' do
+get '/users/administer_accounts' do
+  require_signed_in_as_admin
   @users = @storage.load_users_details
-  erb :all_users_list
+  erb :administer_accounts
 end
 
 post '/users/toggle_admin' do
+  require_signed_in_as_admin
   user_id = params[:user_id].to_i
   if params.keys.include?('admin') && !@storage.user_admin?(user_id)
     @storage.assign_admin(user_id)
