@@ -24,9 +24,6 @@ end
 
 # Helper methods for view templates
 helpers do
-  def signed_in_as_admin?
-    !!session[:user_role] == 'Admin'
-  end
 end
 
 # Helper methods for routes
