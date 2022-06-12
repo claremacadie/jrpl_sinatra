@@ -470,31 +470,31 @@ class CMSTest < Minitest::Test
     assert_equal 'Admin', session[:user_roles]
   end
   
-  # def test_make_admin_user_not_admin
-  #   post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
-  #   post '/users/toggle_admin', {user_id: '11'}, admin_session
-  #   post '/users/signout'
+  def test_make_admin_user_not_admin
+    post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
+    post '/users/toggle_admin', {user_id: '11'}, admin_session
+    post '/users/signout'
 
-  #   post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
-  #   assert_equal '', session[:user_roles]
-  # end
+    post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
+    assert_nil session[:user_roles]
+  end
   
-  # def test_make_user_admin_already_admin
-  #   post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
-  #   post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
-  #   post '/users/signout'
+  def test_make_user_admin_already_admin
+    post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
+    post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
+    post '/users/signout'
 
-  #   post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
-  #   assert_equal 'Admin', session[:user_roles]
-  # end
+    post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
+    assert_equal 'Admin', session[:user_roles]
+  end
   
-  # def test_make_user_not_admin_already_not_admin
-  #   post '/users/toggle_admin', {user_id: '11'}, admin_session
-  #   post '/users/signout'
+  def test_make_user_not_admin_already_not_admin
+    post '/users/toggle_admin', {user_id: '11'}, admin_session
+    post '/users/signout'
 
-  #   post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
-  #   assert_equal '', session[:user_roles]
-  # end
+    post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
+    assert_nil session[:user_roles]
+  end
   
 end
 
