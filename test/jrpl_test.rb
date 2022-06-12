@@ -49,6 +49,12 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, %q(<button type="submit")
   end
   
+  def test_signin_form_already_signed_in
+    get '/users/signin', {}, user_11_session
+    assert_equal 302, last_response.status
+    assert_equal 'You must be signed out to do that.', session[:message]
+  end
+  
   def test_signin
     post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
     assert_equal 302, last_response.status
@@ -57,6 +63,12 @@ class CMSTest < Minitest::Test
   
     get last_response['Location']
     assert_includes last_response.body, 'Signed in as Maccas.'
+  end
+
+  def test_signin_already_signed_in
+    post '/users/signin', {login: 'Maccas', pword: 'a'}, user_11_session
+    assert_equal 302, last_response.status
+    assert_equal 'You must be signed out to do that.', session[:message]
   end
   
   def test_signin_strip_input
@@ -87,7 +99,13 @@ class CMSTest < Minitest::Test
     assert_nil session[:user_name]
     assert_includes last_response.body, 'Sign In'
   end
-  
+
+  def test_signout_already_signed_out
+    post '/users/signout'
+    assert_equal 302, last_response.status
+    assert_equal 'You must be signed in to do that.', session[:message]
+  end
+
   def test_view_signup_form_signed_out
     get '/users/signup'
     assert_equal 200, last_response.status
@@ -241,7 +259,7 @@ class CMSTest < Minitest::Test
     assert_equal 'Clare Mac', session[:user_name]
     assert_equal 'The following have been updated: password.', session[:message]
     post '/users/signout'
-    
+
     post '/users/signin', {login: 'Clare Mac', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
