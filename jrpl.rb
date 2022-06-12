@@ -78,6 +78,18 @@ def setup_user_session_data(user_name)
   session[:user_role] = @storage.user_role(session[:user_id])
 end
 
+def create_series_id
+#   2.5.1 :001 > require 'securerandom'
+#  => true
+# 2.5.1 :002 > SecureRandom.hex(32)
+#  => "89d45edb28859a905672b707c8f7599f766d12074584ef48a997230dfc0e0998"
+# 2.5.1 :003 > SecureRandom.base64(12)
+#  => "KaZbhQ7o7U/f9pMs"
+# 2.5.1 :004 > SecureRandom.uuid
+#  => "ade17ef5-0943-4c70-b417-df7c96c198cd"
+
+end
+
 def set_cookies(series_id_value, token_value)
   response.set_cookie('series_id', {:value => series_id_value,
     :path => '/',
@@ -221,6 +233,9 @@ post '/users/signin' do
   pword = params[:pword].strip
   if valid_credentials?(user_name, pword)
     setup_user_session_data(user_name)
+    if params.keys.include?('remember_me')
+      implement_cookies()
+    end
     session[:message] = 'Welcome!'
     redirect(session[:intended_route])
   else
