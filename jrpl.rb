@@ -88,12 +88,11 @@ def set_cookies(series_id_value, token_value)
     :expires => Time.now + (30*24*60*60)}) # one month from now
 end
 
-def implement_cookies(user_name)
+def implement_cookies
   series_id_value = 123
   token_value = 'xyz'
   set_cookies(series_id_value, token_value)
-  user_id = @storage.user_id(user_name)
-  @storage.save_cookie_data(user_id, series_id_value, token_value)
+  @storage.save_cookie_data(session[:user_id], series_id_value, token_value)
 end
 
 def extract_user_details(params)
@@ -259,7 +258,7 @@ post '/users/signup' do
     session[:user_id] = @storage.user_id(new_user_details[:user_name])
 
     if params.keys.include?('remember_me')
-      implement_cookies(session[:user_name])
+      implement_cookies()
     end
 
     session[:message] = 'Your account has been created.'
