@@ -28,15 +28,8 @@ helpers do
 end
 
 # Helper methods for routes
-def setup_user_session_data(user_name)
-  session[:user_name] = user_name
-  session[:user_id] = @storage.user_id(user_name)
-  session[:user_email] = @storage.user_email(user_name)
-  session[:user_role] = @storage.user_role(session[:user_id])
-end
-
-def setup_user_session_data_from_id(user_id)
-  user_details = @storage.load_user_details_from_id(user_id)
+def setup_user_session_data(user_id)
+  user_details = @storage.load_user_details(user_id)
   session[:user_id] = user_id
   session[:user_name] = user_details[:user_name]
   session[:user_email] = user_details[:email]
@@ -47,7 +40,7 @@ def signin_with_cookie
   return false unless cookies[:series_id] && cookies[:token]
   user_id = @storage.user_id_from_cookies(cookies[:series_id], cookies[:token])
   return false unless user_id
-  setup_user_session_data_from_id(user_id)
+  setup_user_session_data(user_id)
 end
 
 def user_signed_in?
@@ -249,7 +242,8 @@ post '/users/signin' do
   user_name = extract_user_name(params[:login].strip)
   pword = params[:pword].strip
   if valid_credentials?(user_name, pword)
-    setup_user_session_data(user_name)
+    user_id = @storage.user_id(user_name)
+    setup_user_session_data(user_id)
     if params.keys.include?('remember_me')
       implement_cookies()
     end

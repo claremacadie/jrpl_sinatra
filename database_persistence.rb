@@ -65,24 +65,6 @@ class DatabasePersistence
     result.first['user_id'].to_i
   end
 
-  def user_email(user_name)
-    sql = 'SELECT email FROM users WHERE user_name = $1'
-    result = query(sql, user_name)
-    result.first['email']
-  end
-
-  def user_role(user_id)
-    sql = <<~SQL
-      SELECT role.name FROM role
-      INNER JOIN user_role ON role.role_id = user_role.role_id
-      INNER JOIN users ON user_role.user_id = users.user_id
-      WHERE users.user_id = $1
-    SQL
-    result = query(sql, user_id)
-    return '' if result.ntuples == 0
-    result.first['name']
-  end
-
   def user_name_from_email(email)
     sql = 'SELECT user_name FROM users WHERE email = $1'
     result = query(sql, email)
@@ -90,7 +72,7 @@ class DatabasePersistence
     result.first['user_name']
   end
 
-  def load_user_details_from_id(user_id)
+  def load_user_details(user_id)
     sql = <<~SQL
       SELECT users.user_id, users.user_name, users.email, string_agg(role.name, ', ') AS roles
       FROM users
