@@ -1,5 +1,6 @@
 require 'bcrypt'
 require 'pry'
+require 'securerandom'
 require 'sinatra'
 require 'sinatra/cookies'
 require 'tilt/erubis'
@@ -45,6 +46,7 @@ end
 
 def signin_with_cookie
   return false unless cookies[:series_id] && cookies[:token]
+  # bcrypt_token = BCrypt::Password.new(cookies[:token])
   user_id = @storage.user_id_from_cookies(cookies[:series_id], cookies[:token])
   return false unless user_id
   setup_user_session_data(user_id)
@@ -98,29 +100,33 @@ def valid_credentials?(user_name, pword)
   end
 end
 
-def create_series_id
-  #   2.5.1 :001 > require 'securerandom'
-  #  => true
-  # 2.5.1 :002 > SecureRandom.hex(32)
-  #  => "89d45edb28859a905672b707c8f7599f766d12074584ef48a997230dfc0e0998"
-  # 2.5.1 :003 > SecureRandom.base64(12)
-  #  => "KaZbhQ7o7U/f9pMs"
-  # 2.5.1 :004 > SecureRandom.uuid
-  #  => "ade17ef5-0943-4c70-b417-df7c96c198cd"
+def unique_random_string
+  random_string = SecureRandom.hex(32)
+  while @storage.series_id_list.include?(random_string)
+    random_string = SecureRandom.hex(32)
+  end
+  random_string
 end
 
 def set_series_id_cookie
+  series_id_value = unique_random_string()
   response.set_cookie(
-    '123',
+    'series_id',
     { value: series_id_value,
       path: '/',
       expires: Time.now + (30 * 24 * 60 * 60) } # one month from now
   )
 end
 
+def hashed_random_string
+  token = SecureRandom.hex(32)
+  # BCrypt::Password.create(token).to_s
+end
+
 def set_token_cookie
+  token_value = hashed_random_string
   response.set_cookie(
-    'xyz',
+    'token',
     { value: token_value,
       path: '/',
       expires: Time.now + (30 * 24 * 60 * 60) } # one month from now
@@ -130,7 +136,7 @@ end
 def implement_cookies
   set_series_id_cookie
   set_token_cookie
-  @storage.save_cookie_data(session[:user_id], series_id_value, token_value)
+  @storage.save_cookie_data(session[:user_id], cookies[:series_id], cookies[:token])
 end
 
 def extract_user_details(params)
