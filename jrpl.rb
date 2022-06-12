@@ -120,7 +120,7 @@ def set_cookies(series_id_value, token_value)
 end
 
 def implement_cookies
-  series_id_value = 123
+  series_id_value = '123'
   token_value = 'xyz'
   set_cookies(series_id_value, token_value)
   @storage.save_cookie_data(session[:user_id], series_id_value, token_value)
