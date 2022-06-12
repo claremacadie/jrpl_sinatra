@@ -107,6 +107,10 @@ class DatabasePersistence
     query(sql, user_id, admin_id())
   end
 
+  def save_cookie_data(user_id, series_id_value, token_value)
+
+  end
+
   private
 
   def query(statement, *params)

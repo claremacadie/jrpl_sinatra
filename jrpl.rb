@@ -78,19 +78,23 @@ def setup_user_session_data(user_name)
   session[:user_role] = @storage.user_role(session[:user_id])
 end
 
-# def set_cookies(serial_id_value, token_value)
-#   response.set_cookie('serial_id', {:value => serial_id_value,
-#     :path => '/',
-#     :expires => Time.now + (30*24*60*60)})
+def set_cookies(series_id_value, token_value)
+  response.set_cookie('series_id', {:value => series_id_value,
+    :path => '/',
+    :expires => Time.now + (30*24*60*60)}) # one month from now
     
-#     response.set_cookie('token', {:value => token_value,
-#       :path => '/',
-#       :expires => Time.now + (30*24*60*60)})
-# end
+  response.set_cookie('token', {:value => token_value,
+    :path => '/',
+    :expires => Time.now + (30*24*60*60)}) # one month from now
+end
 
-# def implement_cookies(user_name)
-
-# end
+def implement_cookies(user_name)
+  series_id_value = 'abc'
+  token_value = 'xyz'
+  set_cookies(series_id_value, token_value)
+  user_id = @storage.user_id(user_name)
+  @storage.save_cookie_data(user_id, series_id_value, token_value)
+end
 
 def extract_user_details(params)
   { user_name: params[:new_user_name].strip,
@@ -218,9 +222,6 @@ post '/users/signin' do
   pword = params[:pword].strip
   if valid_credentials?(user_name, pword)
     setup_user_session_data(user_name)
-    # if params.keys.include?('remember_me')
-    #   implement_cookies(user_name)
-    # end
     session[:message] = 'Welcome!'
     redirect(session[:intended_route])
   else
@@ -256,6 +257,11 @@ post '/users/signup' do
     @storage.upload_new_user_credentials(new_user_details)
     session[:user_name] = new_user_details[:user_name]
     session[:user_id] = @storage.user_id(new_user_details[:user_name])
+
+    if params.keys.include?('remember_me')
+      implement_cookies(user_name)
+    end
+
     session[:message] = 'Your account has been created.'
     redirect(session[:intended_route])
   else
