@@ -89,7 +89,7 @@ def set_cookies(series_id_value, token_value)
 end
 
 def implement_cookies(user_name)
-  series_id_value = 'abc'
+  series_id_value = 123
   token_value = 'xyz'
   set_cookies(series_id_value, token_value)
   user_id = @storage.user_id(user_name)
@@ -259,7 +259,7 @@ post '/users/signup' do
     session[:user_id] = @storage.user_id(new_user_details[:user_name])
 
     if params.keys.include?('remember_me')
-      implement_cookies(user_name)
+      implement_cookies(session[:user_name])
     end
 
     session[:message] = 'Your account has been created.'

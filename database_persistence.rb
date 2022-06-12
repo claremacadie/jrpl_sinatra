@@ -108,7 +108,8 @@ class DatabasePersistence
   end
 
   def save_cookie_data(user_id, series_id_value, token_value)
-
+    sql = 'INSERT INTO remember_me VALUES ($1, $2, $3, $4);'
+    query(sql, user_id, series_id_value, token_value, Time.now)
   end
 
   private
