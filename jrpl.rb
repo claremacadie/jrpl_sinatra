@@ -78,6 +78,20 @@ def setup_user_session_data(user_name)
   session[:user_role] = @storage.user_role(session[:user_id])
 end
 
+# def set_cookies(serial_id_value, token_value)
+#   response.set_cookie('serial_id', {:value => serial_id_value,
+#     :path => '/',
+#     :expires => Time.now + (30*24*60*60)})
+    
+#     response.set_cookie('token', {:value => token_value,
+#       :path => '/',
+#       :expires => Time.now + (30*24*60*60)})
+# end
+
+# def implement_cookies(user_name)
+
+# end
+
 def extract_user_details(params)
   { user_name: params[:new_user_name].strip,
     email: params[:new_email].strip,
@@ -204,14 +218,9 @@ post '/users/signin' do
   pword = params[:pword].strip
   if valid_credentials?(user_name, pword)
     setup_user_session_data(user_name)
-    response.set_cookie('serial_id', {:value => "abc",
-      :path => '/',
-      :expires => Time.now + (30*24*60*60)})
-      
-      response.set_cookie('token', {:value => "xyz",
-        :path => '/',
-        :expires => Time.now + (30*24*60*60)})
-        
+    # if params.keys.include?('remember_me')
+    #   implement_cookies(user_name)
+    # end
     session[:message] = 'Welcome!'
     redirect(session[:intended_route])
   else
