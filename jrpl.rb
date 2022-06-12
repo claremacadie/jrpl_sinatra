@@ -224,10 +224,12 @@ get "/" do
 end
 
 get '/users/signin' do
+  require_signed_out_user
   erb :signin
 end
 
 post '/users/signin' do
+  require_signed_out_user
   session[:intended_route] = params['intended_route']
   user_name = extract_user_name(params[:login].strip)
   pword = params[:pword].strip
@@ -246,6 +248,7 @@ post '/users/signin' do
 end
 
 post '/users/signout' do
+  require_signed_in_user
   session.delete(:user_name)
   session.delete(:user_id)
   session.delete(:user_email)

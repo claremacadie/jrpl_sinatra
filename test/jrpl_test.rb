@@ -227,7 +227,8 @@ class CMSTest < Minitest::Test
     assert_equal 302, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_equal 'The following have been updated: password.', session[:message]
-    
+    post '/users/signout'
+
     post '/users/signin', {login: 'Clare Mac', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
@@ -239,6 +240,7 @@ class CMSTest < Minitest::Test
     assert_equal 302, last_response.status
     assert_equal 'Clare Mac', session[:user_name]
     assert_equal 'The following have been updated: password.', session[:message]
+    post '/users/signout'
     
     post '/users/signin', {login: 'Clare Mac', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
@@ -258,7 +260,8 @@ class CMSTest < Minitest::Test
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username, password.', session[:message]
-  
+    post '/users/signout'
+
     post '/users/signin', {login: 'joe', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
@@ -270,7 +273,8 @@ class CMSTest < Minitest::Test
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username, password.', session[:message]
-  
+    post '/users/signout'
+
     post '/users/signin', {login: 'joe', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
@@ -282,7 +286,8 @@ class CMSTest < Minitest::Test
     assert_equal 302, last_response.status
     assert_equal 'joe', session[:user_name]
     assert_equal 'The following have been updated: username.', session[:message]
-  
+    post '/users/signout'
+
     post '/users/signin', {login: 'joe', pword: 'a'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
@@ -308,7 +313,8 @@ class CMSTest < Minitest::Test
     assert_equal 302, last_response.status
     assert_equal 'Maccas', session[:user_name]
     assert_equal 'The following have been updated: password.', session[:message]
-  
+    post '/users/signout'
+
     post '/users/signin', {login: 'Maccas', pword: 'b'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
@@ -361,7 +367,8 @@ class CMSTest < Minitest::Test
     assert_equal 'joe', session[:user_name]
     assert_equal 'new@email.com', session[:user_email]
     assert_equal 'The following have been updated: username, password, email.', session[:message]
-  
+    post '/users/signout'
+
     post '/users/signin', {login: 'joe', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
@@ -374,7 +381,8 @@ class CMSTest < Minitest::Test
     assert_equal 'joe', session[:user_name]
     assert_equal 'new@email.com', session[:user_email]
     assert_equal 'The following have been updated: username, password, email.', session[:message]
-  
+    post '/users/signout'
+
     post '/users/signin', {login: 'joe', pword: 'Qwerty90'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
@@ -402,7 +410,8 @@ class CMSTest < Minitest::Test
     assert_equal 302, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal "The password has been reset to 'jrpl' for Clare Mac.", session[:message]
-    
+    post '/users/signout'
+
     post '/users/signin', {login: 'Clare Mac', pword: 'jrpl'}, {}
     assert_equal 302, last_response.status
     assert_equal 'Welcome!', session[:message]
@@ -415,7 +424,8 @@ class CMSTest < Minitest::Test
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal 'You must be an administrator to do that.', session[:message]
     refute_includes last_response.body, "The password has been reset to 'jrpl' for Clare Mac."
-    
+    post '/users/signout'
+
     post '/users/signin', {login: 'Clare Mac', pword: 'jrpl'}, {}
     assert_equal 422, last_response.status
     assert_includes last_response.body, 'Invalid credentials'
@@ -427,7 +437,8 @@ class CMSTest < Minitest::Test
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal 'You must be an administrator to do that.', session[:message]
     refute_includes last_response.body, "The password has been reset to 'jrpl' for Clare MacAdie."
-    
+    post '/users/signout'
+
     post '/users/signin', {login: 'Clare Mac', pword: 'jrpl'}, {}
     assert_equal 422, last_response.status
     assert_includes last_response.body, 'Invalid credentials'
@@ -435,7 +446,8 @@ class CMSTest < Minitest::Test
 
   def test_make_user_admin
     post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
-    
+    post '/users/signout'
+
     post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
     assert_equal 'Admin', session[:user_role]
   end
@@ -443,7 +455,8 @@ class CMSTest < Minitest::Test
   def test_make_admin_user_not_admin
     post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
     post '/users/toggle_admin', {user_id: '11'}, admin_session
-    
+    post '/users/signout'
+
     post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
     assert_equal '', session[:user_role]
   end
@@ -451,14 +464,16 @@ class CMSTest < Minitest::Test
   def test_make_user_admin_already_admin
     post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
     post '/users/toggle_admin', {user_id: '11', admin: 'true'}, admin_session
-    
+    post '/users/signout'
+
     post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
     assert_equal 'Admin', session[:user_role]
   end
   
   def test_make_user_not_admin_already_not_admin
     post '/users/toggle_admin', {user_id: '11'}, admin_session
-    
+    post '/users/signout'
+
     post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
     assert_equal '', session[:user_role]
   end
