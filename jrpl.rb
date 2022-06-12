@@ -28,18 +28,30 @@ helpers do
 end
 
 # Helper methods for routes
-def signin_with_cookie
+def setup_user_session_data(user_name)
+  session[:user_name] = user_name
+  session[:user_id] = @storage.user_id(user_name)
+  session[:user_email] = @storage.user_email(user_name)
+  session[:user_role] = @storage.user_role(session[:user_id])
+end
 
+def setup_user_session_data_from_id(user_id)
+  user_details = @storage.load_user_details_from_id(user_id)
+  session[:user_id] = user_id
+  session[:user_name] = user_details[:user_name]
+  session[:user_email] = user_details[:email]
+  session[:user_role] = user_details[:roles]
+end
+
+def signin_with_cookie
   return false unless cookies[:series_id] && cookies[:token]
   user_id = @storage.user_id_from_cookies(cookies[:series_id], cookies[:token])
   return false unless user_id
-  # set session based on user_id from cookie, return truthy value
-
+  setup_user_session_data_from_id(user_id)
 end
 
 def user_signed_in?
   session.key?(:user_name) || signin_with_cookie()
-  # signin_with_cookie()
 end
 
 def require_signed_in_as_admin
@@ -79,13 +91,6 @@ def valid_credentials?(user_name, pword)
   else
     false
   end
-end
-
-def setup_user_session_data(user_name)
-  session[:user_name] = user_name
-  session[:user_id] = @storage.user_id(user_name)
-  session[:user_email] = @storage.user_email(user_name)
-  session[:user_role] = @storage.user_role(session[:user_id])
 end
 
 def create_series_id

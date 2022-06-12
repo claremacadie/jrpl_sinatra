@@ -90,6 +90,23 @@ class DatabasePersistence
     result.first['user_name']
   end
 
+  def load_user_details_from_id(user_id)
+    sql = <<~SQL
+      SELECT users.user_id, users.user_name, users.email, string_agg(role.name, ', ') AS roles
+      FROM users
+      FULL OUTER JOIN user_role ON users.user_id = user_role.user_id
+      FULL OUTER JOIN role ON user_role.role_id = role.role_id
+      WHERE users.user_id = $1
+      GROUP BY users.user_id, users.user_name, users.email
+      ORDER BY users.user_name;
+    SQL
+    result = query(sql, user_id)
+    return nil if result.ntuples == 0
+    result.map do |tuple|
+      tuple_to_single_user_details_hash(tuple)
+    end.first
+  end
+
   def load_users_details
     sql = select_query_users_details()
     result = query(sql)
@@ -143,6 +160,13 @@ class DatabasePersistence
   end
 
   def tuple_to_users_details_hash(tuple)
+    { user_id: tuple['user_id'].to_i,
+      user_name: tuple['user_name'],
+      email: tuple['email'],
+      roles: tuple['roles'] }
+    end
+    
+  def tuple_to_single_user_details_hash(tuple)
     { user_id: tuple['user_id'].to_i,
       user_name: tuple['user_name'],
       email: tuple['email'],
