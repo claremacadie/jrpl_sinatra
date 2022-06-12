@@ -58,6 +58,13 @@ class DatabasePersistence
     result.first['user_id'].to_i
   end
 
+  def user_id_from_cookies(series_id, token)
+    sql = 'SELECT user_id FROM remember_me WHERE series_id = $1 AND token = $2;'
+    result = query(sql, series_id, token)
+    return nil if result.ntuples == 0
+    result.first['user_id'].to_i
+  end
+
   def user_email(user_name)
     sql = 'SELECT email FROM users WHERE user_name = $1'
     result = query(sql, user_name)

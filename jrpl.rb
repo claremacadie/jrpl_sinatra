@@ -29,14 +29,17 @@ end
 
 # Helper methods for routes
 def signin_with_cookie
+
   return false unless cookies[:series_id] && cookies[:token]
-  # return false unless @storage.user_id_from_cookies(cookies[:series_id], cookies[:token])
+  user_id = @storage.user_id_from_cookies(cookies[:series_id], cookies[:token])
+  return false unless user_id
   # set session based on user_id from cookie, return truthy value
 
 end
 
 def user_signed_in?
   session.key?(:user_name) || signin_with_cookie()
+  # signin_with_cookie()
 end
 
 def require_signed_in_as_admin
