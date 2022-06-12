@@ -118,6 +118,11 @@ class DatabasePersistence
     query(sql, user_id, series_id_value, token_value, Time.now)
   end
 
+  def delete_cookie_data(series_id, token)
+    sql = 'DELETE FROM remember_me WHERE series_id = $1 AND token = $2;'
+    query(sql, series_id, token)
+  end
+
   private
 
   def query(statement, *params)

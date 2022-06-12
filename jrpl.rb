@@ -28,6 +28,13 @@ helpers do
 end
 
 # Helper methods for routes
+def delete_user_session
+  session.delete(:user_name)
+  session.delete(:user_id)
+  session.delete(:user_email)
+  session.delete(:user_roles)
+end
+
 def setup_user_session_data(user_id)
   user_details = @storage.load_user_details(user_id)
   session[:user_id] = user_id
@@ -262,10 +269,8 @@ end
 
 post '/users/signout' do
   require_signed_in_user
-  session.delete(:user_name)
-  session.delete(:user_id)
-  session.delete(:user_email)
-  session.delete(:user_roles)
+  @storage.delete_cookie_data(cookies[:series_id], cookies[:token])
+  delete_user_session
   session[:message] = 'You have been signed out.'
   if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
     '/'
