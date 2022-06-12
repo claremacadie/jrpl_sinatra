@@ -33,7 +33,7 @@ def setup_user_session_data(user_id)
   session[:user_id] = user_id
   session[:user_name] = user_details[:user_name]
   session[:user_email] = user_details[:email]
-  session[:user_role] = user_details[:roles]
+  session[:user_roles] = user_details[:roles]
 end
 
 def signin_with_cookie
@@ -47,8 +47,12 @@ def user_signed_in?
   session.key?(:user_name) || signin_with_cookie()
 end
 
+def user_is_admin?
+  session[:user_roles] && session[:user_roles].include?('Admin')
+end
+
 def require_signed_in_as_admin
-  return if user_signed_in? && session[:user_role] == ('Admin')
+  return if user_signed_in? && user_is_admin?
   session[:intended_route] = request.path_info
   session[:message] = 'You must be an administrator to do that.'
   redirect '/'
@@ -261,6 +265,7 @@ post '/users/signout' do
   session.delete(:user_name)
   session.delete(:user_id)
   session.delete(:user_email)
+  session.delete(:user_roles)
   session[:message] = 'You have been signed out.'
   if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
     '/'

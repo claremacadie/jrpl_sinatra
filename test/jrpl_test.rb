@@ -28,7 +28,7 @@ class CMSTest < Minitest::Test
   end
 
   def admin_session
-    { 'rack.session' => { user_name: 'Maccas' , user_id: 4, user_email: 'james.macadie@telerealtrillium.com', user_role: 'Admin'} }
+    { 'rack.session' => { user_name: 'Maccas' , user_id: 4, user_email: 'james.macadie@telerealtrillium.com', user_roles: 'Admin'} }
   end
 
   def user_11_session
@@ -90,7 +90,7 @@ class CMSTest < Minitest::Test
   
   def test_signout
     get '/', {}, admin_session
-    assert_equal 'Admin', session[:user_role]
+    assert_equal 'Admin', session[:user_roles]
   
     post '/users/signout'
     assert_equal 'You have been signed out.', session[:message]
@@ -467,7 +467,7 @@ class CMSTest < Minitest::Test
     post '/users/signout'
 
     post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
-    assert_equal 'Admin', session[:user_role]
+    assert_equal 'Admin', session[:user_roles]
   end
   
   # def test_make_admin_user_not_admin
@@ -476,7 +476,7 @@ class CMSTest < Minitest::Test
   #   post '/users/signout'
 
   #   post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
-  #   assert_equal '', session[:user_role]
+  #   assert_equal '', session[:user_roles]
   # end
   
   # def test_make_user_admin_already_admin
@@ -485,7 +485,7 @@ class CMSTest < Minitest::Test
   #   post '/users/signout'
 
   #   post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
-  #   assert_equal 'Admin', session[:user_role]
+  #   assert_equal 'Admin', session[:user_roles]
   # end
   
   # def test_make_user_not_admin_already_not_admin
@@ -493,7 +493,7 @@ class CMSTest < Minitest::Test
   #   post '/users/signout'
 
   #   post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
-  #   assert_equal '', session[:user_role]
+  #   assert_equal '', session[:user_roles]
   # end
   
 end
