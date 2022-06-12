@@ -55,7 +55,8 @@ def user_signed_in?
 end
 
 def user_is_admin?
-  session[:user_roles] && session[:user_roles].include?('Admin')
+  # &. Safe navigation - checks object exists before invoking the method
+  session[:user_roles]&.include?('Admin')
 end
 
 def require_signed_in_as_admin
@@ -98,31 +99,37 @@ def valid_credentials?(user_name, pword)
 end
 
 def create_series_id
-#   2.5.1 :001 > require 'securerandom'
-#  => true
-# 2.5.1 :002 > SecureRandom.hex(32)
-#  => "89d45edb28859a905672b707c8f7599f766d12074584ef48a997230dfc0e0998"
-# 2.5.1 :003 > SecureRandom.base64(12)
-#  => "KaZbhQ7o7U/f9pMs"
-# 2.5.1 :004 > SecureRandom.uuid
-#  => "ade17ef5-0943-4c70-b417-df7c96c198cd"
-
+  #   2.5.1 :001 > require 'securerandom'
+  #  => true
+  # 2.5.1 :002 > SecureRandom.hex(32)
+  #  => "89d45edb28859a905672b707c8f7599f766d12074584ef48a997230dfc0e0998"
+  # 2.5.1 :003 > SecureRandom.base64(12)
+  #  => "KaZbhQ7o7U/f9pMs"
+  # 2.5.1 :004 > SecureRandom.uuid
+  #  => "ade17ef5-0943-4c70-b417-df7c96c198cd"
 end
 
-def set_cookies(series_id_value, token_value)
-  response.set_cookie('series_id', {:value => series_id_value,
-    :path => '/',
-    :expires => Time.now + (30*24*60*60)}) # one month from now
-    
-  response.set_cookie('token', {:value => token_value,
-    :path => '/',
-    :expires => Time.now + (30*24*60*60)}) # one month from now
+def set_series_id_cookie
+  response.set_cookie(
+    '123',
+    { value: series_id_value,
+      path: '/',
+      expires: Time.now + (30 * 24 * 60 * 60) } # one month from now
+  )
+end
+
+def set_token_cookie
+  response.set_cookie(
+    'xyz',
+    { value: token_value,
+      path: '/',
+      expires: Time.now + (30 * 24 * 60 * 60) } # one month from now
+  )
 end
 
 def implement_cookies
-  series_id_value = '123'
-  token_value = 'xyz'
-  set_cookies(series_id_value, token_value)
+  set_series_id_cookie
+  set_token_cookie
   @storage.save_cookie_data(session[:user_id], series_id_value, token_value)
 end
 
