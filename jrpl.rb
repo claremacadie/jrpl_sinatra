@@ -123,7 +123,11 @@ end
 def implement_cookies
   set_series_id_cookie
   set_token_cookie
-  @storage.save_cookie_data(session[:user_id], cookies[:series_id], cookies[:token])
+  @storage.save_cookie_data(
+    session[:user_id],
+    cookies[:series_id],
+    cookies[:token]
+  )
 end
 
 def extract_user_details(params)
@@ -341,7 +345,7 @@ end
 
 get '/users/administer_accounts' do
   require_signed_in_as_admin
-  @users = @storage.load_users_details
+  @users = @storage.load_all_users_details
   erb :administer_accounts
 end
 
