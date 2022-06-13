@@ -250,7 +250,8 @@ def update_user_credentials(new_user_details)
 end
 
 # Routes
-get "/" do
+get '/' do
+  user_signed_in?
   erb :home
 end
 

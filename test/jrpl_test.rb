@@ -521,5 +521,4 @@ class CMSTest < Minitest::Test
 #     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
 #     refute_includes last_response.body, 'Signed in as Maccas'
 #   end
-# end
-
+end
