@@ -20,17 +20,15 @@
         </td>
         <td><%= user[:roles] %></td>
         <td>
-          <form action="/users/toggle_admin" method="post">
+          <form class="toggle_admin" action="/users/toggle_admin" method="post">
             <input type="hidden" name="user_id" value="<%= user[:user_id] %>"/>
-            <input 
-              type="checkbox"
-              value="true" 
-              name="admin"
-              <% if !user[:roles].nil? && user[:roles].include?('Admin') %>
-                checked
-              <% end %>
-            />
-            <button type="submit" >Submit Admin change</button>
+            <% if user[:roles]&.include?('Admin') %>
+              <input type="hidden" name="button" value="revoke_admin"/>
+              <button type="submit">Revoke Admin</button>
+            <% else %>
+              <input type="hidden" name="button" value="grant_admin"/>
+              <button type="submit">Grant Admin</button>
+            <% end %>
           </form>
         </td>
       </tr>

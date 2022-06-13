@@ -361,9 +361,12 @@ end
 post '/users/toggle_admin' do
   require_signed_in_as_admin
   user_id = params[:user_id].to_i
-  if params.keys.include?('admin') && !@storage.user_admin?(user_id)
+  button = params[:button]
+  # if params.keys.include?('admin') && !@storage.user_admin?(user_id)
+  if button == 'grant_admin'
     @storage.assign_admin(user_id)
-  elsif !params.keys.include?('admin') && @storage.user_admin?(user_id)
+  # elsif !params.keys.include?('admin') && @storage.user_admin?(user_id)
+  elsif button == 'revoke_admin'
     @storage.unassign_admin(user_id)
   end
   redirect '/users/administer_accounts'
