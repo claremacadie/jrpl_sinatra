@@ -4,6 +4,7 @@
     <th>Username</th>
     <th>Email</th>
     <th>Reset Password?</th>
+    <th>Roles</th>
     <th>Admin?</th>
   </thead>
   <tbody>
@@ -17,6 +18,7 @@
             <button type="submit">Reset password</button>
           </form>
         </td>
+        <td><%= user[:roles] %></td>
         <td>
           <form action="/users/toggle_admin" method="post">
             <input type="hidden" name="user_id" value="<%= user[:user_id] %>"/>
