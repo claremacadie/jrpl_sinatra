@@ -496,30 +496,30 @@ class CMSTest < Minitest::Test
     assert_nil session[:user_roles]
   end
   
-  def test_signin_with_cookie
-    post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
-    assert_equal 302, last_response.status
-    assert_equal 'Welcome!', session[:message]
-    assert_equal 'Maccas', session[:user_name]
+#   def test_signin_with_cookie
+#     post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
+#     assert_equal 302, last_response.status
+#     assert_equal 'Welcome!', session[:message]
+#     assert_equal 'Maccas', session[:user_name]
     
-    get '/'
-    assert_equal 200, last_response.status
-    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, 'Signed in as Maccas'
-  end
+#     get '/'
+#     assert_equal 200, last_response.status
+#     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+#     assert_includes last_response.body, 'Signed in as Maccas'
+#   end
   
-  def test_signin_cookie_deleted_by_signout
-    post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
-    assert_equal 302, last_response.status
-    assert_equal 'Welcome!', session[:message]
-    assert_equal 'Maccas', session[:user_name]
+#   def test_signin_cookie_deleted_by_signout
+#     post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
+#     assert_equal 302, last_response.status
+#     assert_equal 'Welcome!', session[:message]
+#     assert_equal 'Maccas', session[:user_name]
     
-    post '/users/signout'
+#     post '/users/signout'
     
-    get '/'
-    assert_equal 200, last_response.status
-    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    refute_includes last_response.body, 'Signed in as Maccas'
-  end
-end
+#     get '/'
+#     assert_equal 200, last_response.status
+#     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+#     refute_includes last_response.body, 'Signed in as Maccas'
+#   end
+# end
 

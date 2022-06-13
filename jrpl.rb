@@ -30,10 +30,11 @@ end
 
 # Helper methods for routes
 def delete_user_session
-  session.delete(:user_name)
-  session.delete(:user_id)
-  session.delete(:user_email)
-  session.delete(:user_roles)
+  # session.delete(:user_name)
+  # session.delete(:user_id)
+  # session.delete(:user_email)
+  # session.delete(:user_roles)
+  session.clear
 end
 
 def setup_user_session_data(user_id)
@@ -46,7 +47,6 @@ end
 
 def signin_with_cookie
   return false unless cookies[:series_id] && cookies[:token]
-  # bcrypt_token = BCrypt::Password.new(cookies[:token])
   user_id = @storage.user_id_from_cookies(cookies[:series_id], cookies[:token])
   return false unless user_id
   setup_user_session_data(user_id)
@@ -120,7 +120,6 @@ end
 
 def hashed_random_string
   token = SecureRandom.hex(32)
-  # BCrypt::Password.create(token).to_s
 end
 
 def set_token_cookie
@@ -261,7 +260,7 @@ get '/users/signin' do
 end
 
 post '/users/signin' do
-  require_signed_out_user
+  require_signed_out_user # I think this line is causing problems when I am manually testing for cookies working
   session[:intended_route] = params['intended_route']
   user_name = extract_user_name(params[:login].strip)
   pword = params[:pword].strip

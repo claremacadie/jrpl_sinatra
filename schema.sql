@@ -36,7 +36,7 @@ CREATE TABLE remember_me (
 );
 
 CREATE TABLE role (
-  role_id int         PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  role_id int      PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name varchar(50) NOT NULL
 );
 
