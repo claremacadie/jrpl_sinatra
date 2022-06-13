@@ -29,10 +29,6 @@ helpers do
 end
 
 # Helper methods for routes
-def delete_user_session
-  session.clear
-end
-
 def setup_user_session_data(user_id)
   user_details = @storage.load_user_details(user_id)
   session[:user_id] = user_id
@@ -49,7 +45,6 @@ def signin_with_cookie
 end
 
 def user_signed_in?
-  # session.key?(:user_name)
   session.key?(:user_name) || signin_with_cookie()
 end
 
@@ -115,12 +110,8 @@ def set_series_id_cookie
   )
 end
 
-def hashed_random_string
-  token = SecureRandom.hex(32)
-end
-
 def set_token_cookie
-  token_value = hashed_random_string
+  token_value = SecureRandom.hex(32)
   response.set_cookie(
     'token',
     { value: token_value,
@@ -258,7 +249,7 @@ get '/users/signin' do
 end
 
 post '/users/signin' do
-  require_signed_out_user # I think this line is causing problems when I am manually testing for cookies working
+  require_signed_out_user
   session[:intended_route] = params['intended_route']
   user_name = extract_user_name(params[:login].strip)
   pword = params[:pword].strip
@@ -280,7 +271,7 @@ end
 post '/users/signout' do
   require_signed_in_user
   @storage.delete_cookie_data(cookies[:series_id], cookies[:token])
-  delete_user_session
+  session.clear
   session[:message] = 'You have been signed out.'
   if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
     '/'
