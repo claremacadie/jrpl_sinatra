@@ -30,10 +30,6 @@ end
 
 # Helper methods for routes
 def delete_user_session
-  # session.delete(:user_name)
-  # session.delete(:user_id)
-  # session.delete(:user_email)
-  # session.delete(:user_roles)
   session.clear
 end
 
@@ -53,6 +49,7 @@ def signin_with_cookie
 end
 
 def user_signed_in?
+  # session.key?(:user_name)
   session.key?(:user_name) || signin_with_cookie()
 end
 

@@ -34,6 +34,10 @@ class CMSTest < Minitest::Test
   def user_11_session
     { 'rack.session' => { user_name: 'Clare Mac', user_id: 11, user_email: 'clare@macadie.co.uk'} }
   end
+
+  def nil_session
+    { 'rack.session' => { user_name: nil, user_id: nil, user_email: nil} }
+  end
  
   def test_homepage
     get '/'
@@ -496,17 +500,21 @@ class CMSTest < Minitest::Test
     assert_nil session[:user_roles]
   end
   
-#   def test_signin_with_cookie
-#     post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
-#     assert_equal 302, last_response.status
-#     assert_equal 'Welcome!', session[:message]
-#     assert_equal 'Maccas', session[:user_name]
+  # def test_signin_with_cookie
+  #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
+  #   assert_equal 302, last_response.status
+  #   assert_equal 'Welcome!', session[:message]
+  #   assert_equal 'Maccas', session[:user_name]
+  #   p cookies[:series_id]
+  #   p session[:user_name]
     
-#     get '/'
-#     assert_equal 200, last_response.status
-#     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-#     assert_includes last_response.body, 'Signed in as Maccas'
-#   end
+  #   get '/', {}, nil_session
+  #   p session[:user_name]
+  #   gets
+  #   assert_equal 200, last_response.status
+  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+  #   assert_equal 'Maccas', session[:user_name]
+  # end
   
 #   def test_signin_cookie_deleted_by_signout
 #     post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
