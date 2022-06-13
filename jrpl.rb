@@ -373,6 +373,11 @@ post '/users/toggle_admin' do
   end
 end
 
+get '/matches/list' do
+  require_signed_in_user
+  erb :matches_list
+end
+
 not_found do
   redirect '/'
 end
