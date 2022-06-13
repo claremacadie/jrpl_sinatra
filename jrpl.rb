@@ -306,9 +306,8 @@ post '/users/signup' do
   session[:message] = signup_input_error(new_user_details)
   if session[:message].empty?
     @storage.upload_new_user_credentials(new_user_details)
-    session[:user_name] = new_user_details[:user_name]
-    session[:user_id] = @storage.user_id(new_user_details[:user_name])
-
+    user_id = @storage.user_id(new_user_details[:user_name])
+    setup_user_session_data(user_id)
     if params.keys.include?('remember_me')
       implement_cookies()
     end

@@ -519,6 +519,14 @@ class CMSTest < Minitest::Test
     post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
     assert_nil session[:user_roles]
   end
+
+  def test_role_deleted_at_signout
+    post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
+    assert_equal 'Admin', session[:user_roles]
+    post '/users/signout'
+    post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
+    refute_equal 'Admin', session[:user_roles]
+  end
   
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
