@@ -311,7 +311,6 @@ post '/users/signup' do
     if params.keys.include?('remember_me')
       implement_cookies()
     end
-
     session[:message] = 'Your account has been created.'
     redirect(session[:intended_route])
   else
