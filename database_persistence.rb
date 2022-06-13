@@ -117,6 +117,14 @@ class DatabasePersistence
     query(sql, user_id, series_id_value, token_value, Time.now)
   end
 
+  def save_new_token(user_id, series_id_value, token_value)
+    sql = <<~SQL
+      UPDATE remember_me SET token = $1, date_added = $2 
+      WHERE user_id = $3 AND series_id = $4;
+    SQL
+    query(sql, token_value, Time.now, user_id, series_id_value)
+  end
+
   def delete_cookie_data(series_id, token)
     sql = 'DELETE FROM remember_me WHERE series_id = $1 AND token = $2;'
     query(sql, series_id, token)
