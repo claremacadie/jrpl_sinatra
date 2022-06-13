@@ -130,6 +130,40 @@ class DatabasePersistence
     query(sql, series_id, token)
   end
 
+  def load_all_matches
+    sql = <<~SQL
+      SELECT match.match_id, match.date, match.kick_off,
+      home_team.name AS home_team_name, home_team.short_name AS home_team_short_name, 
+      away_team.name AS away_team_name, away_team.short_name AS away_team_short_name, 
+      stage.name AS stage, venue.name AS venue, broadcaster.name AS broadcaster
+      FROM match
+      INNER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
+      INNER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
+      INNER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
+      INNER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
+      INNER JOIN stage ON match.stage_id = stage.stage_id
+      INNER JOIN venue ON match.venue_id = venue.venue_id
+      INNER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
+      ORDER BY match.date, match.kick_off, match.match_id;
+    SQL
+    result = query(sql)
+    result.map do |tuple| 
+      tuple_to_matches_details_hash(tuple)
+    end
+  end
+
+  # SELECT match.match_id, match.date, match.kick_off,
+  # home_team.name, home_team.short_name, away_team.name, away_team.short_name, 
+  # stage.name, venue.name, broadcaster.name
+  # FROM match
+  # INNER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
+  # INNER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
+  # INNER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
+  # INNER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
+  # INNER JOIN stage ON match.stage_id = stage.stage_id
+  # INNER JOIN venue ON match.venue_id = venue.venue_id
+  # INNER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id;
+
   private
 
   def query(statement, *params)
@@ -171,10 +205,23 @@ class DatabasePersistence
       email: tuple['email'],
       roles: tuple['roles'] }
   end
-
+  
   def admin_id
     sql = 'SELECT role_id FROM role WHERE name = $1;'
     result = query(sql, 'Admin')
     result.first['role_id'].to_i
+  end
+  
+  def tuple_to_matches_details_hash(tuple)
+    { match_id: tuple['match_id'].to_i,
+      match_date: tuple['date'],
+      kick_off: tuple['kick_off'],
+      home_team_name: tuple['home_team_name'],
+      home_team_short_name: tuple['home_team_short_name'],
+      away_team_name: tuple['away_team_name'],
+      away_team_short_name: tuple['away_team_short_name'],
+      stage: tuple['stage'],
+      venue: tuple['venue'],
+      broadcaster: tuple['broadcaster'] }
   end
 end

@@ -375,6 +375,7 @@ end
 
 get '/matches/list' do
   require_signed_in_user
+  @matches = @storage.load_all_matches
   erb :matches_list
 end
 
