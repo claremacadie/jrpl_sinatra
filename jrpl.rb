@@ -367,7 +367,11 @@ post '/users/toggle_admin' do
   elsif button == 'revoke_admin' && @storage.user_admin?(user_id)
     @storage.unassign_admin(user_id)
   end
-  redirect '/users/administer_accounts'
+  if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'
+    '/users/administer_accounts'
+  else
+    redirect '/users/administer_accounts'
+  end
 end
 
 not_found do

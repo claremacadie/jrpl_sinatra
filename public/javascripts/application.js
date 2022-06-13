@@ -19,3 +19,14 @@ $(function() {
     }
   });
 });
+
+$(function() {
+  $("form.toggle_admin").submit(function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    var ok = confirm("Are you sure you want to change admin permissions?");
+    if (ok) {
+      this.submit();
+    }
+  });
+});
