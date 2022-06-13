@@ -119,7 +119,7 @@ class DatabasePersistence
 
   def save_new_token(user_id, series_id_value, token_value)
     sql = <<~SQL
-      UPDATE remember_me SET token = $1, date_added = $2 
+      UPDATE remember_me SET token = $1, date_added = $2
       WHERE user_id = $3 AND series_id = $4;
     SQL
     query(sql, token_value, Time.now, user_id, series_id_value)
