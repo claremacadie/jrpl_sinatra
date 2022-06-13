@@ -500,22 +500,22 @@ class CMSTest < Minitest::Test
     assert_nil session[:user_roles]
   end
   
-  # def test_make_user_admin_already_admin
-  #   post '/users/toggle_admin', {user_id: '11', button: 'grant_admin'}, admin_session
-  #   post '/users/toggle_admin', {user_id: '11', button: 'grant_admin'}, admin_session
-  #   post '/users/signout'
+  def test_make_user_admin_already_admin
+    post '/users/toggle_admin', {user_id: '11', button: 'grant_admin'}, admin_session
+    post '/users/toggle_admin', {user_id: '11', button: 'grant_admin'}, admin_session
+    post '/users/signout'
 
-  #   post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
-  #   assert_equal 'Admin', session[:user_roles]
-  # end
+    post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
+    assert_includes session[:user_roles], 'Admin'
+  end
   
-  # def test_make_user_not_admin_already_not_admin
-  #   post '/users/toggle_admin', {user_id: '11'}, admin_session
-  #   post '/users/signout'
+  def test_make_user_not_admin_already_not_admin
+    post '/users/toggle_admin', {user_id: '11', button: 'revoke_admin'}, admin_session
+    post '/users/signout'
 
-  #   post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
-  #   assert_nil session[:user_roles]
-  # end
+    post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
+    assert_nil session[:user_roles]
+  end
 
   def test_role_deleted_at_signout
     post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
