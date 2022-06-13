@@ -39,11 +39,31 @@ class CMSTest < Minitest::Test
     { 'rack.session' => { user_name: nil, user_id: nil, user_email: nil} }
   end
  
-  def test_homepage
+  def test_homepage_signed_out
     get '/'
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Julian Rimet Prediction League'
+    refute_includes last_response.body, 'Administer account'
+    refute_includes last_response.body, 'Administer users'
+  end
+  
+  def test_homepage_signed_in
+    get '/', {}, user_11_session
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Julian Rimet Prediction League'
+    assert_includes last_response.body, 'Administer account'
+    refute_includes last_response.body, 'Administer users'
+  end
+ 
+  def test_homepage_signed_in_admin
+    get '/', {}, admin_session
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Julian Rimet Prediction League'
+    assert_includes last_response.body, 'Administer account'
+    assert_includes last_response.body, 'Administer users'
   end
   
   def test_signin_form

@@ -20,7 +20,7 @@
             <a href="/users/signin">Sign In</a>
             <a href="/users/signup">Create Account</a>
           <% end %>
-          <% if session[:user_role] == 'Admin' %>
+          <% if session[:user_roles]&.include?('Admin') %>
             <a href="/users/administer_accounts">Administer users</a>
           <% end %>
         </nav>
