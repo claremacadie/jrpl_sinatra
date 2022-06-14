@@ -160,6 +160,14 @@ class DatabasePersistence
     result.first['away_team_points'].to_i
   end
 
+  def load_single_match(match_id)
+    sql = select_query_single_match
+    result = query(sql, match_id)
+    result.map do |tuple|
+      tuple_to_matches_details_hash(tuple)
+    end.first
+  end
+
   private
 
   def query(statement, *params)
@@ -226,6 +234,26 @@ class DatabasePersistence
       LEFT OUTER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
       WHERE match.match_id < 49
       ORDER BY match.date, match.kick_off, match.match_id;
+    SQL
+  end
+
+  def select_query_single_match
+    <<~SQL
+      SELECT match.match_id, match.date, match.kick_off,
+      home_team.name AS home_team_name, home_team.short_name AS home_team_short_name,
+      away_team.name AS away_team_name, away_team.short_name AS away_team_short_name,
+      home_tr.name AS home_tournament_role,
+      away_tr.name AS away_tournament_role,
+      stage.name AS stage, venue.name AS venue, broadcaster.name AS broadcaster
+      FROM match
+      FULL OUTER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
+      FULL OUTER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
+      FULL OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
+      FULL OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
+      LEFT OUTER JOIN venue ON match.venue_id = venue.venue_id
+      LEFT OUTER JOIN stage ON match.stage_id = stage.stage_id
+      LEFT OUTER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
+      WHERE match.match_id = $1;
     SQL
   end
 

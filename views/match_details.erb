@@ -1,0 +1,8 @@
+<h1>Match details</h1>
+<p>Match id:<%= @match[:match_id] %></p>
+<p>Date:<%= @match[:match_date] %></p>
+<p>Kick-off:<%= @match[:kick_off] %></p>
+<p>Home team:<%= home_team_name(@match) %></p>
+<p>Home team prediction:<%= home_team_prediction(@match[:match_id]) %></p>
+<p>Away team prediction:<%= away_team_prediction(@match[:match_id]) %></p>
+<p>Away team:<%= away_team_name(@match) %></p>

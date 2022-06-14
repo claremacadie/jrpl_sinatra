@@ -414,6 +414,13 @@ get '/matches/list' do
   erb :matches_list
 end
 
+get '/match/:match_id' do
+  require_signed_in_user
+  match_id = params[:match_id]
+  @match = @storage.load_single_match(match_id)
+  erb :match_details
+end
+
 not_found do
   redirect '/'
 end
