@@ -286,6 +286,13 @@ def update_user_credentials(new_user_details)
   session[:message] = "The following have been updated: #{changed_details}."
 end
 
+def valid_predictions?(home_prediction, away_prediction)
+  home_prediction.to_i.to_f == home_prediction &&
+  away_prediction.to_i.to_f == away_prediction &&
+  home_prediction >= 0 &&
+  away_prediction >= 0
+end
+
 # Routes
 get '/' do
   user_signed_in?
@@ -416,19 +423,25 @@ end
 
 get '/match/:match_id' do
   require_signed_in_user
-  match_id = params[:match_id]
+  match_id = params[:match_id].to_i
   @match = @storage.load_single_match(match_id)
   erb :match_details
 end
 
 post '/match/add_prediction' do
   require_signed_in_user
-  home_prediction = params[:home_team_prediction].to_i
-  away_prediction = params[:away_team_prediction].to_i
   match_id = params[:match_id].to_i
-  @storage.add_prediction(session[:user_id], match_id, home_prediction, away_prediction)
-  session[:message] = 'Prediction submitted.'
-  redirect "/match/#{match_id}"
+  home_prediction = params[:home_team_prediction].to_f
+  away_prediction = params[:away_team_prediction].to_f
+  @match = @storage.load_single_match(match_id)
+  if valid_predictions?(home_prediction, away_prediction)
+    @storage.add_prediction(session[:user_id], match_id, home_prediction.to_i, away_prediction.to_i)
+    session[:message] = 'Prediction submitted.'
+    redirect "/match/#{match_id}"
+  else
+    session[:message] = 'Predictions must be integers, greater than or equal to 0.'
+    erb :match_details
+  end
 end
 
 not_found do

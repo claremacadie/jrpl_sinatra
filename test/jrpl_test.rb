@@ -535,6 +535,7 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Matches List'
     assert_includes last_response.body, "<td>Senegal</td>\n        <td>4</td>\n        <td>5</td>\n        <td>Netherlands</td>"
     assert_includes last_response.body, "<a href=\"/match/48\">View match</a>"
+    assert_includes last_response.body, 'Winner Group A'
   end
   
   def test_view_single_match_signed_in
@@ -546,6 +547,21 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Senegal'
     assert_includes last_response.body, 'Netherlands'
     assert_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
+  end
+
+  def test_add_new_prediction
+    post '/match/add_prediction', {match_id: '2', home_team_prediction: '2', away_team_prediction: '3'}, user_11_session
+
+    assert_equal 302, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_equal 'Prediction submitted.', session[:message]
+
+    get last_response['Location']
+    assert_includes last_response.body, 'Match details'
+    assert_includes last_response.body, 'England'
+    assert_includes last_response.body, 'Iran'
+    assert_includes last_response.body, '2'
+    assert_includes last_response.body, '3'
   end
   
   # def test_signin_with_cookie
