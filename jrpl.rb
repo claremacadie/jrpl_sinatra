@@ -25,41 +25,43 @@ after do
 end
 
 # Helper methods for view templates
+# rubocop:disable Metrics/BlockLength
 helpers do
   def home_team_name(match)
-    unless match[:home_team_name].nil?
-      match[:home_team_name]
-    else
+    if match[:home_team_name].nil?
       match[:home_tournament_role]
+    else
+      match[:home_team_name]
     end
   end
-  
+
   def away_team_name(match)
-    unless match[:away_team_name].nil?
-      match[:away_team_name]
-    else
+    if match[:away_team_name].nil?
       match[:away_tournament_role]
+    else
+      match[:away_team_name]
     end
   end
 
   def home_team_prediction(match_id)
     prediction = @storage.home_team_prediction(match_id, session[:user_id])
-    unless prediction.nil?
-      prediction
-    else
+    if prediction.nil?
       'no prediction'
+    else
+      prediction
     end
   end
 
   def away_team_prediction(match_id)
     prediction = @storage.away_team_prediction(match_id, session[:user_id])
-    unless prediction.nil?
-      prediction
-    else
+    if prediction.nil?
       'no prediction'
+    else
+      prediction
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
 
 # Helper methods for routes
 def setup_user_session_data(user_id)

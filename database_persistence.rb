@@ -131,39 +131,30 @@ class DatabasePersistence
   end
 
   def load_all_matches
-    sql = <<~SQL
-      SELECT match.match_id, match.date, match.kick_off,
-      home_team.name AS home_team_name, home_team.short_name AS home_team_short_name, 
-      away_team.name AS away_team_name, away_team.short_name AS away_team_short_name, 
-      home_tr.name AS home_tournament_role,
-      away_tr.name AS away_tournament_role,
-      stage.name AS stage, venue.name AS venue, broadcaster.name AS broadcaster
-      FROM match
-      FULL OUTER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
-      FULL OUTER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
-      FULL OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
-      FULL OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
-      LEFT OUTER JOIN venue ON match.venue_id = venue.venue_id
-      LEFT OUTER JOIN stage ON match.stage_id = stage.stage_id
-      LEFT OUTER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
-      WHERE match.match_id < 49
-      ORDER BY match.date, match.kick_off, match.match_id;
-    SQL
+    sql = select_query_all_matches
     result = query(sql)
-    result.map do |tuple| 
+    result.map do |tuple|
       tuple_to_matches_details_hash(tuple)
     end
   end
 
   def home_team_prediction(match_id, user_id)
-    sql = 'SELECT home_team_points FROM prediction WHERE match_id = $1 AND user_id = $2';
+    sql = <<~SQL
+      SELECT home_team_points
+      FROM prediction
+      WHERE match_id = $1 AND user_id = $2;
+    SQL
     result = query(sql, match_id, user_id)
     return nil if result.ntuples == 0
     result.first['home_team_points'].to_i
   end
 
   def away_team_prediction(match_id, user_id)
-    sql = 'SELECT away_team_points FROM prediction WHERE match_id = $1 AND user_id = $2';
+    sql = <<~SQL
+      SELECT away_team_points
+      FROM prediction
+      WHERE match_id = $1 AND user_id = $2;
+    SQL
     result = query(sql, match_id, user_id)
     return nil if result.ntuples == 0
     result.first['away_team_points'].to_i
@@ -210,13 +201,35 @@ class DatabasePersistence
       email: tuple['email'],
       roles: tuple['roles'] }
   end
-  
+
   def admin_id
     sql = 'SELECT role_id FROM role WHERE name = $1;'
     result = query(sql, 'Admin')
     result.first['role_id'].to_i
   end
-  
+
+  def select_query_all_matches
+    <<~SQL
+      SELECT match.match_id, match.date, match.kick_off,
+      home_team.name AS home_team_name, home_team.short_name AS home_team_short_name,
+      away_team.name AS away_team_name, away_team.short_name AS away_team_short_name,
+      home_tr.name AS home_tournament_role,
+      away_tr.name AS away_tournament_role,
+      stage.name AS stage, venue.name AS venue, broadcaster.name AS broadcaster
+      FROM match
+      FULL OUTER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
+      FULL OUTER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
+      FULL OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
+      FULL OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
+      LEFT OUTER JOIN venue ON match.venue_id = venue.venue_id
+      LEFT OUTER JOIN stage ON match.stage_id = stage.stage_id
+      LEFT OUTER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
+      WHERE match.match_id < 49
+      ORDER BY match.date, match.kick_off, match.match_id;
+    SQL
+  end
+
+  # rubocop:disable Metrics/MethodLength
   def tuple_to_matches_details_hash(tuple)
     { match_id: tuple['match_id'].to_i,
       match_date: tuple['date'],
@@ -230,4 +243,5 @@ class DatabasePersistence
       venue: tuple['venue'],
       broadcaster: tuple['broadcaster'] }
   end
+  # rubocop:enable Metrics/MethodLength
 end
