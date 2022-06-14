@@ -16,8 +16,8 @@
         <td><%= match[:match_date] %></td>
         <td><%= match[:kick_off] %></td>
         <td><%= home_team_name(match) %></td>
-        <td>num</td>
-        <td>num</td>
+        <td><%= home_team_prediction(match[:match_id]) %></td>
+        <td><%= away_team_prediction(match[:match_id]) %></td>
         <td><%= away_team_name(match) %></td>
       </tr>
     <% end %>

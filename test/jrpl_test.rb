@@ -533,6 +533,7 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Matches List'
+    assert_includes last_response.body, "<td>Senegal</td>\n        <td>4</td>\n        <td>5</td>\n        <td>Netherlands</td>"
   end
   
   # def test_signin_with_cookie

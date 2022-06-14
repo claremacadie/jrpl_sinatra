@@ -155,17 +155,19 @@ class DatabasePersistence
     end
   end
 
-  # SELECT match.match_id, match.date, match.kick_off,
-  # home_team.name, home_team.short_name, away_team.name, away_team.short_name, 
-  # stage.name, venue.name, broadcaster.name
-  # FROM match
-  # INNER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
-  # INNER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
-  # INNER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
-  # INNER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
-  # INNER JOIN stage ON match.stage_id = stage.stage_id
-  # INNER JOIN venue ON match.venue_id = venue.venue_id
-  # INNER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id;
+  def home_team_prediction(match_id, user_id)
+    sql = 'SELECT home_team_points FROM prediction WHERE match_id = $1 AND user_id = $2';
+    result = query(sql, match_id, user_id)
+    return nil if result.ntuples == 0
+    result.first['home_team_points'].to_i
+  end
+
+  def away_team_prediction(match_id, user_id)
+    sql = 'SELECT away_team_points FROM prediction WHERE match_id = $1 AND user_id = $2';
+    result = query(sql, match_id, user_id)
+    return nil if result.ntuples == 0
+    result.first['away_team_points'].to_i
+  end
 
   private
 

@@ -41,6 +41,24 @@ helpers do
       match[:away_tournament_role]
     end
   end
+
+  def home_team_prediction(match_id)
+    prediction = @storage.home_team_prediction(match_id, session[:user_id])
+    unless prediction.nil?
+      prediction
+    else
+      'no prediction'
+    end
+  end
+
+  def away_team_prediction(match_id)
+    prediction = @storage.away_team_prediction(match_id, session[:user_id])
+    unless prediction.nil?
+      prediction
+    else
+      'no prediction'
+    end
+  end
 end
 
 # Helper methods for routes
