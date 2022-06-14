@@ -1,4 +1,23 @@
 <h1>Matches List</h1>
-<% @matches.each do |match| %>
-  <p><%= match %></p>
-<% end %>
+<table>
+  <thead>
+    <th>Date</th>
+    <th>Kick-off</th>
+    <th>Home team</th>
+    <th>Home prediction</th>
+    <th>Away prediction</th>
+    <th>Away team</th>
+  </thead>
+  <tbody>
+    <% @matches.each do |match| %>
+      <tr>
+        <td><%= match[:match_date] %></td>
+        <td><%= match[:kick_off] %></td>
+        <td><%= match[:home_team_name] %></td>
+        <td>num</td>
+        <td>num</td>
+        <td><%= match[:away_team_name] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -526,6 +526,14 @@ class CMSTest < Minitest::Test
     post '/users/signin', {login: 'Clare Mac', pword: 'a'}, {}
     refute_equal 'Admin', session[:user_roles]
   end
+
+  def test_view_matches_list_signed_in
+    get '/matches/list', {}, user_11_session
+
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Matches List'
+  end
   
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
