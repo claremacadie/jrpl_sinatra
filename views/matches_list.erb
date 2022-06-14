@@ -15,10 +15,10 @@
         <td><%= match[:match_id] %></td>
         <td><%= match[:match_date] %></td>
         <td><%= match[:kick_off] %></td>
-        <td><%= match[:home_team_name] %></td>
+        <td><%= home_team_name(match) %></td>
         <td>num</td>
         <td>num</td>
-        <td><%= match[:away_team_name] %></td>
+        <td><%= away_team_name(match) %></td>
       </tr>
     <% end %>
   </tbody>

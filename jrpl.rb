@@ -26,6 +26,21 @@ end
 
 # Helper methods for view templates
 helpers do
+  def home_team_name(match)
+    unless match[:home_team_name].nil?
+      match[:home_team_name]
+    else
+      match[:home_tournament_role]
+    end
+  end
+  
+  def away_team_name(match)
+    unless match[:away_team_name].nil?
+      match[:away_team_name]
+    else
+      match[:away_tournament_role]
+    end
+  end
 end
 
 # Helper methods for routes
