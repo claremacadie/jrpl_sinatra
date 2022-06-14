@@ -421,6 +421,16 @@ get '/match/:match_id' do
   erb :match_details
 end
 
+post '/match/add_prediction' do
+  require_signed_in_user
+  home_prediction = params[:home_team_prediction].to_i
+  away_prediction = params[:away_team_prediction].to_i
+  match_id = params[:match_id].to_i
+  @storage.add_prediction(session[:user_id], match_id, home_prediction, away_prediction)
+  session[:message] = 'Prediction submitted.'
+  redirect "/match/#{match_id}"
+end
+
 not_found do
   redirect '/'
 end

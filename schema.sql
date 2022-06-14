@@ -122,7 +122,7 @@ CREATE TABLE prediction (
   match_id         int       NOT NULL REFERENCES match ON DELETE CASCADE ON UPDATE CASCADE,
   home_team_points int       NOT NULL,
   away_team_points int       NOT NULL,
-  date_added       timestamp NOT NULL,
+  date_added       timestamp NOT NULL DEFAULT NOW(),
   UNIQUE (user_id, match_id)
 );
 

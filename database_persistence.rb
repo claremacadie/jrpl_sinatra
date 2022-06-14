@@ -168,6 +168,17 @@ class DatabasePersistence
     end.first
   end
 
+  def delete_prediction(user_id, match_id)
+    sql = 'DELETE FROM prediction WHERE user_id = $1 AND match_id = $2;'
+    query(sql, user_id, match_id)
+  end
+
+  def add_prediction(user_id, match_id, home_team_points, away_team_points)
+    delete_prediction(user_id, match_id)
+    sql = insert_prediction_query
+    query(sql, user_id, match_id, home_team_points, away_team_points)
+  end
+
   private
 
   def query(statement, *params)
@@ -215,24 +226,30 @@ class DatabasePersistence
     result = query(sql, 'Admin')
     result.first['role_id'].to_i
   end
-
+  
+  # rubocop:disable Metrics/MethodLength
   def select_query_all_matches
     <<~SQL
-      SELECT match.match_id, match.date, match.kick_off,
-      home_team.name AS home_team_name, home_team.short_name AS home_team_short_name,
-      away_team.name AS away_team_name, away_team.short_name AS away_team_short_name,
-      home_tr.name AS home_tournament_role,
-      away_tr.name AS away_tournament_role,
-      stage.name AS stage, venue.name AS venue, broadcaster.name AS broadcaster
+      SELECT match.match_id, 
+        match.date, 
+        match.kick_off,
+        home_team.name AS home_team_name, 
+        home_team.short_name AS home_team_short_name,
+        away_team.name AS away_team_name, 
+        away_team.short_name AS away_team_short_name,
+        home_tr.name AS home_tournament_role,
+        away_tr.name AS away_tournament_role,
+        stage.name AS stage, 
+        venue.name AS venue, 
+        broadcaster.name AS broadcaster
       FROM match
-      FULL OUTER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
-      FULL OUTER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
-      FULL OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
-      FULL OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
-      LEFT OUTER JOIN venue ON match.venue_id = venue.venue_id
-      LEFT OUTER JOIN stage ON match.stage_id = stage.stage_id
-      LEFT OUTER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
-      WHERE match.match_id < 49
+      INNER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.tournament_role_id
+      INNER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.tournament_role_id
+      LEFT OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
+      LEFT OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
+      INNER JOIN venue ON match.venue_id = venue.venue_id
+      INNER JOIN stage ON match.stage_id = stage.stage_id
+      INNER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
       ORDER BY match.date, match.kick_off, match.match_id;
     SQL
   end
@@ -257,7 +274,6 @@ class DatabasePersistence
     SQL
   end
 
-  # rubocop:disable Metrics/MethodLength
   def tuple_to_matches_details_hash(tuple)
     { match_id: tuple['match_id'].to_i,
       match_date: tuple['date'],
@@ -266,10 +282,19 @@ class DatabasePersistence
       home_tournament_role: tuple['home_tournament_role'],
       home_team_short_name: tuple['home_team_short_name'],
       away_team_name: tuple['away_team_name'],
+      away_tournament_role: tuple['away_tournament_role'],
       away_team_short_name: tuple['away_team_short_name'],
       stage: tuple['stage'],
       venue: tuple['venue'],
       broadcaster: tuple['broadcaster'] }
   end
   # rubocop:enable Metrics/MethodLength
+
+  def insert_prediction_query
+    <<~SQL
+      INSERT INTO prediction
+        (user_id, match_id, home_team_points, away_team_points)
+      VALUES ($1, $2, $3, $4);
+    SQL
+  end
 end
