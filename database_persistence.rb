@@ -137,13 +137,13 @@ class DatabasePersistence
       away_team.name AS away_team_name, away_team.short_name AS away_team_short_name, 
       stage.name AS stage, venue.name AS venue, broadcaster.name AS broadcaster
       FROM match
-      INNER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
-      INNER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
-      INNER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
-      INNER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
-      INNER JOIN stage ON match.stage_id = stage.stage_id
-      INNER JOIN venue ON match.venue_id = venue.venue_id
-      INNER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
+      LEFT OUTER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
+      LEFT OUTER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
+      FULL OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
+      FULL OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
+      LEFT OUTER JOIN venue ON match.venue_id = venue.venue_id
+      LEFT OUTER JOIN stage ON match.stage_id = stage.stage_id
+      LEFT OUTER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
       ORDER BY match.date, match.kick_off, match.match_id;
     SQL
     result = query(sql)
