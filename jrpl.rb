@@ -440,6 +440,7 @@ post '/match/add_prediction' do
     redirect "/match/#{match_id}"
   else
     session[:message] = 'Predictions must be integers, greater than or equal to 0.'
+    status 422
     erb :match_details
   end
 end

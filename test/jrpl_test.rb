@@ -563,6 +563,37 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '2'
     assert_includes last_response.body, '3'
   end
+
+  def test_change_prediction
+    post '/match/add_prediction', {match_id: '1', home_team_prediction: '2', away_team_prediction: '3'}, user_11_session
+
+    assert_equal 302, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_equal 'Prediction submitted.', session[:message]
+
+    get last_response['Location']
+    assert_includes last_response.body, 'Match details'
+    assert_includes last_response.body, 'Senegal'
+    assert_includes last_response.body, 'Netherlands'
+    assert_includes last_response.body, '2'
+    assert_includes last_response.body, '3'
+  end
+
+  def test_add_decimal_prediction
+    post '/match/add_prediction', {match_id: '1', home_team_prediction: '2.3', away_team_prediction: '3'}, user_11_session
+
+    assert_equal 422, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Predictions must be integers, greater than or equal to 0.'
+  end
+
+  def test_add_negative_prediction
+    post '/match/add_prediction', {match_id: '1', home_team_prediction: '-2', away_team_prediction: '3'}, user_11_session
+
+    assert_equal 422, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Predictions must be integers, greater than or equal to 0.'
+  end
   
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
