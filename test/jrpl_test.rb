@@ -548,14 +548,14 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Netherlands'
     assert_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
   end
-
+  
   def test_add_new_prediction
     post '/match/add_prediction', {match_id: '2', home_team_prediction: '2', away_team_prediction: '3'}, user_11_session
-
+    
     assert_equal 302, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal 'Prediction submitted.', session[:message]
-
+    
     get last_response['Location']
     assert_includes last_response.body, 'Match details'
     assert_includes last_response.body, 'England'
@@ -563,14 +563,14 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '2'
     assert_includes last_response.body, '3'
   end
-
+  
   def test_change_prediction
     post '/match/add_prediction', {match_id: '1', home_team_prediction: '2', away_team_prediction: '3'}, user_11_session
-
+    
     assert_equal 302, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal 'Prediction submitted.', session[:message]
-
+    
     get last_response['Location']
     assert_includes last_response.body, 'Match details'
     assert_includes last_response.body, 'Senegal'
@@ -578,21 +578,30 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '2'
     assert_includes last_response.body, '3'
   end
-
+  
   def test_add_decimal_prediction
     post '/match/add_prediction', {match_id: '1', home_team_prediction: '2.3', away_team_prediction: '3'}, user_11_session
-
+    
     assert_equal 422, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Your predictions must be integers.'
   end
-
+  
   def test_add_negative_prediction
     post '/match/add_prediction', {match_id: '1', home_team_prediction: '-2', away_team_prediction: '3'}, user_11_session
-
+    
     assert_equal 422, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Your predictions must be non-negative.'
+  end
+  
+  def test_carousel
+    get '/match/2', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, '<a href="/match/1">Previous match</a>'
+    assert_includes last_response.body, '<a href="/match/3">Next match</a>'
   end
   
   # def test_signin_with_cookie

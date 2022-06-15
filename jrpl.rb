@@ -60,6 +60,14 @@ helpers do
       prediction
     end
   end
+
+  def previous_match(match_id)
+    match_id - 1
+  end
+
+  def next_match(match_id)
+    match_id + 1
+  end
 end
 # rubocop:enable Metrics/BlockLength
 

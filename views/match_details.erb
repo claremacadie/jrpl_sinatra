@@ -27,3 +27,6 @@
   <input type="hidden" name="match_id" value="<%= @match[:match_id] %>">
   <button type="submit">Add/Change prediction</button>
 </form>
+
+<a href="/match/<%= previous_match(@match[:match_id]) %>">Previous match</a>
+<a href="/match/<%= next_match(@match[:match_id]) %>">Next match</a>
