@@ -286,16 +286,16 @@ def update_user_credentials(new_user_details)
   session[:message] = "The following have been updated: #{changed_details}."
 end
 
+def not_integer?(num)
+  !(num.floor - num).zero?
+end
+
 def prediction_error(home_prediction, away_prediction)
   error = []
-  if home_prediction.to_i.to_f != home_prediction ||
-     away_prediction.to_i.to_f != away_prediction
-    error << 'integers'
-  end
-  if home_prediction < 0 ||
-     away_prediction < 0
-    error << 'non-negative'
-  end
+  error << 'integers' if
+    not_integer?(home_prediction) || not_integer?(away_prediction)
+  error << 'non-negative' if
+    home_prediction < 0 || away_prediction < 0
   return nil if error.empty?
   "Your predictions must be #{error.join(' and ')}."
 end
