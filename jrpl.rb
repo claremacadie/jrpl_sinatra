@@ -24,6 +24,9 @@ after do
   @storage.disconnect
 end
 
+# Constant definitions
+LOCKDOWN_BUFFER = 30 * 60 # 30 minutes
+
 # Helper methods for view templates
 # rubocop:disable Metrics/BlockLength
 helpers do
