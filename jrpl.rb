@@ -303,6 +303,11 @@ def not_integer?(num)
   !(num.floor - num).zero?
 end
 
+def match_locked_down?(match)
+  match_date_time = match[:match_date] + ' ' + match[:kick_off]
+  (Time.now + LOCKDOWN_BUFFER) > Time.parse(match_date_time)
+end
+
 def prediction_error(home_prediction, away_prediction)
   error = []
   error << 'integers' if
@@ -445,8 +450,7 @@ get '/match/:match_id' do
   require_signed_in_user
   match_id = params[:match_id].to_i
   @match = @storage.load_single_match(match_id)
-  match_locked_down = (Time.now + LOCKDOWN_BUFFER) > Time.parse(@match[:kick_off])
-  session[:message] = 'Match locked down!' if match_locked_down
+  session[:message] = 'Match locked down!' if match_locked_down?(@match)
   erb :match_details
 end
 
