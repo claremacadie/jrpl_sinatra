@@ -286,11 +286,18 @@ def update_user_credentials(new_user_details)
   session[:message] = "The following have been updated: #{changed_details}."
 end
 
-def valid_predictions?(home_prediction, away_prediction)
-  home_prediction.to_i.to_f == home_prediction &&
-  away_prediction.to_i.to_f == away_prediction &&
-  home_prediction >= 0 &&
-  away_prediction >= 0
+def prediction_error(home_prediction, away_prediction)
+  error = []
+  if home_prediction.to_i.to_f != home_prediction ||
+     away_prediction.to_i.to_f != away_prediction
+    error << 'integers'
+  end
+  if home_prediction < 0 || 
+     away_prediction < 0
+    error << 'non-negative'
+  end
+  return nil if error.empty?
+  "Your predictions must be #{error.join(' and ')}."
 end
 
 # Routes
@@ -434,14 +441,14 @@ post '/match/add_prediction' do
   home_prediction = params[:home_team_prediction].to_f
   away_prediction = params[:away_team_prediction].to_f
   @match = @storage.load_single_match(match_id)
-  if valid_predictions?(home_prediction, away_prediction)
+  session[:message] = prediction_error(home_prediction, away_prediction)
+  if session[:message]
+    status 422
+    erb :match_details
+  else
     @storage.add_prediction(session[:user_id], match_id, home_prediction.to_i, away_prediction.to_i)
     session[:message] = 'Prediction submitted.'
     redirect "/match/#{match_id}"
-  else
-    session[:message] = 'Predictions must be integers, greater than or equal to 0.'
-    status 422
-    erb :match_details
   end
 end
 

@@ -584,7 +584,7 @@ class CMSTest < Minitest::Test
 
     assert_equal 422, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, 'Predictions must be integers, greater than or equal to 0.'
+    assert_includes last_response.body, 'Your predictions must be integers.'
   end
 
   def test_add_negative_prediction
@@ -592,7 +592,7 @@ class CMSTest < Minitest::Test
 
     assert_equal 422, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, 'Predictions must be integers, greater than or equal to 0.'
+    assert_includes last_response.body, 'Your predictions must be non-negative.'
   end
   
   # def test_signin_with_cookie
