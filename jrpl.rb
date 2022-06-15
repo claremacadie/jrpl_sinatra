@@ -65,11 +65,11 @@ helpers do
   end
 
   def home_team_points(match)
-    match[:home_team_points].to_i
+    match[:home_team_points]
   end
 
   def away_team_points(match)
-    match[:away_team_points].to_i
+    match[:away_team_points]
   end
 
   def previous_match(match_id)
