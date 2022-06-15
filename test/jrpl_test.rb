@@ -533,7 +533,7 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Matches List'
-    assert_includes last_response.body, "<td>Senegal</td>\n        <td>4</td>\n        <td>5</td>\n        <td>Netherlands</td>"
+    assert_includes last_response.body, "<td>Spain</td>\n        <td>4</td>\n        <td>5</td>\n        <td>IC Play Off 2</td>"
     assert_includes last_response.body, "<a href=\"/match/48\">View match</a>"
     assert_includes last_response.body, 'Winner Group A'
   end
@@ -550,37 +550,31 @@ class CMSTest < Minitest::Test
   end
   
   def test_add_new_prediction
-    post '/match/add_prediction', {match_id: '2', home_team_prediction: '2', away_team_prediction: '3'}, user_11_session
+    post '/match/add_prediction', {match_id: '12', home_team_prediction: '98', away_team_prediction: '99'}, user_11_session
     
     assert_equal 302, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal 'Prediction submitted.', session[:message]
     
     get last_response['Location']
-    assert_includes last_response.body, 'Match details'
-    assert_includes last_response.body, 'England'
-    assert_includes last_response.body, 'Iran'
-    assert_includes last_response.body, '2'
-    assert_includes last_response.body, '3'
+    assert_includes last_response.body, '98'
+    assert_includes last_response.body, '99'
   end
   
   def test_change_prediction
-    post '/match/add_prediction', {match_id: '1', home_team_prediction: '2', away_team_prediction: '3'}, user_11_session
+    post '/match/add_prediction', {match_id: '11', home_team_prediction: '98', away_team_prediction: '99'}, user_11_session
     
     assert_equal 302, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal 'Prediction submitted.', session[:message]
     
     get last_response['Location']
-    assert_includes last_response.body, 'Match details'
-    assert_includes last_response.body, 'Senegal'
-    assert_includes last_response.body, 'Netherlands'
-    assert_includes last_response.body, '2'
-    assert_includes last_response.body, '3'
+    assert_includes last_response.body, '98'
+    assert_includes last_response.body, '99'
   end
   
   def test_add_decimal_prediction
-    post '/match/add_prediction', {match_id: '1', home_team_prediction: '2.3', away_team_prediction: '3'}, user_11_session
+    post '/match/add_prediction', {match_id: '11', home_team_prediction: '2.3', away_team_prediction: '3'}, user_11_session
     
     assert_equal 422, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
@@ -588,7 +582,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_add_negative_prediction
-    post '/match/add_prediction', {match_id: '1', home_team_prediction: '-2', away_team_prediction: '3'}, user_11_session
+    post '/match/add_prediction', {match_id: '11', home_team_prediction: '-2', away_team_prediction: '3'}, user_11_session
     
     assert_equal 422, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']

@@ -445,6 +445,7 @@ get '/match/:match_id' do
   require_signed_in_user
   match_id = params[:match_id].to_i
   @match = @storage.load_single_match(match_id)
+  # match_locked_down = (Time.now - LOCKDOWN_BUFFER) > @match[:kick_off]
   erb :match_details
 end
 

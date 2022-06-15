@@ -392,5 +392,5 @@ INSERT INTO scoring_system (name) VALUES
     ('AutoQuiz');
 
 INSERT INTO prediction (user_id, match_id, home_team_points, away_team_points, date_added) VALUES
-    (11, 1, 4, 5, '2022-06-12 16:45:15'),
-    (4, 4, 4, 3, '2022-06-13 11:45:15');
+    (11, 11, 4, 5, '2022-06-12 16:45:15'),
+    (4, 12, 4, 3, '2022-06-13 11:45:15');
