@@ -304,7 +304,7 @@ def not_integer?(num)
 end
 
 def match_locked_down?(match)
-  match_date_time = match[:match_date] + ' ' + match[:kick_off]
+  match_date_time = "#{match[:match_date]} #{match[:kick_off]}"
   (Time.now + LOCKDOWN_BUFFER) > Time.parse(match_date_time)
 end
 
@@ -320,7 +320,8 @@ end
 
 def prediction_error(match, home_prediction, away_prediction)
   if match_locked_down?(match)
-    'You cannot add or change your prediction because this match is already locked down!'
+    'You cannot add or change your prediction because ' \
+    'this match is already locked down!'
   else
     prediction_type_error(home_prediction, away_prediction)
   end
