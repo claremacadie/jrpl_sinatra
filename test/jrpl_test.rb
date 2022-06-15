@@ -616,6 +616,22 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '<a href="/match/1">Next match</a>'
   end
   
+  def test_view_match_lockdown
+    get '/match/1', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Match locked down!'
+  end
+  
+  def test_view_match_not_lockdown
+    get '/match/64', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    refute_includes last_response.body, 'Match locked down!'
+  end
+  
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
   #   assert_equal 302, last_response.status
