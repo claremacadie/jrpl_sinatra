@@ -308,7 +308,7 @@ def match_locked_down?(match)
   (Time.now + LOCKDOWN_BUFFER) > Time.parse(match_date_time)
 end
 
-def prediction_error(home_prediction, away_prediction)
+def prediction_type_error(home_prediction, away_prediction)
   error = []
   error << 'integers' if
     not_integer?(home_prediction) || not_integer?(away_prediction)
@@ -316,6 +316,14 @@ def prediction_error(home_prediction, away_prediction)
     home_prediction < 0 || away_prediction < 0
   return nil if error.empty?
   "Your predictions must be #{error.join(' and ')}."
+end
+
+def prediction_error(match, home_prediction, away_prediction)
+  if match_locked_down?(match)
+    'You cannot add or change your prediction because this match is already locked down!'
+  else
+    prediction_type_error(home_prediction, away_prediction)
+  end
 end
 
 # Routes
@@ -457,10 +465,10 @@ end
 post '/match/add_prediction' do
   require_signed_in_user
   match_id = params[:match_id].to_i
+  @match = @storage.load_single_match(match_id)
   home_prediction = params[:home_team_prediction].to_f
   away_prediction = params[:away_team_prediction].to_f
-  @match = @storage.load_single_match(match_id)
-  session[:message] = prediction_error(home_prediction, away_prediction)
+  session[:message] = prediction_error(@match, home_prediction, away_prediction)
   if session[:message]
     status 422
     erb :match_details

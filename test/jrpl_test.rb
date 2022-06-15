@@ -589,6 +589,14 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Your predictions must be non-negative.'
   end
   
+  def test_add_prediction_lockeddown_match
+    post '/match/add_prediction', {match_id: '1', home_team_prediction: '2', away_team_prediction: '3'}, user_11_session
+    
+    assert_equal 422, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'You cannot add or change your prediction because this match is already locked down!'
+  end
+  
   def test_carousel
     get '/match/2', {}, user_11_session
     
@@ -607,7 +615,7 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '<a href="/match/2">Next match</a>'
   end
   
-  def test_carousel_below_minimum
+  def test_carousel_above_maximum
     get '/match/64', {}, user_11_session
     
     assert_equal 200, last_response.status
