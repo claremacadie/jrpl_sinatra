@@ -643,6 +643,15 @@ class CMSTest < Minitest::Test
     refute_includes last_response.body, 'Match locked down!'
   end
   
+  def test_view_match_results_not_admin
+    get '/match/2', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Home team: 4'
+    assert_includes last_response.body, 'Away team: 5'
+    end
+  
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
   #   assert_equal 302, last_response.status

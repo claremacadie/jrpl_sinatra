@@ -240,9 +240,12 @@ class DatabasePersistence
   # rubocop:disable Metrics/MethodLength
   def select_query_all_matches
     <<~SQL
-      SELECT match.match_id,
+      SELECT 
+        match.match_id,
         match.date,
         match.kick_off,
+        match.home_team_points,
+        match.away_team_points,
         home_team.name AS home_team_name,
         home_team.short_name AS home_team_short_name,
         away_team.name AS away_team_name,
@@ -266,12 +269,21 @@ class DatabasePersistence
 
   def select_query_single_match
     <<~SQL
-      SELECT match.match_id, match.date, match.kick_off,
-      home_team.name AS home_team_name, home_team.short_name AS home_team_short_name,
-      away_team.name AS away_team_name, away_team.short_name AS away_team_short_name,
-      home_tr.name AS home_tournament_role,
-      away_tr.name AS away_tournament_role,
-      stage.name AS stage, venue.name AS venue, broadcaster.name AS broadcaster
+      SELECT
+        match.match_id,
+        match.date,
+        match.kick_off,
+        match.home_team_points,
+        match.away_team_points,
+        home_team.name AS home_team_name,
+        home_team.short_name AS home_team_short_name,
+        away_team.name AS away_team_name,
+        away_team.short_name AS away_team_short_name,
+        home_tr.name AS home_tournament_role,
+        away_tr.name AS away_tournament_role,
+        stage.name AS stage,
+        venue.name AS venue,
+        broadcaster.name AS broadcaster
       FROM match
       FULL OUTER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
       FULL OUTER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
@@ -288,6 +300,8 @@ class DatabasePersistence
     { match_id: tuple['match_id'].to_i,
       match_date: tuple['date'],
       kick_off: tuple['kick_off'],
+      home_team_points: convert_string_to_integer(tuple['home_team_points']),
+      away_team_points: convert_string_to_integer(tuple['away_team_points']),
       home_team_name: tuple['home_team_name'],
       home_tournament_role: tuple['home_tournament_role'],
       home_team_short_name: tuple['home_team_short_name'],

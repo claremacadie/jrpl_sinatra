@@ -223,8 +223,8 @@ INSERT INTO tournament_role
 
 INSERT INTO match
     (date,         kick_off,   venue_id, home_team_id, away_team_id, home_team_points, away_team_points, result_posted_by, result_posted_on, stage_id, broadcaster_id) VALUES
-    (CURRENT_DATE, split_part((CURRENT_TIME + interval '15 minute')::text, '.', 1)::time, 1,        3,            4,            NULL,             NULL,             NULL,             NULL,             1,        1),
-    ('2022-11-21', '16:00:00', 2,        5,            6,            NULL,             NULL,             NULL,             NULL,             1,        1),
+    (CURRENT_DATE, split_part((CURRENT_TIME + interval '15 minute')::text, '.', 1)::time, 1, 3, 4, NULL, NULL, NULL,       NULL,             1,        1),
+    ('2022-11-21', '16:00:00', 2,        5,            6,               4,                5,             NULL,             NULL,             1,        1),
     ('2022-11-21', '19:00:00', 3,        1,            2,            NULL,             NULL,             NULL,             NULL,             1,        1),
     ('2022-11-21', '22:00:00', 4,        7,            8,            NULL,             NULL,             NULL,             NULL,             1,        1),
     ('2022-11-22', '13:00:00', 5,        9,           10,            NULL,             NULL,             NULL,             NULL,             1,        1),

@@ -64,6 +64,14 @@ helpers do
     end
   end
 
+  def home_team_points(match)
+    match[:home_team_points].to_i
+  end
+
+  def away_team_points(match)
+    match[:away_team_points].to_i
+  end
+
   def previous_match(match_id)
     prev_id = match_id - 1
     prev_id < @storage.min_match_id ? @storage.max_match_id : prev_id
