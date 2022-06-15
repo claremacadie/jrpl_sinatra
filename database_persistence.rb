@@ -179,6 +179,16 @@ class DatabasePersistence
     query(sql, user_id, match_id, home_team_points, away_team_points)
   end
 
+  def max_match_id
+    sql = 'SELECT max(match_id) FROM match;'
+    query(sql).first['max'].to_i
+  end
+
+  def min_match_id
+    sql = 'SELECT min(match_id) FROM match;'
+    query(sql).first['min'].to_i
+  end
+
   private
 
   def query(statement, *params)

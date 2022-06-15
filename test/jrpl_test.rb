@@ -604,6 +604,24 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '<a href="/match/3">Next match</a>'
   end
   
+  def test_carousel_below_minimum
+    get '/match/1', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, '<a href="/match/64">Previous match</a>'
+    assert_includes last_response.body, '<a href="/match/2">Next match</a>'
+  end
+  
+  def test_carousel_below_minimum
+    get '/match/64', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, '<a href="/match/63">Previous match</a>'
+    assert_includes last_response.body, '<a href="/match/1">Next match</a>'
+  end
+  
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
   #   assert_equal 302, last_response.status

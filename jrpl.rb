@@ -62,11 +62,13 @@ helpers do
   end
 
   def previous_match(match_id)
-    match_id - 1
+    prev_id = match_id - 1
+    prev_id < @storage.min_match_id ? @storage.max_match_id : prev_id
   end
-
+  
   def next_match(match_id)
-    match_id + 1
+    next_id = match_id + 1
+    next_id > @storage.max_match_id ? @storage.min_match_id : next_id
   end
 end
 # rubocop:enable Metrics/BlockLength
