@@ -292,7 +292,7 @@ def prediction_error(home_prediction, away_prediction)
      away_prediction.to_i.to_f != away_prediction
     error << 'integers'
   end
-  if home_prediction < 0 || 
+  if home_prediction < 0 ||
      away_prediction < 0
     error << 'non-negative'
   end
@@ -446,7 +446,12 @@ post '/match/add_prediction' do
     status 422
     erb :match_details
   else
-    @storage.add_prediction(session[:user_id], match_id, home_prediction.to_i, away_prediction.to_i)
+    @storage.add_prediction(
+      session[:user_id],
+      match_id,
+      home_prediction.to_i,
+      away_prediction.to_i
+    )
     session[:message] = 'Prediction submitted.'
     redirect "/match/#{match_id}"
   end

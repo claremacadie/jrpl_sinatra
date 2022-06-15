@@ -226,21 +226,21 @@ class DatabasePersistence
     result = query(sql, 'Admin')
     result.first['role_id'].to_i
   end
-  
+
   # rubocop:disable Metrics/MethodLength
   def select_query_all_matches
     <<~SQL
-      SELECT match.match_id, 
-        match.date, 
+      SELECT match.match_id,
+        match.date,
         match.kick_off,
-        home_team.name AS home_team_name, 
+        home_team.name AS home_team_name,
         home_team.short_name AS home_team_short_name,
-        away_team.name AS away_team_name, 
+        away_team.name AS away_team_name,
         away_team.short_name AS away_team_short_name,
         home_tr.name AS home_tournament_role,
         away_tr.name AS away_tournament_role,
-        stage.name AS stage, 
-        venue.name AS venue, 
+        stage.name AS stage,
+        venue.name AS venue,
         broadcaster.name AS broadcaster
       FROM match
       INNER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.tournament_role_id
