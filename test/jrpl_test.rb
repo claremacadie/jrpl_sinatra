@@ -539,14 +539,13 @@ class CMSTest < Minitest::Test
   end
   
   def test_view_single_match_signed_in
-    get '/match/1', {}, user_11_session
+    get '/match/11', {}, user_11_session
     
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Match details'
-    assert_includes last_response.body, 'Senegal'
-    assert_includes last_response.body, 'Netherlands'
-    assert_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
+    assert_includes last_response.body, 'Spain'
+    assert_includes last_response.body, 'IC Play Off 2'
   end
   
   def test_add_new_prediction
@@ -630,6 +629,9 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Match locked down!'
+    assert_includes last_response.body, 'Home team prediction: no prediction'
+    assert_includes last_response.body, 'Away team prediction: no prediction'
+    refute_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
   end
   
   def test_view_match_not_lockdown
@@ -637,6 +639,7 @@ class CMSTest < Minitest::Test
     
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
     refute_includes last_response.body, 'Match locked down!'
   end
   

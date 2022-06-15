@@ -5,28 +5,35 @@
 <p>Home team: <%= home_team_name(@match) %></p>
 <p>Away team: <%= away_team_name(@match) %></p>
 
-<form action="/match/add_prediction" method="post">
-  <label for="home_team_prediction">Home team prediction:
-    <input 
-      type="number" 
-      min="0"
-      id="home_team_prediction" 
-      value="<%= home_team_prediction(@match[:match_id]) %>"
-      name="home_team_prediction"
-    />
-  </label>
-  <label for="away_team_prediction">Away team prediction:
-    <input 
-      type="number" 
-      min="0"
-      id="away_team_prediction" 
-      value="<%= away_team_prediction(@match[:match_id]) %>"
-      name="away_team_prediction"
-    />
-  </label>
-  <input type="hidden" name="match_id" value="<%= @match[:match_id] %>">
-  <button type="submit">Add/Change prediction</button>
-</form>
+<% if @match[:locked_down] %>
+  <p>
+    Home team prediction: <%= home_team_prediction(@match[:match_id]) %>
+    Away team prediction: <%= away_team_prediction(@match[:match_id]) %>
+  </p>
+<% else %>
+  <form action="/match/add_prediction" method="post">
+    <label for="home_team_prediction">Home team prediction:
+      <input 
+        type="number" 
+        min="0"
+        id="home_team_prediction" 
+        value="<%= home_team_prediction(@match[:match_id]) %>"
+        name="home_team_prediction"
+      />
+    </label>
+    <label for="away_team_prediction">Away team prediction:
+      <input 
+        type="number" 
+        min="0"
+        id="away_team_prediction" 
+        value="<%= away_team_prediction(@match[:match_id]) %>"
+        name="away_team_prediction"
+      />
+    </label>
+    <input type="hidden" name="match_id" value="<%= @match[:match_id] %>">
+    <button type="submit">Add/Change prediction</button>
+  </form>
+<% end %>
 
 <a href="/match/<%= previous_match(@match[:match_id]) %>">Previous match</a>
 <a href="/match/<%= next_match(@match[:match_id]) %>">Next match</a>
