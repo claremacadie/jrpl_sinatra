@@ -661,13 +661,26 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Away team: no result'
   end
   
-  def test_view_played_match_results_admin
+  def test_view_unplayed_match_results_admin
     get '/match/2', {}, admin_session
     
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, '4'
     assert_includes last_response.body, '5'
+    assert_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
+    refute_includes last_response.body, '<button type="submit">Add/Change match result</button>'
+  end
+  
+  def test_view_played_match_results_admin
+    get '/match/1', {}, admin_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, '4'
+    assert_includes last_response.body, '5'
+    assert_includes last_response.body, '<button type="submit">Add/Change match result</button>'
+    refute_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
   end
   
   def test_view_unplayed_match_results_admin
@@ -676,6 +689,7 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'no result'
+    refute_includes last_response.body, '<button type="submit">Add/Change match_result</button>'
   end
 
   def test_submit_match_result_not_admin

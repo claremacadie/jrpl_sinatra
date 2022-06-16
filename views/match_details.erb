@@ -36,7 +36,7 @@
 <% end %>
 
 <h2>Result</h2>
-<% if session[:user_roles]&.include?('Admin') %>
+<% if session[:user_roles]&.include?('Admin') && @match[:locked_down] %>
     <form action="/match/add_result" method="post">
     <label for="home_team_points">Home team points:
       <input 
