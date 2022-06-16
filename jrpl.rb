@@ -523,8 +523,8 @@ end
 
 post '/match/add_result' do
   require_signed_in_as_admin
-  home_points = params[:home_team_points].to_i
-  away_points = params[:away_team_points].to_i
+  home_points = params[:home_team_points].to_f
+  away_points = params[:away_team_points].to_f
   match_id = params[:match_id].to_i
   @match = @storage.load_single_match(match_id)
   session[:message] = match_result_error(@match, home_points, away_points)
@@ -532,7 +532,7 @@ post '/match/add_result' do
     status 422
     erb :match_details
   else
-    @storage.add_result(match_id, home_points, away_points, session[:user_id])
+    @storage.add_result(match_id, home_points.to_i, away_points.to_i, session[:user_id])
     session[:message] = 'Result submitted.'
     redirect "/match/#{match_id}"
   end
