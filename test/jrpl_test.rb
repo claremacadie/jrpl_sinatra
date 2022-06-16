@@ -677,6 +677,25 @@ class CMSTest < Minitest::Test
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'no result'
   end
+
+  def test_submit_match_result_not_admin
+    post '/match/add_result', {}, user_11_session
+
+    assert_equal 302, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_equal 'You must be an administrator to do that.', session[:message]
+  end
+
+  def test_submit_match_result_admin
+    post '/match/add_result', {match_id: 1, home_team_points: 99, away_team_points: 98}, admin_session
+    assert_equal 302, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_equal 'Result submitted.', session[:message]
+
+    get last_response['Location']
+    assert_includes last_response.body, '99'
+    assert_includes last_response.body, '98'
+  end
   
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}

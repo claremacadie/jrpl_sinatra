@@ -502,6 +502,17 @@ post '/match/add_prediction' do
   end
 end
 
+post '/match/add_result' do
+  require_signed_in_as_admin
+  home_team_points = params[:home_team_points].to_i
+  away_team_points = params[:away_team_points].to_i
+  match_id = params[:match_id].to_i
+  @match = @storage.load_single_match(match_id)
+  @storage.add_result(match_id, home_team_points, away_team_points, session[:user_id])
+  session[:message] = 'Result submitted.'
+  redirect "/match/#{match_id}"
+end
+
 not_found do
   redirect '/'
 end

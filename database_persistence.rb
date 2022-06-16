@@ -189,6 +189,19 @@ class DatabasePersistence
     query(sql).first['min'].to_i
   end
 
+  def add_result(match_id, home_team_points, away_team_points, user_id)
+    sql = <<~SQL
+      UPDATE match
+      SET
+        home_team_points = $1,
+        away_team_points = $2,
+        result_posted_by = $3,
+        result_posted_on = $4
+      WHERE match_id = $5;
+    SQL
+    query(sql, home_team_points, away_team_points, user_id, Time.now, match_id)
+  end
+
   private
 
   def query(statement, *params)
