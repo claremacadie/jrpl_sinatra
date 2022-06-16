@@ -343,6 +343,25 @@ def prediction_error(match, home_prediction, away_prediction)
   end
 end
 
+def match_result_type_error(home_points, away_points)
+  error = []
+  error << 'integers' if
+    not_integer?(home_points) || not_integer?(away_points)
+  error << 'non-negative' if
+    home_points < 0 || away_points < 0
+  return nil if error.empty?
+  "Match results must be #{error.join(' and ')}."
+end
+
+def match_result_error(match, home_points, away_points)
+  if !match_locked_down?(match)
+    'You cannot add or change the match result because ' \
+    'this match has not yet been played.'
+  else
+    match_result_type_error(home_points, away_points)
+  end
+end
+
 # Routes
 get '/' do
   user_signed_in?
@@ -504,13 +523,19 @@ end
 
 post '/match/add_result' do
   require_signed_in_as_admin
-  home_team_points = params[:home_team_points].to_i
-  away_team_points = params[:away_team_points].to_i
+  home_points = params[:home_team_points].to_i
+  away_points = params[:away_team_points].to_i
   match_id = params[:match_id].to_i
   @match = @storage.load_single_match(match_id)
-  @storage.add_result(match_id, home_team_points, away_team_points, session[:user_id])
-  session[:message] = 'Result submitted.'
-  redirect "/match/#{match_id}"
+  session[:message] = match_result_error(@match, home_points, away_points)
+  if session[:message]
+    status 422
+    erb :match_details
+  else
+    @storage.add_result(match_id, home_points, away_points, session[:user_id])
+    session[:message] = 'Result submitted.'
+    redirect "/match/#{match_id}"
+  end
 end
 
 not_found do
