@@ -533,7 +533,7 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Matches List'
-    assert_includes last_response.body, "<td>Spain</td>\n        <td>4</td>\n        <td>5</td>\n        <td>IC Play Off 2</td>"
+    assert_includes last_response.body, "<td>Spain</td>\n        <td>77</td>\n        <td>78</td>\n        <td>IC Play Off 2</td>"
     assert_includes last_response.body, "<a href=\"/match/48\">View match</a>"
     assert_includes last_response.body, 'Winner Group A'
   end
@@ -623,94 +623,168 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '<a href="/match/1">Next match</a>'
   end
   
-  def test_view_match_lockdown
-    get '/match/1', {}, user_11_session
+  def test_view_match_not_lockdown_no_pred_not_admin
+    get 'match/64', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Add/Change prediction'
+    refute_includes last_response.body, 'Home team: no result'
+    refute_includes last_response.body, 'Away team: no result'
+    refute_equal 'Match locked down!', session[:message]
+    refute_includes last_response.body, 'Add/Change match result'
+  end
+  
+  def test_view_match_not_lockdown_no_pred_admin
+    get 'match/64', {}, admin_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Add/Change prediction'
+    refute_includes last_response.body, 'Home team: no result'
+    refute_includes last_response.body, 'Away team: no result'
+    refute_equal 'Match locked down!', session[:message]
+    refute_includes last_response.body, 'Add/Change match result'
+  end
+  
+  def test_view_match_not_lockdown_prediction_not_admin
+    get 'match/11', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, '77'
+    assert_includes last_response.body, '78'
+    assert_includes last_response.body, 'Add/Change prediction'
+    refute_includes last_response.body, 'Home team: no result'
+    refute_includes last_response.body, 'Away team: no result'
+    refute_equal 'Match locked down!', session[:message]
+    refute_includes last_response.body, 'Add/Change match result'
+  end
+  
+  def test_view_match_not_lockdown_prediction_admin
+    get 'match/12', {}, admin_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, '88'
+    assert_includes last_response.body, '89'
+    assert_includes last_response.body, 'Add/Change prediction'
+    refute_includes last_response.body, 'Home team: no result'
+    refute_includes last_response.body, 'Away team: no result'
+    refute_equal 'Match locked down!', session[:message]
+    refute_includes last_response.body, 'Add/Change match result'
+  end
+  
+  def test_view_match_lockdown_no_pred_no_result_not_admin
+    get 'match/3', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body,'Match locked down!'
+    assert_includes last_response.body, 'Home team prediction: no prediction'
+    assert_includes last_response.body, 'Away team prediction: no prediction'
+    assert_includes last_response.body, 'Home team: no result'
+    assert_includes last_response.body, 'Away team: no result'
+    refute_includes last_response.body, 'Add/Change prediction'
+    refute_includes last_response.body, 'Add/Change match result'
+  end
+  
+  def test_view_match_lockdown_no_pred_no_result_admin
+    get 'match/3', {}, admin_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body,'Match locked down!'
+    assert_includes last_response.body, 'Home team prediction: no prediction'
+    assert_includes last_response.body, 'Away team prediction: no prediction'
+    assert_includes last_response.body, 'Add/Change match result'
+    refute_includes last_response.body, 'Add/Change prediction'
+  end
+  
+  def test_view_match_lockdown_prediction_no_result_not_admin
+    get 'match/6', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Match locked down!'
+    assert_includes last_response.body, '71'
+    assert_includes last_response.body, '72'
+    assert_includes last_response.body, 'Home team: no result'
+    assert_includes last_response.body, 'Away team: no result'
+    refute_includes last_response.body, 'Add/Change prediction'
+    refute_includes last_response.body, 'Add/Change match result'
+  end
+  
+  def test_view_match_lockdown_prediction_no_result_admin
+    get 'match/6', {}, admin_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Match locked down!'
+    assert_includes last_response.body, '81'
+    assert_includes last_response.body, '82'
+    assert_includes last_response.body, 'Home team points'
+    assert_includes last_response.body, 'Away team points'
+    assert_includes last_response.body, 'Add/Change match result'
+    refute_includes last_response.body, 'Add/Change prediction'
+  end
+  
+  def test_view_match_lockdown_no_pred_result_not_admin
+    get 'match/7', {}, user_11_session
     
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Match locked down!'
     assert_includes last_response.body, 'Home team prediction: no prediction'
     assert_includes last_response.body, 'Away team prediction: no prediction'
-    refute_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
+    assert_includes last_response.body, 'Home team: 61'
+    assert_includes last_response.body, 'Away team: 62'
+    refute_includes last_response.body, 'Add/Change prediction'
+    refute_includes last_response.body, 'Add/Change match result'
   end
   
-  def test_view_match_not_lockdown
-    get '/match/64', {}, user_11_session
+  def test_view_match_lockdown_no_pred_result_admin
+    get 'match/7', {}, admin_session
     
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
-    refute_includes last_response.body, 'Match locked down!'
-  end
-  
-  def test_view_played_match_results_not_admin
-    get '/match/2', {}, user_11_session
-    
-    assert_equal 200, last_response.status
-    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, 'Home team: 4'
-    assert_includes last_response.body, 'Away team: 5'
-  end
-  
-  def test_view_unplayed_match_results_not_admin
-    get '/match/63', {}, user_11_session
-    
-    assert_equal 200, last_response.status
-    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, 'Home team: no result'
-    assert_includes last_response.body, 'Away team: no result'
-  end
-  
-  def test_view_unplayed_match_results_admin
-    get '/match/2', {}, admin_session
-    
-    assert_equal 200, last_response.status
-    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, '4'
-    assert_includes last_response.body, '5'
-    assert_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
-    refute_includes last_response.body, '<button type="submit">Add/Change match result</button>'
-  end
-  
-  def test_view_played_match_results_admin
-    get '/match/1', {}, admin_session
-    
-    assert_equal 200, last_response.status
-    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, '4'
-    assert_includes last_response.body, '5'
-    assert_includes last_response.body, '<button type="submit">Add/Change match result</button>'
-    refute_includes last_response.body, '<button type="submit">Add/Change prediction</button>'
-  end
-  
-  def test_view_unplayed_match_results_admin
-    get '/match/63', {}, admin_session
-    
-    assert_equal 200, last_response.status
-    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, 'no result'
-    refute_includes last_response.body, '<button type="submit">Add/Change match_result</button>'
+    assert_includes last_response.body, 'Match locked down!'
+    assert_includes last_response.body, 'Home team prediction: no prediction'
+    assert_includes last_response.body, 'Away team prediction: no prediction'
+    assert_includes last_response.body, '61'
+    assert_includes last_response.body, '62'
+    assert_includes last_response.body, 'Add/Change match result'
+    refute_includes last_response.body, 'Add/Change prediction'
   end
 
-  def test_submit_match_result_not_admin
-    post '/match/add_result', {}, user_11_session
-
-    assert_equal 302, last_response.status
+  def test_view_match_lockdown_prediction_result_not_admin
+    get 'match/8', {}, user_11_session
+    
+    assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_equal 'You must be an administrator to do that.', session[:message]
+    assert_includes last_response.body, 'Match locked down!'
+    assert_includes last_response.body, 'Home team prediction: 73'
+    assert_includes last_response.body, 'Away team prediction: 74'
+    assert_includes last_response.body, 'Home team: 63'
+    assert_includes last_response.body, 'Away team: 64'
+    refute_includes last_response.body, 'Add/Change prediction'
+    refute_includes last_response.body, 'Add/Change match result'
   end
 
-  def test_submit_match_result_admin
-    post '/match/add_result', {match_id: 1, home_team_points: 99, away_team_points: 98}, admin_session
-    assert_equal 302, last_response.status
+  def test_view_match_lockdown_prediction_result_admin
+    get 'match/8', {}, admin_session
+    
+    assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_equal 'Result submitted.', session[:message]
-
-    get last_response['Location']
-    assert_includes last_response.body, '99'
-    assert_includes last_response.body, '98'
+    assert_includes last_response.body, 'Match locked down!'
+    assert_includes last_response.body, 'Home team prediction: 83'
+    assert_includes last_response.body, 'Away team prediction: 84'
+    assert_includes last_response.body, '63'
+    assert_includes last_response.body, '64'
+    assert_includes last_response.body, 'Add/Change match result'
+    refute_includes last_response.body, 'Add/Change prediction'
   end
-  
+
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
   #   assert_equal 302, last_response.status

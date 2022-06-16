@@ -223,14 +223,14 @@ INSERT INTO tournament_role
 
 INSERT INTO match
     (date,         kick_off,   venue_id, home_team_id, away_team_id, home_team_points, away_team_points, result_posted_by, result_posted_on, stage_id, broadcaster_id) VALUES
-    (CURRENT_DATE, split_part((CURRENT_TIME + interval '15 minute')::text, '.', 1)::time, 1, 3, 4, NULL, NULL, NULL,       NULL,             1,        1),
-    ('2022-11-21', '16:00:00', 2,        5,            6,               4,                5,             NULL,             NULL,             1,        1),
-    ('2022-11-21', '19:00:00', 3,        1,            2,            NULL,             NULL,             NULL,             NULL,             1,        1),
-    ('2022-11-21', '22:00:00', 4,        7,            8,            NULL,             NULL,             NULL,             NULL,             1,        1),
-    ('2022-11-22', '13:00:00', 5,        9,           10,            NULL,             NULL,             NULL,             NULL,             1,        1),
-    ('2022-11-22', '16:00:00', 6,       15,           16,            NULL,             NULL,             NULL,             NULL,             1,        1),
-    ('2022-11-22', '19:00:00', 7,       11,           12,            NULL,             NULL,             NULL,             NULL,             1,        1),
-    ('2022-11-22', '22:00:00', 8,       13,           14,            NULL,             NULL,             NULL,             NULL,             1,        1),
+    ('2021-11-21', '20:00:00', 1,        3,            4,               6,                3,             NULL,             NULL,             1,        1),
+    ('2021-11-21', '16:00:00', 2,        5,            6,               4,                5,             NULL,             NULL,             1,        1),
+    ('2021-11-21', '19:00:00', 3,        1,            2,            NULL,             NULL,             NULL,             NULL,             1,        1),
+    ('2021-11-21', '22:00:00', 4,        7,            8,            NULL,             NULL,             NULL,             NULL,             1,        1),
+    (CURRENT_DATE, split_part((CURRENT_TIME + interval '15 minute')::text, '.', 1)::time, 5,        9,           10,            NULL,             NULL,             NULL,             NULL,             1,        1),
+    ('2021-11-22', '16:00:00', 6,       15,           16,            NULL,             NULL,             NULL,             NULL,             1,        1),
+    ('2021-11-22', '19:00:00', 7,       11,           12,              61,               62,             NULL,             NULL,             1,        1),
+    ('2021-11-22', '22:00:00', 8,       13,           14,              63,               64,             NULL,             NULL,             1,        1),
     ('2022-11-23', '13:00:00', 3,       23,           24,            NULL,             NULL,             NULL,             NULL,             1,        1),
     ('2022-11-23', '16:00:00', 2,       19,           20,            NULL,             NULL,             NULL,             NULL,             1,        1),
     ('2022-11-23', '19:00:00', 1,       17,           18,            NULL,             NULL,             NULL,             NULL,             1,        1),
@@ -392,5 +392,9 @@ INSERT INTO scoring_system (name) VALUES
     ('AutoQuiz');
 
 INSERT INTO prediction (user_id, match_id, home_team_points, away_team_points, date_added) VALUES
-    (11, 11, 4, 5, '2022-06-12 16:45:15'),
-    (4, 12, 4, 3, '2022-06-13 11:45:15');
+    (11, 11, 77, 78, '2022-06-12 16:45:15'),
+    (4, 12, 88, 89, '2022-06-13 11:45:15'),
+    (11, 6, 71, 72, '2022-06-12 16:45:15'),
+    (4, 6, 81, 82, '2022-06-13 11:45:15'),
+    (11, 8, 73, 74, '2022-06-12 16:45:15'),
+    (4, 8, 83, 84, '2022-06-13 11:45:15');
