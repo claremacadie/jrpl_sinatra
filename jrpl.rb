@@ -65,11 +65,19 @@ helpers do
   end
 
   def home_team_points(match)
-    match[:home_team_points]
+    if match[:home_team_points].nil?
+      'no result'
+    else
+      match[:home_team_points]
+    end
   end
 
   def away_team_points(match)
-    match[:away_team_points]
+    if match[:away_team_points].nil?
+      'no result'
+    else
+      match[:away_team_points]
+    end
   end
 
   def previous_match(match_id)
