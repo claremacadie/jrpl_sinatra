@@ -37,6 +37,28 @@
 
 <h2>Result</h2>
 <% if session[:user_roles]&.include?('Admin') %>
+    <form action="/match/add_points" method="post">
+    <label for="home_team_points">Home team points:
+      <input 
+        type="number" 
+        min="0"
+        id="home_team_points" 
+        placeholder="<%= home_team_points(@match) %>"
+        name="home_team_points"
+      />
+    </label>
+    <label for="away_team_points">Away team points:
+      <input 
+        type="number" 
+        min="0"
+        id="away_team_points" 
+        placeholder="<%= away_team_points(@match) %>"
+        name="away_team_points"
+      />
+    </label>
+    <input type="hidden" name="match_id" value="<%= @match[:match_id] %>">
+    <button type="submit">Add/Change match result</button>
+  </form>
 <% else %>
   <p>Home team: <%= home_team_points(@match) %></p>
   <p>Away team: <%= away_team_points(@match) %></p>
