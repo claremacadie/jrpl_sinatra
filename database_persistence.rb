@@ -298,13 +298,13 @@ class DatabasePersistence
         venue.name AS venue,
         broadcaster.name AS broadcaster
       FROM match
-      FULL OUTER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.team_id
-      FULL OUTER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.team_id
-      FULL OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
-      FULL OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
-      LEFT OUTER JOIN venue ON match.venue_id = venue.venue_id
-      LEFT OUTER JOIN stage ON match.stage_id = stage.stage_id
-      LEFT OUTER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
+      INNER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.tournament_role_id
+      INNER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.tournament_role_id
+      LEFT OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
+      LEFT OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
+      INNER JOIN venue ON match.venue_id = venue.venue_id
+      INNER JOIN stage ON match.stage_id = stage.stage_id
+      INNER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
       WHERE match.match_id = $1;
     SQL
   end

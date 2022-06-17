@@ -629,8 +629,8 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Add/Change prediction'
-    refute_includes last_response.body, 'Home team: no result'
-    refute_includes last_response.body, 'Away team: no result'
+    refute_includes last_response.body, 'Winner Semi-Final 1: no result'
+    refute_includes last_response.body, 'Winner Semi-Final 2: no result'
     refute_equal 'Match locked down!', session[:message]
     refute_includes last_response.body, 'Add/Change match result'
   end
@@ -641,8 +641,8 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Add/Change prediction'
-    refute_includes last_response.body, 'Home team: no result'
-    refute_includes last_response.body, 'Away team: no result'
+    refute_includes last_response.body, 'Winner Semi-Final 1: no result'
+    refute_includes last_response.body, 'Winner Semi-Final 2: no result'
     refute_equal 'Match locked down!', session[:message]
     refute_includes last_response.body, 'Add/Change match result'
   end
@@ -655,8 +655,8 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '77'
     assert_includes last_response.body, '78'
     assert_includes last_response.body, 'Add/Change prediction'
-    refute_includes last_response.body, 'Home team: no result'
-    refute_includes last_response.body, 'Away team: no result'
+    refute_includes last_response.body, 'Spain: no result'
+    refute_includes last_response.body, 'IC Play Off 2: no result'
     refute_equal 'Match locked down!', session[:message]
     refute_includes last_response.body, 'Add/Change match result'
   end
@@ -669,8 +669,8 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '88'
     assert_includes last_response.body, '89'
     assert_includes last_response.body, 'Add/Change prediction'
-    refute_includes last_response.body, 'Home team: no result'
-    refute_includes last_response.body, 'Away team: no result'
+    refute_includes last_response.body, 'Belgium: no result'
+    refute_includes last_response.body, 'Canada no result'
     refute_equal 'Match locked down!', session[:message]
     refute_includes last_response.body, 'Add/Change match result'
   end
@@ -681,10 +681,10 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body,'Match locked down!'
-    assert_includes last_response.body, 'Home team prediction: no prediction'
-    assert_includes last_response.body, 'Away team prediction: no prediction'
-    assert_includes last_response.body, 'Home team: no result'
-    assert_includes last_response.body, 'Away team: no result'
+    assert_includes last_response.body, 'Qatar: no prediction'
+    assert_includes last_response.body, 'Ecuador: no prediction'
+    assert_includes last_response.body, 'Qatar: no result'
+    assert_includes last_response.body, 'Ecuador: no result'
     refute_includes last_response.body, 'Add/Change prediction'
     refute_includes last_response.body, 'Add/Change match result'
   end
@@ -695,8 +695,8 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body,'Match locked down!'
-    assert_includes last_response.body, 'Home team prediction: no prediction'
-    assert_includes last_response.body, 'Away team prediction: no prediction'
+    assert_includes last_response.body, 'Qatar: no prediction'
+    assert_includes last_response.body, 'Ecuador: no prediction'
     assert_includes last_response.body, 'Add/Change match result'
     refute_includes last_response.body, 'Add/Change prediction'
   end
@@ -709,8 +709,8 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Match locked down!'
     assert_includes last_response.body, '71'
     assert_includes last_response.body, '72'
-    assert_includes last_response.body, 'Home team: no result'
-    assert_includes last_response.body, 'Away team: no result'
+    assert_includes last_response.body, 'Denmark: no result'
+    assert_includes last_response.body, 'Tunisia: no result'
     refute_includes last_response.body, 'Add/Change prediction'
     refute_includes last_response.body, 'Add/Change match result'
   end
@@ -723,8 +723,8 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Match locked down!'
     assert_includes last_response.body, '81'
     assert_includes last_response.body, '82'
-    assert_includes last_response.body, 'Home team points'
-    assert_includes last_response.body, 'Away team points'
+    assert_includes last_response.body, 'Denmark'
+    assert_includes last_response.body, 'Tunisia'
     assert_includes last_response.body, 'Add/Change match result'
     refute_includes last_response.body, 'Add/Change prediction'
   end
@@ -735,10 +735,10 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Match locked down!'
-    assert_includes last_response.body, 'Home team prediction: no prediction'
-    assert_includes last_response.body, 'Away team prediction: no prediction'
-    assert_includes last_response.body, 'Home team: 61'
-    assert_includes last_response.body, 'Away team: 62'
+    assert_includes last_response.body, 'Mexico: no prediction'
+    assert_includes last_response.body, 'Poland: no prediction'
+    assert_includes last_response.body, 'Mexico: 61'
+    assert_includes last_response.body, 'Poland: 62'
     refute_includes last_response.body, 'Add/Change prediction'
     refute_includes last_response.body, 'Add/Change match result'
   end
@@ -749,8 +749,8 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Match locked down!'
-    assert_includes last_response.body, 'Home team prediction: no prediction'
-    assert_includes last_response.body, 'Away team prediction: no prediction'
+    assert_includes last_response.body, 'Mexico: no prediction'
+    assert_includes last_response.body, 'Poland: no prediction'
     assert_includes last_response.body, '61'
     assert_includes last_response.body, '62'
     assert_includes last_response.body, 'Add/Change match result'
@@ -763,10 +763,10 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Match locked down!'
-    assert_includes last_response.body, 'Home team prediction: 73'
-    assert_includes last_response.body, 'Away team prediction: 74'
-    assert_includes last_response.body, 'Home team: 63'
-    assert_includes last_response.body, 'Away team: 64'
+    assert_includes last_response.body, 'France: 73'
+    assert_includes last_response.body, 'IC Play Off 1: 74'
+    assert_includes last_response.body, 'France: 63'
+    assert_includes last_response.body, 'IC Play Off 1: 64'
     refute_includes last_response.body, 'Add/Change prediction'
     refute_includes last_response.body, 'Add/Change match result'
   end
@@ -777,8 +777,8 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Match locked down!'
-    assert_includes last_response.body, 'Home team prediction: 83'
-    assert_includes last_response.body, 'Away team prediction: 84'
+    assert_includes last_response.body, 'France: 83'
+    assert_includes last_response.body, 'IC Play Off 1: 84'
     assert_includes last_response.body, '63'
     assert_includes last_response.body, '64'
     assert_includes last_response.body, 'Add/Change match result'
