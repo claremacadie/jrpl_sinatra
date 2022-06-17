@@ -147,11 +147,7 @@ class DatabasePersistence
   end
 
   def match_list
-    sql = <<~SQL
-      SELECT match_id
-      FROM match
-      ORDER BY date, kick_off;
-    SQL
+    sql = 'SELECT match_id FROM match ORDER BY date, kick_off;'
     result = query(sql)
     result.map do |tuple|
       { match_id: tuple['match_id'].to_i }
