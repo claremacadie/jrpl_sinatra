@@ -597,21 +597,21 @@ class CMSTest < Minitest::Test
   end
   
   def test_carousel
-    get '/match/2', {}, user_11_session
-    
-    assert_equal 200, last_response.status
-    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, '<a href="/match/1">Previous match</a>'
-    assert_includes last_response.body, '<a href="/match/3">Next match</a>'
-  end
-  
-  def test_carousel_below_minimum
     get '/match/1', {}, user_11_session
     
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, '<a href="/match/3">Previous match</a>'
+    assert_includes last_response.body, '<a href="/match/4">Next match</a>'
+  end
+  
+  def test_carousel_below_minimum
+    get '/match/2', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, '<a href="/match/64">Previous match</a>'
-    assert_includes last_response.body, '<a href="/match/2">Next match</a>'
+    assert_includes last_response.body, '<a href="/match/3">Next match</a>'
   end
   
   def test_carousel_above_maximum
@@ -620,7 +620,7 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, '<a href="/match/63">Previous match</a>'
-    assert_includes last_response.body, '<a href="/match/1">Next match</a>'
+    assert_includes last_response.body, '<a href="/match/2">Next match</a>'
   end
   
   def test_view_match_not_lockdown_no_pred_not_admin

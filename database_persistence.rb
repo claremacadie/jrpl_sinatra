@@ -138,6 +138,26 @@ class DatabasePersistence
     end
   end
 
+  def load_single_match(match_id)
+    sql = select_query_single_match
+    result = query(sql, match_id)
+    result.map do |tuple|
+      tuple_to_matches_details_hash(tuple)
+    end.first
+  end
+
+  def match_list
+    sql = <<~SQL
+      SELECT match_id
+      FROM match
+      ORDER BY date, kick_off;
+    SQL
+    result = query(sql)
+    result.map do |tuple|
+      { match_id: tuple['match_id'].to_i }
+    end
+  end
+
   def home_team_prediction(match_id, user_id)
     sql = <<~SQL
       SELECT home_team_points
@@ -158,14 +178,6 @@ class DatabasePersistence
     result = query(sql, match_id, user_id)
     return nil if result.ntuples == 0
     result.first['away_team_points'].to_i
-  end
-
-  def load_single_match(match_id)
-    sql = select_query_single_match
-    result = query(sql, match_id)
-    result.map do |tuple|
-      tuple_to_matches_details_hash(tuple)
-    end.first
   end
 
   def delete_prediction(user_id, match_id)
@@ -253,7 +265,7 @@ class DatabasePersistence
   # rubocop:disable Metrics/MethodLength
   def select_query_all_matches
     <<~SQL
-      SELECT 
+      SELECT
         match.match_id,
         match.date,
         match.kick_off,

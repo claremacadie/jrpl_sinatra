@@ -81,13 +81,27 @@ helpers do
   end
 
   def previous_match(match_id)
-    prev_id = match_id - 1
-    prev_id < @storage.min_match_id ? @storage.max_match_id : prev_id
+    match_list = @storage.match_list
+    max_index = match_list.size - 1
+    current_match_index = match_list.index(match_id: match_id)
+    previous_match_index = current_match_index - 1
+    if previous_match_index < 0
+      match_list[max_index][:match_id]
+    else
+      match_list[previous_match_index][:match_id]
+    end
   end
 
   def next_match(match_id)
-    next_id = match_id + 1
-    next_id > @storage.max_match_id ? @storage.min_match_id : next_id
+    match_list = @storage.match_list
+    max_index = match_list.size - 1
+    current_match_index = match_list.index(match_id: match_id)
+    next_match_index = current_match_index + 1
+    if next_match_index > max_index
+      match_list[0][:match_id]
+    else
+      match_list[next_match_index][:match_id]
+    end
   end
 end
 # rubocop:enable Metrics/BlockLength
@@ -532,7 +546,9 @@ post '/match/add_result' do
     status 422
     erb :match_details
   else
-    @storage.add_result(match_id, home_points.to_i, away_points.to_i, session[:user_id])
+    @storage.add_result(
+      match_id, home_points.to_i, away_points.to_i, session[:user_id]
+    )
     session[:message] = 'Result submitted.'
     redirect "/match/#{match_id}"
   end
