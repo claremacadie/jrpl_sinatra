@@ -532,6 +532,7 @@ class CMSTest < Minitest::Test
 
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Search matches'
     assert_includes last_response.body, 'Matches List'
     assert_includes last_response.body, "<td>Spain</td>\n        <td>77</td>\n        <td>78</td>\n        <td>IC Play Off 2</td>"
     assert_includes last_response.body, "<a href=\"/match/48\">View match</a>"
