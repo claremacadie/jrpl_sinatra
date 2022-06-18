@@ -554,6 +554,11 @@ post '/match/add_result' do
   end
 end
 
+get '/matches/search_form' do
+  require_signed_in_user
+  erb :match_search_form
+end
+
 not_found do
   redirect '/'
 end

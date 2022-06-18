@@ -844,6 +844,23 @@ class CMSTest < Minitest::Test
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'You cannot add or change the match result because this match has not yet been played.'
   end
+
+  def test_view_search_form_signed_out
+    get '/matches/search_form'
+
+    assert_equal 302, last_response.status
+    assert_equal 'You must be signed in to do that.', session[:message]
+  end
+
+  def test_view_search_form_signed_in
+    get '/matches/search_form', {}, user_11_session
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, 'Match search form'
+    assert_includes last_response.body, '<input type="radio" id="match_status_all"'
+    assert_includes last_response.body, '<input type="radio" id="preduction_status_all"'
+    assert_includes last_response.body, '<input type="checkbox" id="group_stages"'
+  end
   
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
