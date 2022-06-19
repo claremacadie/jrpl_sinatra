@@ -226,26 +226,40 @@ class DatabasePersistence
     # result = query(sql, lockdown[:date], lockdown[:time])
     # result.map { |tuple| tuple['match_id'] }
     
-    # Select matches from the correct stage
-    # Pad out tournament stages
-    while criteria[:tournament_stages].size < 8
-      criteria[:tournament_stages] << ''
-    end
+    # # Select matches from the correct stage
+    # # Pad out tournament stages
+    # while criteria[:tournament_stages].size < 8
+    #   criteria[:tournament_stages] << ''
+    # end
+    # sql = <<~SQL
+    #   SELECT match.match_id 
+    #   FROM match
+    #   INNER JOIN stage ON match.stage_id = stage.stage_id
+    #   WHERE stage.name IN ($1, $2, $3, $4, $5, $6);
+    # SQL
+    # result = query(
+    #   sql,
+    #   criteria[:tournament_stages][0],
+    #   criteria[:tournament_stages][1],
+    #   criteria[:tournament_stages][2],
+    #   criteria[:tournament_stages][3],
+    #   criteria[:tournament_stages][4],
+    #   criteria[:tournament_stages][5]
+    # )
+    # result.map { |tuple| tuple['match_id'] }
+    
+    # Select matches with predictions for user
     sql = <<~SQL
-      SELECT match.match_id 
-      FROM match
-      INNER JOIN stage ON match.stage_id = stage.stage_id
-      WHERE stage.name IN ($1, $2, $3, $4, $5, $6);
+    SELECT match.match_id
+    FROM match
+    LEFT OUTER JOIN 
+    (SELECT prediction.match_id
+      FROM prediction
+      WHERE prediction.user_id = $1) AS predictions
+      ON predictions.match_id = match.match_id
+      WHERE predictions.match_id IS NOT NULL;
     SQL
-    result = query(
-      sql,
-      criteria[:tournament_stages][0],
-      criteria[:tournament_stages][1],
-      criteria[:tournament_stages][2],
-      criteria[:tournament_stages][3],
-      criteria[:tournament_stages][4],
-      criteria[:tournament_stages][5]
-    )
+    result = query(sql, user_id)
     result.map { |tuple| tuple['match_id'] }
     
     # # Select matches with no predictions for user
@@ -255,12 +269,13 @@ class DatabasePersistence
     # LEFT OUTER JOIN 
     # (SELECT prediction.match_id
     #   FROM prediction
-    #   WHERE prediction.user_id = 11) AS predictions
+    #   WHERE prediction.user_id = $1) AS predictions
     #   ON predictions.match_id = match.match_id
     #   WHERE predictions.match_id IS NULL;
     # SQL
-    # result = query(sql, criteria[:tournament_stages])
+    # result = query(sql, user_id)
     # result.map { |tuple| tuple['match_id'] }
+    
   end
       
       private
