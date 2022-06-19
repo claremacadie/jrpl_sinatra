@@ -229,9 +229,10 @@ class DatabasePersistence
   end
 
   def lockdown_clause(match_status)
-    if match_status == 'locked_down'
+    case match_status
+    when 'locked_down'
       '(date < $1::date OR (date = $1::date AND kick_off < $2::time))'
-    elsif match_status == 'not_locked_down'
+    when 'not_locked_down'
       '(date > $1::date OR (date = $1::date AND kick_off >= $2::time))'
     else
       '$1 != $2'
@@ -243,16 +244,17 @@ class DatabasePersistence
   end
 
   def predictions_clause(prediction_status)
-    if prediction_status == 'predicted'
+    case prediction_status
+    when 'predicted'
       'AND (predictions.match_id IS NOT NULL)'
-    elsif prediction_status == 'not_predicted'
+    when 'not_predicted'
       'AND (predictions.match_id IS NULL)'
     else
       ''
     end
   end
 
-  def add_empty_strings_tournament_stages_for_exec_params(criteria, no_of_stages)
+  def add_empty_strings_for_stages_for_exec_params(criteria, no_of_stages)
     while criteria[:tournament_stages].size < no_of_stages
       criteria[:tournament_stages] << ''
     end
@@ -288,11 +290,12 @@ class DatabasePersistence
     'ORDER BY match.date, match.kick_off, match.match_id;'
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def filter_matches(user_id, criteria, lockdown, no_of_stages)
-    add_empty_strings_tournament_stages_for_exec_params(criteria, no_of_stages)
- 
+    add_empty_strings_for_stages_for_exec_params(criteria, no_of_stages)
+
     sql = [
-      select_query,
+      select_query(),
       from_query(),
       'WHERE',
       lockdown_clause(criteria[:match_status]),
@@ -300,7 +303,7 @@ class DatabasePersistence
       predictions_clause(criteria[:prediction_status]),
       order_clause()
     ].join(' ')
-    
+
     result = query(
       sql,
       lockdown[:date],
@@ -317,9 +320,10 @@ class DatabasePersistence
     result.map do |tuple|
       tuple_to_matches_details_hash(tuple)
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
   end
-      
-      private
+
+  private
 
   def query(statement, *params)
     @logger.info "#{statement}: #{params}"
@@ -330,7 +334,6 @@ class DatabasePersistence
     # This is needed because nil.to_i returns 0!!!
     str ? str.to_i : nil
   end
-
 
   def select_query_single_user
     <<~SQL
