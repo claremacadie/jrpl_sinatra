@@ -210,6 +210,18 @@ class DatabasePersistence
     query(sql, home_team_points, away_team_points, user_id, Time.now, match_id)
   end
 
+  def from_query
+    <<~SQL
+    FROM match
+      INNER JOIN stage ON match.stage_id = stage.stage_id
+      LEFT OUTER JOIN
+        (SELECT prediction.match_id
+          FROM prediction
+          WHERE prediction.user_id = $9)
+      AS predictions ON predictions.match_id = match.match_id
+    SQL
+  end
+
   def lockdown_clause(match_status)
     if match_status == 'locked_down'
       '(date < $1::date OR (date = $1::date AND kick_off < $2::time))'
@@ -224,69 +236,49 @@ class DatabasePersistence
     'AND (stage.name IN ($3, $4, $5, $6, $7, $8))'
   end
 
-  def filter_matches(user_id, criteria, lockdown)
-  select_query = 'SELECT match_id'
-  from_query = 'FROM match INNER JOIN stage ON match.stage_id = stage.stage_id'
-  where_keyword = 'WHERE'
-
-  while criteria[:tournament_stages].size < 6
-    criteria[:tournament_stages] << ''
+  def predictions_clause(prediction_status)
+    if prediction_status == 'predicted'
+      'AND (predictions.match_id IS NOT NULL)'
+    elsif prediction_status == 'not_predicted'
+      'AND (predictions.match_id IS NULL)'
+    else
+      ''
+    end
   end
+
+  def add_empty_strings_tournament_stages_for_exec_params(criteria)
+    while criteria[:tournament_stages].size < 6
+      criteria[:tournament_stages] << ''
+    end
+  end
+
+  def filter_matches(user_id, criteria, lockdown)
+    select_query = 'SELECT match.match_id'
+    add_empty_strings_tournament_stages_for_exec_params(criteria)
  
-  p sql = [
-    select_query,
-    from_query,
-    where_keyword,
-    lockdown_clause(criteria[:match_status]),
-    tournament_stages_clause()
-  ].join(' ')
-  gets
-  
-  result = query(
-    sql,
-    lockdown[:date],
-    lockdown[:time],
-    criteria[:tournament_stages][0],
-    criteria[:tournament_stages][1],
-    criteria[:tournament_stages][2],
-    criteria[:tournament_stages][3],
-    criteria[:tournament_stages][4],
-    criteria[:tournament_stages][5]
-  )
-
-
-  result.map { |tuple| tuple['match_id'] }
-
-    # result.map { |tuple| tuple['match_id'] }
+    sql = [
+      select_query,
+      from_query(),
+      'WHERE',
+      lockdown_clause(criteria[:match_status]),
+      tournament_stages_clause(),
+      predictions_clause(criteria[:prediction_status])
+    ].join(' ')
     
-    # # Select matches with predictions for user
-    # sql = <<~SQL
-    # SELECT match.match_id
-    # FROM match
-    # LEFT OUTER JOIN 
-    # (SELECT prediction.match_id
-    #   FROM prediction
-    #   WHERE prediction.user_id = $1) AS predictions
-    #   ON predictions.match_id = match.match_id
-    #   WHERE predictions.match_id IS NOT NULL;
-    # SQL
-    # result = query(sql, user_id)
-    # result.map { |tuple| tuple['match_id'] }
-    
-    # # Select matches with no predictions for user
-    # sql = <<~SQL
-    # SELECT match.match_id
-    # FROM match
-    # LEFT OUTER JOIN 
-    # (SELECT prediction.match_id
-    #   FROM prediction
-    #   WHERE prediction.user_id = $1) AS predictions
-    #   ON predictions.match_id = match.match_id
-    #   WHERE predictions.match_id IS NULL;
-    # SQL
-    # result = query(sql, user_id)
-    # result.map { |tuple| tuple['match_id'] }
+    result = query(
+      sql,
+      lockdown[:date],
+      lockdown[:time],
+      criteria[:tournament_stages][0],
+      criteria[:tournament_stages][1],
+      criteria[:tournament_stages][2],
+      criteria[:tournament_stages][3],
+      criteria[:tournament_stages][4],
+      criteria[:tournament_stages][5],
+      user_id
+    )
 
+    result.map { |tuple| tuple['match_id'] }
   end
       
       private
