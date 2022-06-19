@@ -68,7 +68,7 @@
   <label for="prediction_status_all">All</label>
 
   <p>Tournament stage:</p>
-  <% @tournament_stage_names.each do |stage| %>
+  <% @stage_names.each do |stage| %>
     <input 
       type="checkbox" 
       id="<% stage.downcase.split.join('_') %>" 

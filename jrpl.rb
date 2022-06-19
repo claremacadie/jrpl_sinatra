@@ -389,14 +389,14 @@ end
 def set_criteria_to_default
   { match_status: 'all',
     prediction_status: 'all',
-    tournament_stages: @tournament_stage_names }
+    tournament_stages: @stage_names }
 end
 
 def calculate_lockdown
   lockdown_timedate = Time.now + LOCKDOWN_BUFFER
   lockdown_date = lockdown_timedate.strftime("%Y-%m-%d")
   lockdown_time = lockdown_timedate.strftime("%k:%M:%S")
-  {date: lockdown_date, time: lockdown_time}
+  { date: lockdown_date, time: lockdown_time }
 end
 
 # Routes
@@ -573,7 +573,7 @@ end
 
 get '/matches/all' do
   require_signed_in_user
-  @tournament_stage_names = @storage.tournament_stage_names
+  @stage_names = @storage.tournament_stage_names
   session[:criteria] = set_criteria_to_default()
   @matches = @storage.load_all_matches
   erb :matches_list do
@@ -588,10 +588,12 @@ end
 
 post '/matches/filter' do
   require_signed_in_user
-  @tournament_stage_names = @storage.tournament_stage_names
+  @stage_names = @storage.tournament_stage_names
   session[:criteria] = extract_search_criteria(params)
   lockdown = calculate_lockdown
-  @matches = @storage.filter_matches(session[:user_id], session[:criteria], lockdown, @tournament_stage_names.size)
+  @matches = @storage.filter_matches(
+    session[:user_id], session[:criteria], lockdown, @stage_names.size
+  )
   erb :matches_list do
     erb :match_filter_form
   end
