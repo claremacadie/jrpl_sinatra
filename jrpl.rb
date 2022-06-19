@@ -571,12 +571,12 @@ post '/match/add_result' do
   end
 end
 
-get '/matches/search_form' do
+get '/matches/filter_form' do
   require_signed_in_user
-  erb :match_search_form
+  erb :match_filter_form
 end
 
-post '/matches/search' do
+post '/matches/filter' do
   require_signed_in_user
   criteria = extract_search_criteria(params)
   lockdown = calculate_lockdown

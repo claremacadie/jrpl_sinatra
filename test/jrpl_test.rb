@@ -845,25 +845,25 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'You cannot add or change the match result because this match has not yet been played.'
   end
 
-  def test_view_search_form_signed_out
-    get '/matches/search_form'
+  def test_view_filter_form_signed_out
+    get '/matches/filter_form'
 
     assert_equal 302, last_response.status
     assert_equal 'You must be signed in to do that.', session[:message]
   end
 
-  def test_view_search_form_signed_in
-    get '/matches/search_form', {}, user_11_session
+  def test_view_filter_form_signed_in
+    get '/matches/filter_form', {}, user_11_session
 
     assert_equal 200, last_response.status
-    assert_includes last_response.body, 'Match search form'
+    assert_includes last_response.body, 'Match filter form'
     assert_includes last_response.body, '<input type="radio" id="match_status_all"'
     assert_includes last_response.body, '<input type="radio" id="prediction_status_all"'
     assert_includes last_response.body, '<input type="checkbox" id="group_stages"'
   end
 
   def test_filter_matches_all
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'all', prediction_status: 'all', "Group Stages"=>"tournament_stage", "Round of 16"=>"tournament_stage", "Quarter Finals"=>"tournament_stage", "Semi Finals"=>"tournament_stage", "Third Fourth Place Play-off"=>"tournament_stage", "Final"=>"tournament_stage"},
       user_11_session
 
@@ -936,7 +936,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_filter_matches_locked_down
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'locked_down', prediction_status: 'all', "Group Stages"=>"tournament_stage", "Round of 16"=>"tournament_stage", "Quarter Finals"=>"tournament_stage", "Semi Finals"=>"tournament_stage", "Third Fourth Place Play-off"=>"tournament_stage", "Final"=>"tournament_stage"},
       user_11_session
 
@@ -1009,7 +1009,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_filter_matches_not_locked_down
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'not_locked_down', prediction_status: 'all', "Group Stages"=>"tournament_stage", "Round of 16"=>"tournament_stage", "Quarter Finals"=>"tournament_stage", "Semi Finals"=>"tournament_stage", "Third Fourth Place Play-off"=>"tournament_stage", "Final"=>"tournament_stage"},
       user_11_session
 
@@ -1082,7 +1082,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_filter_matches_predicted
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'all', prediction_status: 'predicted', "Group Stages"=>"tournament_stage", "Round of 16"=>"tournament_stage", "Quarter Finals"=>"tournament_stage", "Semi Finals"=>"tournament_stage", "Third Fourth Place Play-off"=>"tournament_stage", "Final"=>"tournament_stage"},
       user_11_session
 
@@ -1155,7 +1155,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_filter_matches_not_predicted
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'all', prediction_status: 'not_predicted', "Group Stages"=>"tournament_stage", "Round of 16"=>"tournament_stage", "Quarter Finals"=>"tournament_stage", "Semi Finals"=>"tournament_stage", "Third Fourth Place Play-off"=>"tournament_stage", "Final"=>"tournament_stage"},
       user_11_session
 
@@ -1228,7 +1228,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_filter_matches_group_stages
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'all', prediction_status: 'all', "Group Stages"=>"tournament_stage"},
       user_11_session
 
@@ -1301,7 +1301,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_filter_matches_round_of_16
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'all', prediction_status: 'all', "Round of 16"=>"tournament_stage"},
       user_11_session
 
@@ -1374,7 +1374,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_filter_matches_quarter_finals
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'all', prediction_status: 'all', "Quarter Finals"=>"tournament_stage"},
       user_11_session
 
@@ -1447,7 +1447,7 @@ class CMSTest < Minitest::Test
   end
    
   def test_filter_matches_semi_finals
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'all', prediction_status: 'all', "Semi Finals"=>"tournament_stage"},
       user_11_session
 
@@ -1520,7 +1520,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_filter_matches_3_4_place
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'all', prediction_status: 'all', "Third Fourth Place Play-off"=>"tournament_stage"},
       user_11_session
 
@@ -1593,7 +1593,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_filter_matches_final
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'all', prediction_status: 'all', "Final"=>"tournament_stage"},
       user_11_session
 
@@ -1666,7 +1666,7 @@ class CMSTest < Minitest::Test
   end
   
 def test_filter_matches_group_stages_and_final
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'all', prediction_status: 'all', "Group Stages"=>"tournament_stage", "Final"=>"tournament_stage"},
       user_11_session
 
@@ -1739,7 +1739,7 @@ def test_filter_matches_group_stages_and_final
   end
   
   def test_filter_matches_not_locked_down_predicted_group_stages
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'not_locked_down', prediction_status: 'predicted', "Group Stages"=>"tournament_stage"},
       user_11_session
 
@@ -1812,7 +1812,7 @@ def test_filter_matches_group_stages_and_final
   end
   
   def test_filter_matches_locked_down_predicted_group_stages
-    post '/matches/search',
+    post '/matches/filter',
       {match_status: 'locked_down', prediction_status: 'predicted', "Group Stages"=>"tournament_stage"},
       user_11_session
 
