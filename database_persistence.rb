@@ -212,68 +212,51 @@ class DatabasePersistence
 
   def lockdown_clause(match_status)
     if match_status == 'locked_down'
-      'date < $1::date OR (date = $1::date AND kick_off < $2::time)'
+      '(date < $1::date OR (date = $1::date AND kick_off < $2::time))'
     elsif match_status == 'not_locked_down'
-      'date > $1::date OR (date = $1::date AND kick_off >= $2::time)'
+      '(date > $1::date OR (date = $1::date AND kick_off >= $2::time))'
     else
       '$1 != $2'
     end
   end
 
+  def tournament_stages_clause
+    'AND (stage.name IN ($3, $4, $5, $6, $7, $8))'
+  end
+
   def filter_matches(user_id, criteria, lockdown)
-  #   # Find match ids that meet the status, prediction, stage
-  #   # Narrow down to those that match all criteria
-  #   # Load match details for those matches
-
   select_query = 'SELECT match_id'
-  from_query = 'FROM match'
+  from_query = 'FROM match INNER JOIN stage ON match.stage_id = stage.stage_id'
   where_keyword = 'WHERE'
-  # lockdown clause
-  
 
-  # # Not locked down
-  # lockdown_clause = 'date > $1::date OR (date = $1::date AND kick_off >= $2::time)'
-
-  # # Locked down
-  # lockdown_clause = 'date < $1::date OR (date = $1::date AND kick_off < $2::time)'
-
-  p sql = [select_query, from_query, where_keyword, lockdown_clause(criteria[:match_status])].join(' ')
+  while criteria[:tournament_stages].size < 6
+    criteria[:tournament_stages] << ''
+  end
+ 
+  p sql = [
+    select_query,
+    from_query,
+    where_keyword,
+    lockdown_clause(criteria[:match_status]),
+    tournament_stages_clause()
+  ].join(' ')
   gets
-  result = query(sql, lockdown[:date], lockdown[:time])
+  
+  result = query(
+    sql,
+    lockdown[:date],
+    lockdown[:time],
+    criteria[:tournament_stages][0],
+    criteria[:tournament_stages][1],
+    criteria[:tournament_stages][2],
+    criteria[:tournament_stages][3],
+    criteria[:tournament_stages][4],
+    criteria[:tournament_stages][5]
+  )
+
+
   result.map { |tuple| tuple['match_id'] }
 
-
-  # #   # Not locked down
-  #   sql = 'SELECT match_id FROM match WHERE date > $1::date OR (date = $1::date AND kick_off >= $2::time);'
-  #   result = query(sql, lockdown[:date], lockdown[:time])
-  #   result.map { |tuple| tuple['match_id'] }
-    
-
-    # # Locked down?
-    # sql = 'SELECT match_id FROM match WHERE date < $1::date OR (date = $1::date AND kick_off < $2::time);'
-    # result = query(sql, lockdown[:date], lockdown[:time])
-    # result.map { |tuple| tuple['match_id'] }
-    
-    # # Select matches from the correct stage
-    # # Pad out tournament stages
-    # while criteria[:tournament_stages].size < 8
-    #   criteria[:tournament_stages] << ''
-    # end
-    # sql = <<~SQL
-    #   SELECT match.match_id 
-    #   FROM match
-    #   INNER JOIN stage ON match.stage_id = stage.stage_id
-    #   WHERE stage.name IN ($1, $2, $3, $4, $5, $6);
-    # SQL
-    # result = query(
-    #   sql,
-    #   criteria[:tournament_stages][0],
-    #   criteria[:tournament_stages][1],
-    #   criteria[:tournament_stages][2],
-    #   criteria[:tournament_stages][3],
-    #   criteria[:tournament_stages][4],
-    #   criteria[:tournament_stages][5]
-    # )
     # result.map { |tuple| tuple['match_id'] }
     
     # # Select matches with predictions for user
