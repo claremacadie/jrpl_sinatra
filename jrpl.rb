@@ -580,9 +580,8 @@ post '/matches/search' do
   require_signed_in_user
   criteria = extract_search_criteria(params)
   lockdown = calculate_lockdown
-  p @matches = @storage.filter_matches(session[:user_id], criteria, lockdown)
-  gets
-  erb :match_search_form
+  @matches = @storage.filter_matches(session[:user_id], criteria, lockdown)
+  erb :matches_list
 end
 
 not_found do

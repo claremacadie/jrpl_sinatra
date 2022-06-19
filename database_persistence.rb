@@ -278,6 +278,10 @@ class DatabasePersistence
     SQL
   end
 
+  def order_clause
+    'ORDER BY match.date, match.kick_off, match.match_id;'
+  end
+
   def filter_matches(user_id, criteria, lockdown)
     add_empty_strings_tournament_stages_for_exec_params(criteria)
  
@@ -287,7 +291,8 @@ class DatabasePersistence
       'WHERE',
       lockdown_clause(criteria[:match_status]),
       tournament_stages_clause(),
-      predictions_clause(criteria[:prediction_status])
+      predictions_clause(criteria[:prediction_status]),
+      order_clause()
     ].join(' ')
     
     result = query(
@@ -303,7 +308,9 @@ class DatabasePersistence
       user_id
     )
 
-    result.map { |tuple| tuple['match_id'] }
+    result.map do |tuple|
+      tuple_to_matches_details_hash(tuple)
+    end
   end
       
       private
