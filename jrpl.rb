@@ -389,8 +389,7 @@ end
 def set_criteria_to_default
   { match_status: 'all',
     prediction_status: 'all',
-    tournament_stages: ['Group Stages', 'Round of 16', 'Quarter Finals', 
-      'Semi Finals', 'Third Fourth Place Play-off', 'Final'] }
+    tournament_stages: @tournament_stage_names }
 end
 
 def calculate_lockdown
@@ -574,6 +573,7 @@ end
 
 get '/matches/all' do
   require_signed_in_user
+  @tournament_stage_names = @storage.tournament_stage_names
   session[:criteria] = set_criteria_to_default()
   @matches = @storage.load_all_matches
   erb :matches_list do
@@ -588,6 +588,7 @@ end
 
 post '/matches/filter' do
   require_signed_in_user
+  @tournament_stage_names = @storage.tournament_stage_names
   session[:criteria] = extract_search_criteria(params)
   lockdown = calculate_lockdown
   @matches = @storage.filter_matches(session[:user_id], session[:criteria], lockdown)

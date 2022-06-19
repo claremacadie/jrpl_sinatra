@@ -258,6 +258,12 @@ class DatabasePersistence
     end
   end
 
+  def tournament_stage_names
+    sql = 'SELECT name FROM stage;'
+    result = query(sql)
+    result.map { |tuple| tuple['name'] }
+  end
+
   def select_query
     <<~SQL
     SELECT

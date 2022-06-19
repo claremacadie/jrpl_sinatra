@@ -68,71 +68,18 @@
   <label for="prediction_status_all">All</label>
 
   <p>Tournament stage:</p>
-  <input 
-    type="checkbox" 
-    id="group_stages" 
-    name="Group Stages" 
-    value="tournament_stage"
-    <% if session[:criteria][:tournament_stages].include? 'Group Stages' %>
-    checked 
-    <% end %>
-  />
-  <label for="not_predicted">Group Stages</label><br>
-
-  <input 
-    type="checkbox" 
-    id="round_of_16" 
-    name="Round of 16" 
-    value="tournament_stage" 
-    <% if session[:criteria][:tournament_stages].include? 'Round of 16' %>
-    checked 
-    <% end %>
-  />
-  <label for="round_of_16">Round of 16</label><br>
-
-  <input 
-    type="checkbox" 
-    id="quarter_finals" 
-    name="Quarter Finals" 
-    value="tournament_stage" 
-    <% if session[:criteria][:tournament_stages].include? 'Quarter Finals' %>
-    checked 
-    <% end %>
-  />
-  <label for="quarter_finals">Quarter Finals</label><br>
-
-  <input 
-    type="checkbox" 
-    id="semi_finals" 
-    name="Semi Finals" 
-    value="tournament_stage"
-    <% if session[:criteria][:tournament_stages].include? 'Semi Finals' %>
-    checked 
-    <% end %>
-  />
-  <label for="semi_finals">Semi Finals</label><br>
-
-  <input 
-    type="checkbox" 
-    id="3_4_play_off" 
-    name="Third Fourth Place Play-off" 
-    value="tournament_stage" 
-    <% if session[:criteria][:tournament_stages].include? 'Third Fourth Place Play-off' %>
-    checked 
-    <% end %>
-  />
-  <label for="3_4_play_off">Third Fourth Place Play-off</label><br>
-
-  <input 
-    type="checkbox" 
-    id="final" 
-    name="Final" 
-    value="tournament_stage"
-    <% if session[:criteria][:tournament_stages].include? 'Final' %>
-    checked 
-    <% end %>
-  />
-  <label for="final">Final</label><br>
+  <% @tournament_stage_names.each do |stage| %>
+    <input 
+      type="checkbox" 
+      id="<% stage.downcase.split.join('_') %>" 
+      name="<%= stage %>"
+      value="tournament_stage"
+      <% if session[:criteria][:tournament_stages].include?(stage) %>
+      checked 
+      <% end %>
+    />
+    <label for="<% stage.downcase.split.join('_') %>"><%= stage %></label><br>
+  <% end %>
 
   <input type="hidden" name="criteria" value="<%= @criteria %>" />
   <button type="submit">Search matches</button>
