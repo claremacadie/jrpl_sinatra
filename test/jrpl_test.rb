@@ -528,15 +528,25 @@ class CMSTest < Minitest::Test
   end
 
   def test_view_matches_list_signed_in
-    get '/matches/list', {}, user_11_session
+    get '/matches/all', {}, user_11_session
 
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, 'Search matches'
+    assert_includes last_response.body, 'Match filter form'
+    assert_includes last_response.body, '<input type="radio" id="match_status_all"'
+    assert_includes last_response.body, '<input type="radio" id="prediction_status_all"'
+    assert_includes last_response.body, '<input type="checkbox" id="group_stages"'
     assert_includes last_response.body, 'Matches List'
     assert_includes last_response.body, "<td>Spain</td>\n        <td>77</td>\n        <td>78</td>\n        <td>IC Play Off 2</td>"
     assert_includes last_response.body, "<a href=\"/match/48\">View match</a>"
     assert_includes last_response.body, 'Winner Group A'
+  end
+
+  def test_view_matches_list_signed_out
+    get '/matches/all'
+
+    assert_equal 302, last_response.status
+    assert_equal 'You must be signed in to do that.', session[:message]
   end
   
   def test_view_single_match_signed_in
@@ -843,23 +853,6 @@ class CMSTest < Minitest::Test
     assert_equal 422, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'You cannot add or change the match result because this match has not yet been played.'
-  end
-
-  def test_view_filter_form_signed_out
-    get '/matches/filter_form'
-
-    assert_equal 302, last_response.status
-    assert_equal 'You must be signed in to do that.', session[:message]
-  end
-
-  def test_view_filter_form_signed_in
-    get '/matches/filter_form', {}, user_11_session
-
-    assert_equal 200, last_response.status
-    assert_includes last_response.body, 'Match filter form'
-    assert_includes last_response.body, '<input type="radio" id="match_status_all"'
-    assert_includes last_response.body, '<input type="radio" id="prediction_status_all"'
-    assert_includes last_response.body, '<input type="checkbox" id="group_stages"'
   end
 
   def test_filter_matches_all

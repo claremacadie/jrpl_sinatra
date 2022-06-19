@@ -515,12 +515,6 @@ post '/users/toggle_admin' do
   end
 end
 
-get '/matches/list' do
-  require_signed_in_user
-  @matches = @storage.load_all_matches
-  erb :matches_list
-end
-
 get '/match/:match_id' do
   require_signed_in_user
   match_id = params[:match_id].to_i
@@ -571,6 +565,14 @@ post '/match/add_result' do
   end
 end
 
+get '/matches/all' do
+  require_signed_in_user
+  @matches = @storage.load_all_matches
+  erb :matches_list do
+    erb :match_filter_form
+  end
+end
+
 get '/matches/filter_form' do
   require_signed_in_user
   erb :match_filter_form
@@ -578,10 +580,12 @@ end
 
 post '/matches/filter' do
   require_signed_in_user
-  criteria = extract_search_criteria(params)
+  @criteria = extract_search_criteria(params)
   lockdown = calculate_lockdown
-  @matches = @storage.filter_matches(session[:user_id], criteria, lockdown)
-  erb :matches_list
+  @matches = @storage.filter_matches(session[:user_id], @criteria, lockdown)
+  erb :matches_list do
+    erb :match_filter_form
+  end
 end
 
 not_found do

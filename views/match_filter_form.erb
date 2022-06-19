@@ -1,5 +1,5 @@
 <h1>Match filter form</h1>
-<form action="/matches/search" method="post">
+<form action="/matches/filter" method="post">
   <p>Match status:</p>
   <input type="radio" id="not_locked_down" name="match_status" value="not_locked_down">
   <label for="not_locked_down">Not locked down</label><br>
@@ -30,5 +30,6 @@
   <input type="checkbox" id="final" name="Final" value="tournament_stage" checked>
   <label for="final">Final</label><br>
 
+  <input type="hidden" name="criteria" value="<%= @criteria %>" />
   <button type="submit">Search matches</button>
 <form>
