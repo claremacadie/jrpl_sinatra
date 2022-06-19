@@ -386,6 +386,13 @@ def extract_search_criteria(params)
     tournament_stages: extract_tournament_stages(params) }
 end
 
+def set_criteria_to_default
+  { match_status: 'all',
+    prediction_status: 'all',
+    tournament_stages: ['Group Stages', 'Round of 16', 'Quarter Finals', 
+      'Semi Finals', 'Third Fourth Place Play-off', 'Final'] }
+end
+
 def calculate_lockdown
   lockdown_timedate = Time.now + LOCKDOWN_BUFFER
   lockdown_date = lockdown_timedate.strftime("%Y-%m-%d")
@@ -567,6 +574,7 @@ end
 
 get '/matches/all' do
   require_signed_in_user
+  session[:criteria] = set_criteria_to_default()
   @matches = @storage.load_all_matches
   erb :matches_list do
     erb :match_filter_form

@@ -533,9 +533,8 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Match filter form'
-    assert_includes last_response.body, '<input type="radio" id="match_status_all"'
-    assert_includes last_response.body, '<input type="radio" id="prediction_status_all"'
-    assert_includes last_response.body, '<input type="checkbox" id="group_stages"'
+    assert_includes last_response.body, 'type="radio"'
+    assert_includes last_response.body, 'type="checkbox"'
     assert_includes last_response.body, 'Matches List'
     assert_includes last_response.body, "<td>Spain</td>\n        <td>77</td>\n        <td>78</td>\n        <td>IC Play Off 2</td>"
     assert_includes last_response.body, "<a href=\"/match/48\">View match</a>"

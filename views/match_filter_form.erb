@@ -1,19 +1,70 @@
 <h1>Match filter form</h1>
 <form action="/matches/filter" method="post">
   <p>Match status:</p>
-  <input type="radio" id="not_locked_down" name="match_status" value="not_locked_down" />
+  <input 
+    type="radio" 
+    id="not_locked_down" 
+    name="match_status" 
+    value="not_locked_down"
+    <% if session[:criteria][:match_status] == 'not_locked_down' %>
+    checked 
+    <% end %>
+  />
   <label for="not_locked_down">Not locked down</label><br>
-  <input type="radio" id="locked_down" name="match_status" value="locked_down" />
+
+  <input 
+    type="radio" 
+    id="locked_down" 
+    name="match_status" 
+    value="locked_down" 
+    <% if session[:criteria][:match_status] == 'locked_down' %>
+    checked 
+    <% end %>
+  />
   <label for="locked_down">Locked down</label><br>
-  <input type="radio" id="match_status_all" name="match_status" value="all" checked />
+
+  <input 
+    type="radio" 
+    id="match_status_all" 
+    name="match_status" value="all" 
+    <% if session[:criteria][:match_status] == 'all' || session[:criteria].nil? %>
+    checked 
+    <% end %>
+  />
   <label for="match_status_all">All</label>
 
   <p>Prediction status:</p>
-  <input type="radio" id="not_predicted" name="prediction_status" value="not_predicted" />
+  <input 
+    type="radio" 
+    id="not_predicted" 
+    name="prediction_status" 
+    value="not_predicted" 
+    <% if session[:criteria][:prediction_status] == 'not_predicted' %>
+    checked 
+    <% end %>
+  />
   <label for="not_predicted">Not predicted</label><br>
-  <input type="radio" id="predicted" name="prediction_status" value="predicted" />
+
+  <input 
+    type="radio" 
+    id="predicted" 
+    name="prediction_status" 
+    value="predicted" 
+    <% if session[:criteria][:prediction_status] == 'predicted' %>
+    checked 
+    <% end %>
+  />
   <label for="predicted">Predicted</label><br>
-  <input type="radio" id="prediction_status_all" name="prediction_status" value="all" checked />
+
+  <input 
+    type="radio" 
+    id="prediction_status_all" 
+    name="prediction_status" 
+    value="all" 
+    <% if session[:criteria][:prediction_status] == 'all' || session[:criteria].nil? %>
+    checked 
+    <% end %>
+  />
   <label for="prediction_status_all">All</label>
 
   <p>Tournament stage:</p>
