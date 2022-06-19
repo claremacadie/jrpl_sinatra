@@ -591,7 +591,7 @@ post '/matches/filter' do
   @tournament_stage_names = @storage.tournament_stage_names
   session[:criteria] = extract_search_criteria(params)
   lockdown = calculate_lockdown
-  @matches = @storage.filter_matches(session[:user_id], session[:criteria], lockdown)
+  @matches = @storage.filter_matches(session[:user_id], session[:criteria], lockdown, @tournament_stage_names.size)
   erb :matches_list do
     erb :match_filter_form
   end

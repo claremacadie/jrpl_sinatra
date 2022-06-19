@@ -252,8 +252,8 @@ class DatabasePersistence
     end
   end
 
-  def add_empty_strings_tournament_stages_for_exec_params(criteria)
-    while criteria[:tournament_stages].size < 6
+  def add_empty_strings_tournament_stages_for_exec_params(criteria, no_of_stages)
+    while criteria[:tournament_stages].size < no_of_stages
       criteria[:tournament_stages] << ''
     end
   end
@@ -288,8 +288,8 @@ class DatabasePersistence
     'ORDER BY match.date, match.kick_off, match.match_id;'
   end
 
-  def filter_matches(user_id, criteria, lockdown)
-    add_empty_strings_tournament_stages_for_exec_params(criteria)
+  def filter_matches(user_id, criteria, lockdown, no_of_stages)
+    add_empty_strings_tournament_stages_for_exec_params(criteria, no_of_stages)
  
     sql = [
       select_query,
