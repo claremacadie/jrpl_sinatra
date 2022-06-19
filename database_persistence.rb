@@ -210,7 +210,48 @@ class DatabasePersistence
     query(sql, home_team_points, away_team_points, user_id, Time.now, match_id)
   end
 
-  private
+  def filter_matches(user_id, criteria, lockdown)
+  #   # Find match ids that meet the status, prediction, stage
+  #   # Narrow down to those that match all criteria
+  #   # Load match details for those matches
+
+  # #   # Not locked down
+  #   sql = 'SELECT match_id FROM match WHERE date > $1::date OR (date = $1::date AND kick_off >= $2::time);'
+  #   result = query(sql, lockdown[:date], lockdown[:time])
+  #   result.map { |tuple| tuple['match_id'] }
+    
+
+    # # Locked down?
+    # sql = 'SELECT match_id FROM match WHERE date < $1::date OR (date = $1::date AND kick_off < $2::time);'
+    # result = query(sql, lockdown[:date], lockdown[:time])
+    # result.map { |tuple| tuple['match_id'] }
+    
+    # Select matches from the correct stage
+    sql = <<~SQL
+      SELECT match.match_id 
+      FROM match
+      INNER JOIN stage ON match.stage_id = stage.stage_id
+      WHERE stage.name IN $1;
+    SQL
+    result = query(sql, criteria[:tournament_stages])
+    result.map { |tuple| tuple['match_id'] }
+    
+    # # Select matches with no predictions for user
+    # sql = <<~SQL
+    # SELECT match.match_id
+    # FROM match
+    # LEFT OUTER JOIN 
+    # (SELECT prediction.match_id
+    #   FROM prediction
+    #   WHERE prediction.user_id = 11) AS predictions
+    #   ON predictions.match_id = match.match_id
+    #   WHERE predictions.match_id IS NULL;
+    # SQL
+    # result = query(sql, criteria[:tournament_stages])
+    # result.map { |tuple| tuple['match_id'] }
+  end
+      
+      private
 
   def query(statement, *params)
     @logger.info "#{statement}: #{params}"
@@ -221,6 +262,7 @@ class DatabasePersistence
     # This is needed because nil.to_i returns 0!!!
     str ? str.to_i : nil
   end
+
 
   def select_query_single_user
     <<~SQL

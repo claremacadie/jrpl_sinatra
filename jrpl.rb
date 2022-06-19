@@ -376,6 +376,24 @@ def match_result_error(match, home_points, away_points)
   end
 end
 
+def extract_tournament_stages(params)
+  stages = params.select { |_, v| v == 'tournament_stage' }.keys
+  stages.join(', ')
+end
+
+def extract_search_criteria(params)
+  { match_status: params[:match_status],
+    prediction_status: params[:prediction_status],
+    tournament_stages: extract_tournament_stages(params) }
+end
+
+def calculate_lockdown
+  lockdown_timedate = Time.now + LOCKDOWN_BUFFER
+  lockdown_date = lockdown_timedate.strftime("%Y-%m-%d")
+  lockdown_time = lockdown_timedate.strftime("%k:%M:%S")
+  {date: lockdown_date, time: lockdown_time}
+end
+
 # Routes
 get '/' do
   user_signed_in?
@@ -556,6 +574,15 @@ end
 
 get '/matches/search_form' do
   require_signed_in_user
+  erb :match_search_form
+end
+
+post '/matches/search' do
+  require_signed_in_user
+  criteria = extract_search_criteria(params)
+  lockdown = calculate_lockdown
+  p @matches = @storage.filter_matches(session[:user_id], criteria, lockdown)
+  gets
   erb :match_search_form
 end
 
