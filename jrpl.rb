@@ -377,8 +377,7 @@ def match_result_error(match, home_points, away_points)
 end
 
 def extract_tournament_stages(params)
-  stages = params.select { |_, v| v == 'tournament_stage' }.keys
-  stages.join(', ')
+  params.select { |_, v| v == 'tournament_stage' }.keys
 end
 
 def extract_search_criteria(params)

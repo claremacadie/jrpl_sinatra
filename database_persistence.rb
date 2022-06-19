@@ -227,13 +227,25 @@ class DatabasePersistence
     # result.map { |tuple| tuple['match_id'] }
     
     # Select matches from the correct stage
+    # Pad out tournament stages
+    while criteria[:tournament_stages].size < 8
+      criteria[:tournament_stages] << ''
+    end
     sql = <<~SQL
       SELECT match.match_id 
       FROM match
       INNER JOIN stage ON match.stage_id = stage.stage_id
-      WHERE stage.name IN $1;
+      WHERE stage.name IN ($1, $2, $3, $4, $5, $6);
     SQL
-    result = query(sql, criteria[:tournament_stages])
+    result = query(
+      sql,
+      criteria[:tournament_stages][0],
+      criteria[:tournament_stages][1],
+      criteria[:tournament_stages][2],
+      criteria[:tournament_stages][3],
+      criteria[:tournament_stages][4],
+      criteria[:tournament_stages][5]
+    )
     result.map { |tuple| tuple['match_id'] }
     
     # # Select matches with no predictions for user
