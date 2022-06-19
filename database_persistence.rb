@@ -210,10 +210,38 @@ class DatabasePersistence
     query(sql, home_team_points, away_team_points, user_id, Time.now, match_id)
   end
 
+  def lockdown_clause(match_status)
+    if match_status == 'locked_down'
+      'date < $1::date OR (date = $1::date AND kick_off < $2::time)'
+    elsif match_status == 'not_locked_down'
+      'date > $1::date OR (date = $1::date AND kick_off >= $2::time)'
+    else
+      '$1 != $2'
+    end
+  end
+
   def filter_matches(user_id, criteria, lockdown)
   #   # Find match ids that meet the status, prediction, stage
   #   # Narrow down to those that match all criteria
   #   # Load match details for those matches
+
+  select_query = 'SELECT match_id'
+  from_query = 'FROM match'
+  where_keyword = 'WHERE'
+  # lockdown clause
+  
+
+  # # Not locked down
+  # lockdown_clause = 'date > $1::date OR (date = $1::date AND kick_off >= $2::time)'
+
+  # # Locked down
+  # lockdown_clause = 'date < $1::date OR (date = $1::date AND kick_off < $2::time)'
+
+  p sql = [select_query, from_query, where_keyword, lockdown_clause(criteria[:match_status])].join(' ')
+  gets
+  result = query(sql, lockdown[:date], lockdown[:time])
+  result.map { |tuple| tuple['match_id'] }
+
 
   # #   # Not locked down
   #   sql = 'SELECT match_id FROM match WHERE date > $1::date OR (date = $1::date AND kick_off >= $2::time);'
@@ -248,19 +276,19 @@ class DatabasePersistence
     # )
     # result.map { |tuple| tuple['match_id'] }
     
-    # Select matches with predictions for user
-    sql = <<~SQL
-    SELECT match.match_id
-    FROM match
-    LEFT OUTER JOIN 
-    (SELECT prediction.match_id
-      FROM prediction
-      WHERE prediction.user_id = $1) AS predictions
-      ON predictions.match_id = match.match_id
-      WHERE predictions.match_id IS NOT NULL;
-    SQL
-    result = query(sql, user_id)
-    result.map { |tuple| tuple['match_id'] }
+    # # Select matches with predictions for user
+    # sql = <<~SQL
+    # SELECT match.match_id
+    # FROM match
+    # LEFT OUTER JOIN 
+    # (SELECT prediction.match_id
+    #   FROM prediction
+    #   WHERE prediction.user_id = $1) AS predictions
+    #   ON predictions.match_id = match.match_id
+    #   WHERE predictions.match_id IS NOT NULL;
+    # SQL
+    # result = query(sql, user_id)
+    # result.map { |tuple| tuple['match_id'] }
     
     # # Select matches with no predictions for user
     # sql = <<~SQL
@@ -275,7 +303,7 @@ class DatabasePersistence
     # SQL
     # result = query(sql, user_id)
     # result.map { |tuple| tuple['match_id'] }
-    
+
   end
       
       private
