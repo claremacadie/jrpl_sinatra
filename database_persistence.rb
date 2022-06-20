@@ -226,7 +226,7 @@ class DatabasePersistence
     @db.exec_params(statement, params)
   end
 
-  def convert_string_to_integer(str)
+  def convert_str_to_int(str)
     # This is needed because nil.to_i returns 0!!!
     str ? str.to_i : nil
   end
@@ -267,14 +267,15 @@ class DatabasePersistence
       roles: tuple['roles'] }
   end
 
+  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
   def tuple_to_matches_details_hash(tuple)
     { match_id: tuple['match_id'].to_i,
       match_date: tuple['date'],
       kick_off: tuple['kick_off'],
-      home_team_points: convert_string_to_integer(tuple['home_team_points']),
-      away_team_points: convert_string_to_integer(tuple['away_team_points']),
-      home_team_prediction: convert_string_to_integer(tuple['home_team_prediction']),
-      away_team_prediction: convert_string_to_integer(tuple['away_team_prediction']),
+      home_team_points: convert_str_to_int(tuple['home_team_points']),
+      away_team_points: convert_str_to_int(tuple['away_team_points']),
+      home_team_prediction: convert_str_to_int(tuple['home_team_prediction']),
+      away_team_prediction: convert_str_to_int(tuple['away_team_prediction']),
       home_team_name: tuple['home_team_name'],
       home_tournament_role: tuple['home_tournament_role'],
       home_team_short_name: tuple['home_team_short_name'],
@@ -285,7 +286,7 @@ class DatabasePersistence
       venue: tuple['venue'],
       broadcaster: tuple['broadcaster'] }
   end
-  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
   def insert_prediction_query
     <<~SQL
@@ -406,7 +407,7 @@ class DatabasePersistence
       order_clause()
     ].join(' ')
   end
-  
+
   def construct_single_match_query
     [
       select_match_details_clause(),
