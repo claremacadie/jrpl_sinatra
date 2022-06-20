@@ -146,14 +146,6 @@ class DatabasePersistence
     end.first
   end
 
-  def match_list
-    sql = 'SELECT match_id FROM match ORDER BY date, kick_off;'
-    result = query(sql)
-    result.map do |tuple|
-      { match_id: tuple['match_id'].to_i }
-    end
-  end
-
   def delete_prediction(user_id, match_id)
     sql = 'DELETE FROM prediction WHERE user_id = $1 AND match_id = $2;'
     query(sql, user_id, match_id)
