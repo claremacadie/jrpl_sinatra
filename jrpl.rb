@@ -46,8 +46,8 @@ helpers do
     end
   end
 
-  def home_team_prediction(match_id)
-    prediction = @storage.home_team_prediction(match_id, session[:user_id])
+  def home_team_prediction(match)
+    prediction = match[:home_team_prediction]
     if prediction.nil?
       'no prediction'
     else
@@ -55,8 +55,8 @@ helpers do
     end
   end
 
-  def away_team_prediction(match_id)
-    prediction = @storage.away_team_prediction(match_id, session[:user_id])
+  def away_team_prediction(match)
+    prediction = match[:away_team_prediction]
     if prediction.nil?
       'no prediction'
     else

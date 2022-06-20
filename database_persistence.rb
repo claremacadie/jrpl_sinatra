@@ -295,6 +295,8 @@ class DatabasePersistence
       kick_off: tuple['kick_off'],
       home_team_points: convert_string_to_integer(tuple['home_team_points']),
       away_team_points: convert_string_to_integer(tuple['away_team_points']),
+      home_team_prediction: convert_string_to_integer(tuple['home_team_prediction']),
+      away_team_prediction: convert_string_to_integer(tuple['away_team_prediction']),
       home_team_name: tuple['home_team_name'],
       home_tournament_role: tuple['home_tournament_role'],
       home_team_short_name: tuple['home_team_short_name'],
@@ -321,6 +323,8 @@ class DatabasePersistence
       match.match_id,
       match.date,
       match.kick_off,
+      predictions.home_team_points AS home_team_prediction,
+      predictions.away_team_points AS away_team_prediction,
       match.home_team_points,
       match.away_team_points,
       home_team.name AS home_team_name,
@@ -332,6 +336,13 @@ class DatabasePersistence
       stage.name AS stage,
       venue.name AS venue,
       broadcaster.name AS broadcaster
+    SQL
+  end
+
+  def select_user_predictions_clause
+    <<~SQL
+      , predictions.home_team_points AS home_team_prediction,
+      predictions.away_team_points AS away_team_prediction
     SQL
   end
 
@@ -351,7 +362,7 @@ class DatabasePersistence
   def predictions_for_single_user_single_or_all_matches_clause
     <<~SQL
       LEFT OUTER JOIN
-        (SELECT prediction.match_id
+        (SELECT prediction.match_id, prediction.home_team_points, prediction.away_team_points
           FROM prediction
           WHERE prediction.user_id = $1)
       AS predictions ON predictions.match_id = match.match_id
@@ -361,7 +372,7 @@ class DatabasePersistence
   def predictions_for_single_user_filter_clause
     <<~SQL
       LEFT OUTER JOIN
-        (SELECT prediction.match_id
+        (SELECT prediction.match_id, prediction.home_team_points, prediction.away_team_points
           FROM prediction
           WHERE prediction.user_id = $9)
       AS predictions ON predictions.match_id = match.match_id
@@ -411,14 +422,16 @@ class DatabasePersistence
   def construct_all_matches_query
     [
       select_match_details_clause(),
+      select_user_predictions_clause(),
       from_match_details_clause(),
       predictions_for_single_user_single_or_all_matches_clause()
     ].join(' ')
   end
-
+  
   def construct_single_match_query
     [
       select_match_details_clause(),
+      select_user_predictions_clause(),
       from_match_details_clause(),
       where_single_match_clause(),
       order_clause()
