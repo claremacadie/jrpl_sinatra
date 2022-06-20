@@ -386,7 +386,7 @@ def extract_search_criteria(params)
     tournament_stages: extract_tournament_stages(params) }
 end
 
-def set_criteria_to_default
+def set_criteria_to_all_matches
   { match_status: 'all',
     prediction_status: 'all',
     tournament_stages: @stage_names }
@@ -397,6 +397,13 @@ def calculate_lockdown
   lockdown_date = lockdown_timedate.strftime("%Y-%m-%d")
   lockdown_time = lockdown_timedate.strftime("%k:%M:%S")
   { date: lockdown_date, time: lockdown_time }
+end
+
+def load_matches(no_of_stages)
+  lockdown = calculate_lockdown
+  @storage.filter_matches(
+    session[:user_id], session[:criteria], lockdown, no_of_stages
+  )
 end
 
 # Routes
@@ -574,8 +581,8 @@ end
 get '/matches/all' do
   require_signed_in_user
   @stage_names = @storage.tournament_stage_names
-  session[:criteria] = set_criteria_to_default()
-  @matches = @storage.load_all_matches(session[:user_id])
+  session[:criteria] = set_criteria_to_all_matches()
+  @matches = load_matches(@stage_names.size)
   erb :matches_list do
     erb :match_filter_form
   end
@@ -590,10 +597,7 @@ post '/matches/filter' do
   require_signed_in_user
   @stage_names = @storage.tournament_stage_names
   session[:criteria] = extract_search_criteria(params)
-  lockdown = calculate_lockdown
-  @matches = @storage.filter_matches(
-    session[:user_id], session[:criteria], lockdown, @stage_names.size
-  )
+  @matches = load_matches(@stage_names.size)
   if @matches.empty?
     session[:message] = 'No matches meet your criteria, please try again!'
   end
