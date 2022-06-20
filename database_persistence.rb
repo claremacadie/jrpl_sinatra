@@ -210,99 +210,17 @@ class DatabasePersistence
     query(sql, home_team_points, away_team_points, user_id, Time.now, match_id)
   end
 
-  def from_query
-    <<~SQL
-    FROM match
-      INNER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.tournament_role_id
-      INNER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.tournament_role_id
-      LEFT OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
-      LEFT OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
-      INNER JOIN venue ON match.venue_id = venue.venue_id
-      INNER JOIN stage ON match.stage_id = stage.stage_id
-      INNER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
-      LEFT OUTER JOIN
-        (SELECT prediction.match_id
-          FROM prediction
-          WHERE prediction.user_id = $9)
-      AS predictions ON predictions.match_id = match.match_id
-    SQL
-  end
-
-  def lockdown_clause(match_status)
-    case match_status
-    when 'locked_down'
-      '(date < $1::date OR (date = $1::date AND kick_off < $2::time))'
-    when 'not_locked_down'
-      '(date > $1::date OR (date = $1::date AND kick_off >= $2::time))'
-    else
-      '$1 != $2'
-    end
-  end
-
-  def tournament_stages_clause
-    'AND (stage.name IN ($3, $4, $5, $6, $7, $8))'
-  end
-
-  def predictions_clause(prediction_status)
-    case prediction_status
-    when 'predicted'
-      'AND (predictions.match_id IS NOT NULL)'
-    when 'not_predicted'
-      'AND (predictions.match_id IS NULL)'
-    else
-      ''
-    end
-  end
-
-  def add_empty_strings_for_stages_for_exec_params(criteria, no_of_stages)
-    while criteria[:tournament_stages].size < no_of_stages
-      criteria[:tournament_stages] << ''
-    end
-  end
-
   def tournament_stage_names
     sql = 'SELECT name FROM stage;'
     result = query(sql)
     result.map { |tuple| tuple['name'] }
   end
 
-  def select_query
-    <<~SQL
-    SELECT
-      match.match_id,
-      match.date,
-      match.kick_off,
-      match.home_team_points,
-      match.away_team_points,
-      home_team.name AS home_team_name,
-      home_team.short_name AS home_team_short_name,
-      away_team.name AS away_team_name,
-      away_team.short_name AS away_team_short_name,
-      home_tr.name AS home_tournament_role,
-      away_tr.name AS away_tournament_role,
-      stage.name AS stage,
-      venue.name AS venue,
-      broadcaster.name AS broadcaster
-    SQL
-  end
-
-  def order_clause
-    'ORDER BY match.date, match.kick_off, match.match_id;'
-  end
-
   # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def filter_matches(user_id, criteria, lockdown, no_of_stages)
     add_empty_strings_for_stages_for_exec_params(criteria, no_of_stages)
 
-    sql = [
-      select_query(),
-      from_query(),
-      'WHERE',
-      lockdown_clause(criteria[:match_status]),
-      tournament_stages_clause(),
-      predictions_clause(criteria[:prediction_status]),
-      order_clause()
-    ].join(' ')
+    sql = construct_filter_query(criteria)
 
     result = query(
       sql,
@@ -320,8 +238,8 @@ class DatabasePersistence
     result.map do |tuple|
       tuple_to_matches_details_hash(tuple)
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
   private
 
@@ -454,5 +372,91 @@ class DatabasePersistence
         (user_id, match_id, home_team_points, away_team_points)
       VALUES ($1, $2, $3, $4);
     SQL
+  end
+
+  def select_match_details_clause
+    <<~SQL
+    SELECT
+      match.match_id,
+      match.date,
+      match.kick_off,
+      match.home_team_points,
+      match.away_team_points,
+      home_team.name AS home_team_name,
+      home_team.short_name AS home_team_short_name,
+      away_team.name AS away_team_name,
+      away_team.short_name AS away_team_short_name,
+      home_tr.name AS home_tournament_role,
+      away_tr.name AS away_tournament_role,
+      stage.name AS stage,
+      venue.name AS venue,
+      broadcaster.name AS broadcaster
+    SQL
+  end
+
+  def from_match_details_clause
+    <<~SQL
+    FROM match
+      INNER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.tournament_role_id
+      INNER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.tournament_role_id
+      LEFT OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
+      LEFT OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
+      INNER JOIN venue ON match.venue_id = venue.venue_id
+      INNER JOIN stage ON match.stage_id = stage.stage_id
+      INNER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
+      LEFT OUTER JOIN
+        (SELECT prediction.match_id
+          FROM prediction
+          WHERE prediction.user_id = $9)
+      AS predictions ON predictions.match_id = match.match_id
+    SQL
+  end
+
+  def lockdown_clause(match_status)
+    case match_status
+    when 'locked_down'
+      '(date < $1::date OR (date = $1::date AND kick_off < $2::time))'
+    when 'not_locked_down'
+      '(date > $1::date OR (date = $1::date AND kick_off >= $2::time))'
+    else
+      '$1 != $2'
+    end
+  end
+
+  def tournament_stages_clause
+    'AND (stage.name IN ($3, $4, $5, $6, $7, $8))'
+  end
+
+  def predictions_clause(prediction_status)
+    case prediction_status
+    when 'predicted'
+      'AND (predictions.match_id IS NOT NULL)'
+    when 'not_predicted'
+      'AND (predictions.match_id IS NULL)'
+    else
+      ''
+    end
+  end
+
+  def add_empty_strings_for_stages_for_exec_params(criteria, no_of_stages)
+    while criteria[:tournament_stages].size < no_of_stages
+      criteria[:tournament_stages] << ''
+    end
+  end
+
+  def order_clause
+    'ORDER BY match.date, match.kick_off, match.match_id;'
+  end
+
+  def construct_filter_query(criteria)
+    [
+      select_match_details_clause(),
+      from_match_details_clause(),
+      'WHERE',
+      lockdown_clause(criteria[:match_status]),
+      tournament_stages_clause(),
+      predictions_clause(criteria[:prediction_status]),
+      order_clause()
+    ].join(' ')
   end
 end
