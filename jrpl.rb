@@ -96,7 +96,7 @@ helpers do
       match_list[previous_match_index]
     end
   end
-  
+
   def next_match(match_id)
     match_list = load_match_list()
     max_index = match_list.size - 1

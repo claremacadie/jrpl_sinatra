@@ -186,11 +186,12 @@ class DatabasePersistence
     result.map { |tuple| tuple['name'] }
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def filter_matches_list(user_id, criteria, lockdown)
     add_empty_strings_for_stages_for_exec_params(criteria)
-  
+
     sql = construct_filter_matches_list_query(criteria)
-  
+
     result = query(
       sql,
       lockdown[:date],
@@ -203,11 +204,12 @@ class DatabasePersistence
       criteria[:tournament_stages][5],
       user_id
     )
-  
+
     result.map do |tuple|
       tuple['match_id'].to_i
     end
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
   # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def filter_matches(user_id, criteria, lockdown)
