@@ -34,15 +34,36 @@ class CMSTest < Minitest::Test
   def user_11_session
     { 'rack.session' => { user_name: 'Clare Mac', user_id: 11, user_email: 'clare@macadie.co.uk'} }
   end
-
+  
   def nil_session
     { 'rack.session' => { user_name: nil, user_id: nil, user_email: nil} }
   end
-
-  def all_matches_criteria
-    { :match_status=>"all",
-      :prediction_status=>"all",
-      :tournament_stages=>["Group Stages", "Round of 16", "Quarter Finals", "Semi Finals", "Third Fourth Place Play-off", "Final"] }
+  
+  def user_11_session_with_all_criteria
+    { 'rack.session' => { 
+      user_name: 'Clare Mac',
+      user_id: 11,
+      user_email: 'clare@macadie.co.uk',
+      criteria: { 
+        match_status: "all",
+        prediction_status: "all",
+        tournament_stages: ["Group Stages", "Round of 16", "Quarter Finals", "Semi Finals", "Third Fourth Place Play-off", "Final"]
+      }
+    }}
+  end
+  
+  def admin_session_with_all_criteria
+    { 'rack.session' => { 
+      user_name: 'Maccas',
+      user_id: 4,
+      user_email: 'james.macadie@telerealtrillium.com',
+      user_roles: 'Admin',
+      criteria: { 
+        match_status: "all",
+        prediction_status: "all",
+        tournament_stages: ["Group Stages", "Round of 16", "Quarter Finals", "Semi Finals", "Third Fourth Place Play-off", "Final"]
+      }
+    }}
   end
 
   def test_homepage_signed_out
@@ -598,29 +619,29 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '99'
   end
   
-  # def test_add_decimal_prediction
-  #   post '/match/add_prediction', {match_id: '11', home_team_prediction: '2.3', away_team_prediction: '3'}, user_11_session
+  def test_add_decimal_prediction
+    post '/match/add_prediction', {match_id: '11', home_team_prediction: '2.3', away_team_prediction: '3'}, user_11_session_with_all_criteria
     
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_includes last_response.body, 'Your predictions must be integers.'
-  # end
+    assert_equal 422, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Your predictions must be integers.'
+  end
   
-  # def test_add_negative_prediction
-  #   post '/match/add_prediction', {match_id: '11', home_team_prediction: '-2', away_team_prediction: '3'}, user_11_session
+  def test_add_negative_prediction
+    post '/match/add_prediction', {match_id: '11', home_team_prediction: '-2', away_team_prediction: '3'}, user_11_session_with_all_criteria
     
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_includes last_response.body, 'Your predictions must be non-negative.'
-  # end
+    assert_equal 422, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Your predictions must be non-negative.'
+  end
   
-  # def test_add_prediction_lockeddown_match
-  #   post '/match/add_prediction', {match_id: '1', home_team_prediction: '2', away_team_prediction: '3'}, user_11_session
+  def test_add_prediction_lockeddown_match
+    post '/match/add_prediction', {match_id: '1', home_team_prediction: '2', away_team_prediction: '3'}, user_11_session_with_all_criteria
     
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_includes last_response.body, 'You cannot add or change your prediction because this match is already locked down!'
-  # end
+    assert_equal 422, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'You cannot add or change your prediction because this match is already locked down!'
+  end
   
   def test_carousel
     get '/match/1', {}, user_11_session
@@ -846,29 +867,29 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '99'
   end
   
-  # def test_add_decimal_result
-  #   post '/match/add_result', {match_id: '3', home_team_points: '2.3', away_team_points: '3'}, admin_session
+  def test_add_decimal_result
+    post '/match/add_result', {match_id: '3', home_team_points: '2.3', away_team_points: '3'}, admin_session_with_all_criteria
     
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_includes last_response.body, 'Match results must be integers.'
-  # end
+    assert_equal 422, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Match results must be integers.'
+  end
   
-  # def test_add_negative_result
-  #   post '/match/add_result', {match_id: 3, home_team_points: '-2', away_team_points: '3'}, admin_session
+  def test_add_negative_result
+    post '/match/add_result', {match_id: 3, home_team_points: '-2', away_team_points: '3'}, admin_session_with_all_criteria
     
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_includes last_response.body, 'Match results must be non-negative.'
-  # end
+    assert_equal 422, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Match results must be non-negative.'
+  end
   
-  # def test_add_result_not_lockeddown_match
-  #   post '/match/add_result', {match_id: '64', home_team_points: '2', away_team_points: '3'}, admin_session
+  def test_add_result_not_lockeddown_match
+    post '/match/add_result', {match_id: '64', home_team_points: '2', away_team_points: '3'}, admin_session_with_all_criteria
     
-  #   assert_equal 422, last_response.status
-  #   assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-  #   assert_includes last_response.body, 'You cannot add or change the match result because this match has not yet been played.'
-  # end
+    assert_equal 422, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'You cannot add or change the match result because this match has not yet been played.'
+  end
 
   def test_filter_matches_all
     post '/matches/filter',
