@@ -14,7 +14,7 @@
         type="number" 
         min="0"
         id="home_team_prediction" 
-        value="<%= home_team_prediction(@match[:match_id]) %>"
+        value="<%= home_team_prediction(@match) %>"
         name="home_team_prediction"
       />
     </label>
@@ -23,7 +23,7 @@
         type="number" 
         min="0"
         id="away_team_prediction" 
-        value="<%= away_team_prediction(@match[:match_id]) %>"
+        value="<%= away_team_prediction(@match) %>"
         name="away_team_prediction"
       />
     </label>

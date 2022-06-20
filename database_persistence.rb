@@ -138,9 +138,9 @@ class DatabasePersistence
     end
   end
 
-  def load_single_match(match_id)
+  def load_single_match(user_id, match_id)
     sql = construct_single_match_query()
-    result = query(sql, match_id)
+    result = query(sql, user_id, match_id)
     result.map do |tuple|
       tuple_to_matches_details_hash(tuple)
     end.first
@@ -380,7 +380,7 @@ class DatabasePersistence
   end
 
   def where_single_match_clause
-    'WHERE match.match_id = $1'
+    'WHERE match.match_id = $2'
   end
 
   def lockdown_clause(match_status)
@@ -433,6 +433,7 @@ class DatabasePersistence
       select_match_details_clause(),
       select_user_predictions_clause(),
       from_match_details_clause(),
+      predictions_for_single_user_single_or_all_matches_clause(),
       where_single_match_clause(),
       order_clause()
     ].join(' ')
