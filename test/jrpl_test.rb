@@ -52,6 +52,32 @@ class CMSTest < Minitest::Test
     }}
   end
   
+  def user_11_session_predicted_criteria
+    { 'rack.session' => { 
+      user_name: 'Clare Mac',
+      user_id: 11,
+      user_email: 'clare@macadie.co.uk',
+      criteria: { 
+        match_status: "all",
+        prediction_status: "predicted",
+        tournament_stages: ["Group Stages", "Round of 16", "Quarter Finals", "Semi Finals", "Third Fourth Place Play-off", "Final"]
+      }
+    }}
+  end
+  
+  def user_11_session_not_predicted_group_stages_criteria
+    { 'rack.session' => { 
+      user_name: 'Clare Mac',
+      user_id: 11,
+      user_email: 'clare@macadie.co.uk',
+      criteria: { 
+        match_status: "all",
+        prediction_status: "not_predicted",
+        tournament_stages: ["Group Stages"]
+      }
+    }}
+  end
+  
   def admin_session_with_all_criteria
     { 'rack.session' => { 
       user_name: 'Maccas',
@@ -657,8 +683,8 @@ class CMSTest < Minitest::Test
     
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
-    assert_includes last_response.body, '<a href="/match/64">Previous match</a>'
     assert_includes last_response.body, '<a href="/match/3">Next match</a>'
+    refute_includes last_response.body, 'Previous match'
   end
   
   def test_carousel_above_maximum
@@ -667,7 +693,7 @@ class CMSTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, '<a href="/match/63">Previous match</a>'
-    assert_includes last_response.body, '<a href="/match/2">Next match</a>'
+    refute_includes last_response.body, 'Next match'
   end
   
   def test_view_match_not_lockdown_no_pred_not_admin
@@ -1931,6 +1957,27 @@ def test_filter_matches_group_stages_and_final
 
     assert_includes last_response.body, 'No matches meet your criteria, please try again!'
     refute_includes last_response.body, 'Matches List'
+  end
+
+  def test_carousel_predicted
+    get '/match/6', {}, user_11_session_predicted_criteria
+
+    assert_includes last_response.body, '<a href="/match/8">Next match'
+    refute_includes last_response.body, 'Previous match'
+  end
+
+  def test_carousel_not_predicted_group_stages
+    get '/match/3', {}, user_11_session_not_predicted_group_stages_criteria
+
+    assert_includes last_response.body, '<a href="/match/2">Previous match'
+    assert_includes last_response.body, '<a href="/match/1">Next match'
+  end
+
+  def test_carousel_not_predicted_group_stages
+    get '/match/48', {}, user_11_session_not_predicted_group_stages_criteria
+
+    assert_includes last_response.body, '<a href="/match/47">Previous match'
+    refute_includes last_response.body, 'Next match'
   end
 
   # def test_signin_with_cookie

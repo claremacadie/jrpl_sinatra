@@ -82,12 +82,11 @@ helpers do
 
   def previous_match(match_id)
     match_list = load_match_list()
-    max_index = match_list.size - 1
     current_match_index = match_list.index { |match| match == match_id }
     current_match_index = 1 if current_match_index.nil?
     previous_match_index = current_match_index - 1
     if previous_match_index < 0
-      match_list[max_index]
+      nil
     else
       match_list[previous_match_index]
     end
@@ -100,7 +99,7 @@ helpers do
     current_match_index = 1 if current_match_index.nil?
     next_match_index = current_match_index + 1
     if next_match_index > max_index
-      match_list[0]
+      nil
     else
       match_list[next_match_index]
     end

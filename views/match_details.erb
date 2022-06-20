@@ -63,5 +63,10 @@
   <% end %>
 <% end %>
 
-<a href="/match/<%= previous_match(@match[:match_id]) %>">Previous match</a>
-<a href="/match/<%= next_match(@match[:match_id]) %>">Next match</a>
+<% unless previous_match(@match[:match_id]).nil? %>
+  <a href="/match/<%= previous_match(@match[:match_id]) %>">Previous match</a>
+<% end %>
+
+<% unless next_match(@match[:match_id]).nil? %>
+  <a href="/match/<%= next_match(@match[:match_id]) %>">Next match</a>
+<% end %>
