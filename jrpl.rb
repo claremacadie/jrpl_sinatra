@@ -84,6 +84,7 @@ helpers do
     match_list = load_match_list()
     max_index = match_list.size - 1
     current_match_index = match_list.index { |match| match == match_id }
+    current_match_index = 1 if current_match_index.nil?
     previous_match_index = current_match_index - 1
     if previous_match_index < 0
       match_list[max_index]
