@@ -213,7 +213,7 @@ class DatabasePersistence
   def filter_matches(user_id, criteria, lockdown)
     add_empty_strings_for_stages_for_exec_params(criteria)
 
-    sql = construct_filter_query(criteria)
+    sql = construct_filter_matches_details_query(criteria)
 
     result = query(
       sql,
@@ -452,7 +452,7 @@ class DatabasePersistence
     ].join(' ')
   end
 
-  def construct_filter_query(criteria)
+  def construct_filter_matches_details_query(criteria)
     [
       select_match_details_clause(),
       from_match_details_clause(),
