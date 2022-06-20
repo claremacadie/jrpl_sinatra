@@ -1,5 +1,5 @@
 <h1>Match filter form</h1>
-<form action="/matches/filter" method="post">
+<form class="filter_form" action="/matches/filter" method="post">
   <p>Match status:</p>
   <input 
     type="radio" 
@@ -80,6 +80,10 @@
     />
     <label for="<% stage.downcase.split.join('_') %>"><%= stage %></label><br>
   <% end %>
+      <div>
+    <input type="checkbox" id="select-all">
+    <label for="final">Select All</label>
+    </div>
 
   <input type="hidden" name="criteria" value="<%= @criteria %>" />
   <button type="submit">Search matches</button>
