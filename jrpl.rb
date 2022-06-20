@@ -575,7 +575,7 @@ get '/matches/all' do
   require_signed_in_user
   @stage_names = @storage.tournament_stage_names
   session[:criteria] = set_criteria_to_default()
-  @matches = @storage.load_all_matches
+  @matches = @storage.load_all_matches(session[:user_id])
   erb :matches_list do
     erb :match_filter_form
   end

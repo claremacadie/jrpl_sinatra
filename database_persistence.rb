@@ -130,9 +130,9 @@ class DatabasePersistence
     query(sql, series_id, token)
   end
 
-  def load_all_matches
+  def load_all_matches(user_id)
     sql = construct_all_matches_query()
-    result = query(sql)
+    result = query(sql, user_id)
     result.map do |tuple|
       tuple_to_matches_details_hash(tuple)
     end
@@ -348,7 +348,17 @@ class DatabasePersistence
     SQL
   end
 
-  def predictions_for_single_user_clause
+  def predictions_for_single_user_single_or_all_matches_clause
+    <<~SQL
+      LEFT OUTER JOIN
+        (SELECT prediction.match_id
+          FROM prediction
+          WHERE prediction.user_id = $1)
+      AS predictions ON predictions.match_id = match.match_id
+    SQL
+  end
+
+  def predictions_for_single_user_filter_clause
     <<~SQL
       LEFT OUTER JOIN
         (SELECT prediction.match_id
@@ -401,7 +411,8 @@ class DatabasePersistence
   def construct_all_matches_query
     [
       select_match_details_clause(),
-      from_match_details_clause()
+      from_match_details_clause(),
+      predictions_for_single_user_single_or_all_matches_clause()
     ].join(' ')
   end
 
@@ -418,7 +429,7 @@ class DatabasePersistence
     [
       select_match_details_clause(),
       from_match_details_clause(),
-      predictions_for_single_user_clause(),
+      predictions_for_single_user_filter_clause(),
       'WHERE',
       lockdown_clause(criteria[:match_status]),
       tournament_stages_clause(),
