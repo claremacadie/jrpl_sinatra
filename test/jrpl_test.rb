@@ -1876,6 +1876,17 @@ def test_filter_matches_group_stages_and_final
     refute_includes last_response.body, '<td>64</td>'
   end
 
+  def test_filter_matches_search_criteria_retained
+    post '/matches/filter',
+      {match_status: 'locked_down', prediction_status: 'predicted', "Group Stages"=>"tournament_stage"},
+      user_11_session
+
+    assert_includes last_response.body.gsub(/\n/, ''), %q(value="locked_down"     checked)
+    assert_includes last_response.body.gsub(/\n/, ''), %q(value="predicted"     checked)
+    assert_includes last_response.body.gsub(/\n/, ''), %q(name="Group Stages"      value="tournament_stage"      checked)
+    refute_includes last_response.body.gsub(/\n/, ''), %q(name="Final"      value="tournament_stage"      checked)
+  end
+
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
   #   assert_equal 302, last_response.status
