@@ -5,8 +5,8 @@
 
 <h2>Prediction</h2>
 <% if @match[:locked_down] %>
-  <p><%= home_team_name(@match) %>: <%= home_team_prediction(@match[:match_id]) %></p>
-  <p><%= away_team_name(@match) %>: <%= away_team_prediction(@match[:match_id]) %></p>
+  <p><%= home_team_name(@match) %>: <%= home_team_prediction(@match) %></p>
+  <p><%= away_team_name(@match) %>: <%= away_team_prediction(@match) %></p>
 <% else %>
   <form action="/match/add_prediction" method="post">
     <label for="home_team_prediction"><%= home_team_name(@match) %>:

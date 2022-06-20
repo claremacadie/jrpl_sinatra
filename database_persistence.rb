@@ -424,7 +424,8 @@ class DatabasePersistence
       select_match_details_clause(),
       select_user_predictions_clause(),
       from_match_details_clause(),
-      predictions_for_single_user_single_or_all_matches_clause()
+      predictions_for_single_user_single_or_all_matches_clause(),
+      order_clause()
     ].join(' ')
   end
   

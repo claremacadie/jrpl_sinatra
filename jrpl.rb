@@ -533,7 +533,7 @@ end
 post '/match/add_prediction' do
   require_signed_in_user
   match_id = params[:match_id].to_i
-  @match = @storage.load_single_match(match_id)
+  @match = @storage.load_single_match(session[:user_id], match_id)
   home_prediction = params[:home_team_prediction].to_f
   away_prediction = params[:away_team_prediction].to_f
   session[:message] = prediction_error(@match, home_prediction, away_prediction)
@@ -557,7 +557,7 @@ post '/match/add_result' do
   home_points = params[:home_team_points].to_f
   away_points = params[:away_team_points].to_f
   match_id = params[:match_id].to_i
-  @match = @storage.load_single_match(match_id)
+  @match = @storage.load_single_match(session[:user_id], match_id)
   session[:message] = match_result_error(@match, home_points, away_points)
   if session[:message]
     status 422
