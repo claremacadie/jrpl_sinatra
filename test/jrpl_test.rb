@@ -536,7 +536,7 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'type="radio"'
     assert_includes last_response.body, 'type="checkbox"'
     assert_includes last_response.body, 'Matches List'
-    assert_includes last_response.body, "<td>Spain</td>\n        <td>77</td>\n        <td>78</td>\n        <td>IC Play Off 2</td>"
+    assert_includes last_response.body, '<td>77</td>'
     assert_includes last_response.body, "<a href=\"/match/48\">View match</a>"
     assert_includes last_response.body, 'Winner Group A'
   end
@@ -1885,6 +1885,15 @@ def test_filter_matches_group_stages_and_final
     assert_includes last_response.body.gsub(/\n/, ''), %q(value="predicted"     checked)
     assert_includes last_response.body.gsub(/\n/, ''), %q(name="Group Stages"      value="tournament_stage"      checked)
     refute_includes last_response.body.gsub(/\n/, ''), %q(name="Final"      value="tournament_stage"      checked)
+  end
+
+  def test_filter_matches_no_matches_returned
+    post '/matches/filter',
+      {match_status: 'locked_down', prediction_status: 'all', "Final"=>"tournament_stage"},
+      user_11_session
+
+    assert_includes last_response.body, 'No matches meet your filter criteria, please try again!'
+    refute_includes last_response.body, 'Matches List'
   end
 
   # def test_signin_with_cookie
