@@ -12,6 +12,7 @@
       <th>Away prediction</th>
       <th>Away team</th>
       <th></th>
+      <th></th>
     </thead>
     <tbody>
       <% @matches.each do |match| %>
@@ -23,6 +24,11 @@
           <td><%= home_team_prediction(match) %></td>
           <td><%= away_team_prediction(match) %></td>
           <td><%= away_team_name(match) %></td>
+          <td>
+            <% if match_locked_down?(match) %>
+              Locked down
+            <% end %>
+          </td>
           <td><a href="/match/<%= match[:match_id] %>">View match</a></td>
         </tr>
       <% end %>

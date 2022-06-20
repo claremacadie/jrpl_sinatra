@@ -1980,6 +1980,13 @@ def test_filter_matches_group_stages_and_final
     refute_includes last_response.body, 'Next match'
   end
 
+  def test_locked_down_displayed_matches_list
+    get '/matches/all', {}, user_11_session
+
+    assert_includes last_response.body.gsub(/\n/, ''), '</td>          <td>England</td>          <td>no prediction</td>          <td>no prediction</td>          <td>Iran</td>          <td>              Locked down          </td>'
+    assert_includes last_response.body.gsub(/\n/, ''), '<td>Morocco</td>          <td>no prediction</td>          <td>no prediction</td>          <td>Croatia</td>          <td>          </td>          <td>'
+  end
+
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
   #   assert_equal 302, last_response.status

@@ -80,6 +80,11 @@ helpers do
     end
   end
 
+  def match_locked_down?(match)
+    match_date_time = "#{match[:match_date]} #{match[:kick_off]}"
+    (Time.now + LOCKDOWN_BUFFER) > Time.parse(match_date_time)
+  end
+
   def previous_match(match_id)
     match_list = load_match_list()
     current_match_index = match_list.index { |match| match == match_id }
@@ -332,11 +337,6 @@ end
 
 def not_integer?(num)
   !(num.floor - num).zero?
-end
-
-def match_locked_down?(match)
-  match_date_time = "#{match[:match_date]} #{match[:kick_off]}"
-  (Time.now + LOCKDOWN_BUFFER) > Time.parse(match_date_time)
 end
 
 def prediction_type_error(home_prediction, away_prediction)
