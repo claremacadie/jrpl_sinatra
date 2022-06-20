@@ -594,7 +594,9 @@ post '/matches/filter' do
   @matches = @storage.filter_matches(
     session[:user_id], session[:criteria], lockdown, @stage_names.size
   )
-  session[:message] = 'No matches meet your filter criteria, please try again!' if @matches.empty?
+  if @matches.empty?
+    session[:message] = 'No matches meet your criteria, please try again!'
+  end
   erb :matches_list do
     erb :match_filter_form
   end

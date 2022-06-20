@@ -1902,7 +1902,7 @@ def test_filter_matches_group_stages_and_final
       {match_status: 'locked_down', prediction_status: 'all', "Final"=>"tournament_stage"},
       user_11_session
 
-    assert_includes last_response.body, 'No matches meet your filter criteria, please try again!'
+    assert_includes last_response.body, 'No matches meet your criteria, please try again!'
     refute_includes last_response.body, 'Matches List'
   end
 
