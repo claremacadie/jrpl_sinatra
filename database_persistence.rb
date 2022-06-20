@@ -195,8 +195,8 @@ class DatabasePersistence
   end
 
   # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-  def filter_matches(user_id, criteria, lockdown, no_of_stages)
-    add_empty_strings_for_stages_for_exec_params(criteria, no_of_stages)
+  def filter_matches(user_id, criteria, lockdown)
+    add_empty_strings_for_stages_for_exec_params(criteria)
 
     sql = construct_filter_query(criteria)
 
@@ -388,8 +388,9 @@ class DatabasePersistence
     end
   end
 
-  def add_empty_strings_for_stages_for_exec_params(criteria, no_of_stages)
-    while criteria[:tournament_stages].size < no_of_stages
+  def add_empty_strings_for_stages_for_exec_params(criteria)
+    number_of_stages = 6
+    while criteria[:tournament_stages].size < number_of_stages
       criteria[:tournament_stages] << ''
     end
   end

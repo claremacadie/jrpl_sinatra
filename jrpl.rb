@@ -399,11 +399,9 @@ def calculate_lockdown
   { date: lockdown_date, time: lockdown_time }
 end
 
-def load_matches(no_of_stages)
+def load_matches
   lockdown = calculate_lockdown
-  @storage.filter_matches(
-    session[:user_id], session[:criteria], lockdown, no_of_stages
-  )
+  @storage.filter_matches(session[:user_id], session[:criteria], lockdown)
 end
 
 # Routes
@@ -582,7 +580,7 @@ get '/matches/all' do
   require_signed_in_user
   @stage_names = @storage.tournament_stage_names
   session[:criteria] = set_criteria_to_all_matches()
-  @matches = load_matches(@stage_names.size)
+  @matches = load_matches()
   erb :matches_list do
     erb :match_filter_form
   end
@@ -597,7 +595,7 @@ post '/matches/filter' do
   require_signed_in_user
   @stage_names = @storage.tournament_stage_names
   session[:criteria] = extract_search_criteria(params)
-  @matches = load_matches(@stage_names.size)
+  @matches = load_matches()
   if @matches.empty?
     session[:message] = 'No matches meet your criteria, please try again!'
   end
