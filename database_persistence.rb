@@ -194,6 +194,29 @@ class DatabasePersistence
     result.map { |tuple| tuple['name'] }
   end
 
+  def filter_matches_list(user_id, criteria, lockdown)
+    add_empty_strings_for_stages_for_exec_params(criteria)
+  
+    sql = construct_filter_matches_list_query(criteria)
+  
+    result = query(
+      sql,
+      lockdown[:date],
+      lockdown[:time],
+      criteria[:tournament_stages][0],
+      criteria[:tournament_stages][1],
+      criteria[:tournament_stages][2],
+      criteria[:tournament_stages][3],
+      criteria[:tournament_stages][4],
+      criteria[:tournament_stages][5],
+      user_id
+    )
+  
+    result.map do |tuple|
+      tuple['match_id'].to_i
+    end
+  end
+
   # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def filter_matches(user_id, criteria, lockdown)
     add_empty_strings_for_stages_for_exec_params(criteria)
@@ -294,6 +317,10 @@ class DatabasePersistence
         (user_id, match_id, home_team_points, away_team_points)
       VALUES ($1, $2, $3, $4);
     SQL
+  end
+
+  def select_match_id_clause
+    'SELECT match.match_id'
   end
 
   def select_match_details_clause
@@ -416,6 +443,19 @@ class DatabasePersistence
       from_match_details_clause(),
       predictions_for_single_user_single_or_all_matches_clause(),
       where_single_match_clause(),
+      order_clause()
+    ].join(' ')
+  end
+
+  def construct_filter_matches_list_query(criteria)
+    [
+      select_match_id_clause(),
+      from_match_details_clause(),
+      predictions_for_single_user_filter_clause(),
+      'WHERE',
+      lockdown_clause(criteria[:match_status]),
+      tournament_stages_clause(),
+      predictions_clause(criteria[:prediction_status]),
       order_clause()
     ].join(' ')
   end

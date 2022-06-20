@@ -81,14 +81,14 @@ helpers do
   end
 
   def previous_match(match_id)
-    match_list = @storage.match_list
+    match_list = load_match_list()
     max_index = match_list.size - 1
-    current_match_index = match_list.index(match_id: match_id)
+    current_match_index = match_list.index { |match| match == match_id }
     previous_match_index = current_match_index - 1
     if previous_match_index < 0
-      match_list[max_index][:match_id]
+      match_list[max_index]
     else
-      match_list[previous_match_index][:match_id]
+      match_list[previous_match_index]
     end
   end
 
@@ -399,6 +399,11 @@ def calculate_lockdown
   { date: lockdown_date, time: lockdown_time }
 end
 
+def load_match_list
+  lockdown = calculate_lockdown
+  @storage.filter_matches_list(session[:user_id], session[:criteria], lockdown)
+end
+
 def load_matches
   lockdown = calculate_lockdown
   @storage.filter_matches(session[:user_id], session[:criteria], lockdown)
@@ -578,7 +583,7 @@ end
 
 get '/matches/all' do
   require_signed_in_user
-  @stage_names = @storage.tournament_stage_names
+  @stage_names = @storage.tournament_stage_names()
   session[:criteria] = set_criteria_to_all_matches()
   @matches = load_matches()
   erb :matches_list do
@@ -593,7 +598,7 @@ end
 
 post '/matches/filter' do
   require_signed_in_user
-  @stage_names = @storage.tournament_stage_names
+  @stage_names = @storage.tournament_stage_names()
   session[:criteria] = extract_search_criteria(params)
   @matches = load_matches()
   if @matches.empty?
