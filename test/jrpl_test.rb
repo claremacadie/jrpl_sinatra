@@ -558,6 +558,16 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'IC Play Off 2'
   end
   
+  def test_view_single_match_signed_in_tournament_role
+    get '/match/64', {}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Match details'
+    assert_includes last_response.body, 'Winner Semi-Final 1'
+    assert_includes last_response.body, 'Winner Semi-Final 2'
+  end
+  
   def test_add_new_prediction
     post '/match/add_prediction', {match_id: '12', home_team_prediction: '98', away_team_prediction: '99'}, user_11_session
     
