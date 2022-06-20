@@ -1987,6 +1987,12 @@ def test_filter_matches_group_stages_and_final
     assert_includes last_response.body.gsub(/\n/, ''), '<td>Morocco</td>          <td>no prediction</td>          <td>no prediction</td>          <td>Croatia</td>          <td>          </td>          <td>'
   end
 
+  def test_select_deslect_all_on_matcfilter_form
+    get '/matches/all', {}, user_11_session
+
+    assert_includes last_response.body, 'Select/Deselect All'
+  end
+
   # def test_signin_with_cookie
   #   post '/users/signin', {login: 'Maccas', pword: 'a'}, {}
   #   assert_equal 302, last_response.status
