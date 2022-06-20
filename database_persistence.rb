@@ -154,28 +154,6 @@ class DatabasePersistence
     end
   end
 
-  def home_team_prediction(match_id, user_id)
-    sql = <<~SQL
-      SELECT home_team_points
-      FROM prediction
-      WHERE match_id = $1 AND user_id = $2;
-    SQL
-    result = query(sql, match_id, user_id)
-    return nil if result.ntuples == 0
-    result.first['home_team_points'].to_i
-  end
-
-  def away_team_prediction(match_id, user_id)
-    sql = <<~SQL
-      SELECT away_team_points
-      FROM prediction
-      WHERE match_id = $1 AND user_id = $2;
-    SQL
-    result = query(sql, match_id, user_id)
-    return nil if result.ntuples == 0
-    result.first['away_team_points'].to_i
-  end
-
   def delete_prediction(user_id, match_id)
     sql = 'DELETE FROM prediction WHERE user_id = $1 AND match_id = $2;'
     query(sql, user_id, match_id)
