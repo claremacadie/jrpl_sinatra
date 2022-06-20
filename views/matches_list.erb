@@ -4,7 +4,7 @@
   <h2>Matches List</h2>
   <table>
     <thead>
-      <th>Match id</th>
+      <th hidden>Match id</th>
       <th>Date</th>
       <th>Kick-off</th>
       <th>Home team</th>
@@ -16,7 +16,7 @@
     <tbody>
       <% @matches.each do |match| %>
         <tr>
-          <td><%= match[:match_id] %></td>
+          <td hidden><%= match[:match_id] %></td>
           <td><%= match[:match_date] %></td>
           <td><%= match[:kick_off] %></td>
           <td><%= home_team_name(match) %></td>
