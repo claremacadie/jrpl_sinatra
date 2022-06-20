@@ -131,7 +131,7 @@ class DatabasePersistence
   end
 
   def load_all_matches
-    sql = select_query_all_matches
+    sql = construct_all_matches_query()
     result = query(sql)
     result.map do |tuple|
       tuple_to_matches_details_hash(tuple)
@@ -139,7 +139,6 @@ class DatabasePersistence
   end
 
   def load_single_match(match_id)
-    # sql = [select_match_details_clause(), from_match_details_clause(), where_single_match_clause(), order_clause()].join(' ')
     sql = construct_single_match_query()
     result = query(sql, match_id)
     result.map do |tuple|
@@ -254,6 +253,12 @@ class DatabasePersistence
     str ? str.to_i : nil
   end
 
+  def admin_id
+    sql = 'SELECT role_id FROM role WHERE name = $1;'
+    result = query(sql, 'Admin')
+    result.first['role_id'].to_i
+  end
+
   def select_query_single_user
     <<~SQL
       SELECT users.user_id, users.user_name, users.email, string_agg(role.name, ', ') AS roles
@@ -282,42 +287,6 @@ class DatabasePersistence
       user_name: tuple['user_name'],
       email: tuple['email'],
       roles: tuple['roles'] }
-  end
-
-  def admin_id
-    sql = 'SELECT role_id FROM role WHERE name = $1;'
-    result = query(sql, 'Admin')
-    result.first['role_id'].to_i
-  end
-
-  # rubocop:disable Metrics/MethodLength
-  def select_query_all_matches
-    <<~SQL
-      SELECT
-        match.match_id,
-        match.date,
-        match.kick_off,
-        match.home_team_points,
-        match.away_team_points,
-        home_team.name AS home_team_name,
-        home_team.short_name AS home_team_short_name,
-        away_team.name AS away_team_name,
-        away_team.short_name AS away_team_short_name,
-        home_tr.name AS home_tournament_role,
-        away_tr.name AS away_tournament_role,
-        stage.name AS stage,
-        venue.name AS venue,
-        broadcaster.name AS broadcaster
-      FROM match
-      INNER JOIN tournament_role AS home_tr ON match.home_team_id = home_tr.tournament_role_id
-      INNER JOIN tournament_role AS away_tr ON match.away_team_id = away_tr.tournament_role_id
-      LEFT OUTER JOIN team AS home_team ON home_tr.team_id = home_team.team_id
-      LEFT OUTER JOIN team AS away_team ON away_tr.team_id = away_team.team_id
-      INNER JOIN venue ON match.venue_id = venue.venue_id
-      INNER JOIN stage ON match.stage_id = stage.stage_id
-      INNER JOIN broadcaster ON match.broadcaster_id = broadcaster.broadcaster_id
-      ORDER BY match.date, match.kick_off, match.match_id;
-    SQL
   end
 
   def tuple_to_matches_details_hash(tuple)
@@ -427,6 +396,13 @@ class DatabasePersistence
 
   def order_clause
     'ORDER BY match.date, match.kick_off, match.match_id;'
+  end
+
+  def construct_all_matches_query
+    [
+      select_match_details_clause(),
+      from_match_details_clause()
+    ].join(' ')
   end
 
   def construct_single_match_query
