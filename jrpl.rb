@@ -540,7 +540,7 @@ get '/match/:match_id' do
   end
   @match = @storage.load_single_match(session[:user_id], match_id)
   @match[:locked_down] = match_locked_down?(@match)
-  session[:message] = 'Match locked down!' if @match[:locked_down]
+  # session[:message] = 'Match locked down!' if @match[:locked_down]
   erb :match_details
 end
 

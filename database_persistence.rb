@@ -169,6 +169,7 @@ class DatabasePersistence
 
   def add_result(match_id, home_team_points, away_team_points, user_id)
     update_match_table(match_id, home_team_points, away_team_points, user_id)
+    # update_points_table(match_id, user_id)
   end
 
   def tournament_stage_names

@@ -704,7 +704,7 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Add/Change prediction'
     refute_includes last_response.body, 'Winner Semi-Final 1: no result'
     refute_includes last_response.body, 'Winner Semi-Final 2: no result'
-    refute_equal 'Match locked down!', session[:message]
+    refute_includes last_response.body, 'Match locked down!'
     refute_includes last_response.body, 'Add/Change match result'
   end
   
@@ -716,7 +716,7 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Add/Change prediction'
     refute_includes last_response.body, 'Winner Semi-Final 1: no result'
     refute_includes last_response.body, 'Winner Semi-Final 2: no result'
-    refute_equal 'Match locked down!', session[:message]
+    refute_includes last_response.body, 'Match locked down!'
     refute_includes last_response.body, 'Add/Change match result'
   end
   
@@ -730,7 +730,7 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Add/Change prediction'
     refute_includes last_response.body, 'Spain: no result'
     refute_includes last_response.body, 'IC Play Off 2: no result'
-    refute_equal 'Match locked down!', session[:message]
+    refute_includes last_response.body, 'Match locked down!'
     refute_includes last_response.body, 'Add/Change match result'
   end
   
@@ -744,7 +744,7 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, 'Add/Change prediction'
     refute_includes last_response.body, 'Belgium: no result'
     refute_includes last_response.body, 'Canada no result'
-    refute_equal 'Match locked down!', session[:message]
+    refute_includes last_response.body, 'Match locked down!'
     refute_includes last_response.body, 'Add/Change match result'
   end
   
