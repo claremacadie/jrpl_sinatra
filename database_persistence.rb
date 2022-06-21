@@ -204,6 +204,15 @@ class DatabasePersistence
     result.map { |tuple| tuple['prediction_id'].to_i }
   end
 
+  def update_points_table(prediction_id, scoring_system_id, result_points, score_points)
+    sql = <<~SQL
+      UPDATE points
+        SET result_points = $1, score_points = $2, total_points = $3
+      WHERE (prediction_id = $4 AND scoring_system_id = $5);
+    SQL
+    query(sql, result_points, score_points, result_points + score_points, prediction_id, scoring_system_id)
+  end
+
   def insert_into_points_table(prediction_id, scoring_system_id, result_points, score_points)
     sql = <<~SQL
       INSERT INTO points 
@@ -211,7 +220,7 @@ class DatabasePersistence
       VALUES
       ($1, $2, $3, $4, $5);
     SQL
-    query(sql, prediction_id, 1, result_points, score_points, result_points + score_points)
+    query(sql, prediction_id, scoring_system_id, result_points, score_points, result_points + score_points)
   end
 
   def update_scoreboard(match_id)
@@ -220,10 +229,8 @@ class DatabasePersistence
     match_type = result_type(result[:home_team_points], result[:away_team_points])
     existing_predictions_scored = prediction_id_in_points_table()
     
-    # Official scoring
-    # For each prediction, work out result points and score points and update db
-      # if prediciton_id already exists in points, update record
-      # else create new record
+    # Official scoring:
+    scoring_id = 1
     predictions.each do |prediction|
       prediction_type = result_type(prediction[:home_team_points], prediction[:away_team_points])
       result_points = ( match_type == prediction_type ? 1 : 0 )
@@ -231,24 +238,11 @@ class DatabasePersistence
       away_score_points = ( result[:away_team_points] == prediction[:away_team_points] ? 1 : 0 )
       score_points = home_score_points + away_score_points
       if existing_predictions_scored.include?(prediction[:prediction_id])
-        # update_points_table(prediction[:prediction_id], 1, result_points, score_points)
+        update_points_table(prediction[:prediction_id], scoring_id, result_points, score_points)
       else
-        insert_into_points_table(prediction[:prediction_id], 1, result_points, score_points)
+        insert_into_points_table(prediction[:prediction_id], scoring_id, result_points, score_points)
       end
     end
-    # For each scoring system
-      # Calculate result points
-          # Determine result type - home win, away win, draw
-   
-
-    # end
-          # Return 1 if result and prediction are the same type
-      # Calculate score points
-        # if home prediction and away predictions is the same as result
-      # If points already contains that prediction_id for that system, update record
-        # UPDATE TABLE points SET result points and score points WHERE preediction_id and scoring system id
-      # Otherwise, create new points record
-        # INSERT INTO points (prediction_id, scoring_system_id, result_points, score_points)
   end
 
   def tournament_stage_names
