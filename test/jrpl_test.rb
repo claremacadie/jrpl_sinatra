@@ -2012,4 +2012,16 @@ def test_filter_matches_group_stages_and_final
     assert_includes last_response.body.gsub(/\n/, ''), '<td>Mr. Mean</td>        <td>1</td>        <td>2</td>        <td>3</td>'
     refute_includes last_response.body.gsub(/\n/, ''), '<td>Clare Mac</td>        <td>1</td>        <td>2</td>        <td>3</td>'
   end
+  
+  def test_scoreboard_add_result
+    post '/match/add_result', {match_id: 6, home_team_points: '2', away_team_points: '1'}, admin_session
+    
+    get '/scoreboard'
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Scoreboard'
+    assert_includes last_response.body.gsub(/\n/, ''), '<td>Clare Mac</td>        <td>1</td>        <td>2</td>        <td>3</td>'
+    assert_includes last_response.body.gsub(/\n/, ''), '<td>Mr. Median</td>        <td>1</td>        <td>2</td>        <td>3</td>'
+    assert_includes last_response.body.gsub(/\n/, ''), '<td>Maccas</td>        <td>1</td>        <td>0</td>        <td>1</td>'
+  end
 end
