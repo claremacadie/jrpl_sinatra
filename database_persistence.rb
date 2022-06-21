@@ -207,22 +207,25 @@ class DatabasePersistence
   def update_scoreboard(match_id)
     predictions = predictions_for_match(match_id)
     result = match_result(match_id)
-    match_result_type = result_type(result[:home_team_points], result[:away_team_points])
+    match_type = result_type(result[:home_team_points], result[:away_team_points])
     existing_predictions_scored = prediction_id_in_points_table()
     
     # Official scoring
     # For each prediction, work out result points and score points and update db
       # if prediciton_id already exists in points, update record
       # else create new record
-    # prediction_for_match.each do |prediction|
-    #   prediction_result = result_type(prediction[:home_team_points, prediction[:away_team_prediction]])
-    #   result_points = calculate_result_points
-    #   # if existing_predictions_scored.include?(prediction[:prediction_id])
-    #   #   update_points_table(prediction[:prediction_id], 1, result_points, score_points)
-    #   # else
-    #   #   insert_into_points_table(prediction[:prediction_id], 1, result_points, score_points)
-    #   # end
-    # end
+    predictions.each do |prediction|
+      prediction_type = result_type(prediction[:home_team_points], prediction[:away_team_points])
+      result_points = ( match_type == prediction_type ? 1 : 0 )
+      home_score_points = ( result[:home_team_points] == prediction[:home_team_points] ? 1 : 0 )
+      away_score_points = ( result[:away_team_points] == prediction[:away_team_points] ? 1 : 0 )
+      score_points = home_score_points + away_score_points
+      # if existing_predictions_scored.include?(prediction[:prediction_id])
+      #   update_points_table(prediction[:prediction_id], 1, result_points, score_points)
+      # else
+      #   insert_into_points_table(prediction[:prediction_id], 1, result_points, score_points)
+      # end
+    end
     # For each scoring system
       # Calculate result points
           # Determine result type - home win, away win, draw
