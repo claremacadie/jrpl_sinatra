@@ -204,6 +204,16 @@ class DatabasePersistence
     result.map { |tuple| tuple['prediction_id'].to_i }
   end
 
+  def insert_into_points_table(prediction_id, scoring_system_id, result_points, score_points)
+    sql = <<~SQL
+      INSERT INTO points 
+      (prediction_id, scoring_system_id, result_points, score_points, total_points)
+      VALUES
+      ($1, $2, $3, $4, $5);
+    SQL
+    query(sql, prediction_id, 1, result_points, score_points, result_points + score_points)
+  end
+
   def update_scoreboard(match_id)
     predictions = predictions_for_match(match_id)
     result = match_result(match_id)
@@ -220,11 +230,11 @@ class DatabasePersistence
       home_score_points = ( result[:home_team_points] == prediction[:home_team_points] ? 1 : 0 )
       away_score_points = ( result[:away_team_points] == prediction[:away_team_points] ? 1 : 0 )
       score_points = home_score_points + away_score_points
-      # if existing_predictions_scored.include?(prediction[:prediction_id])
-      #   update_points_table(prediction[:prediction_id], 1, result_points, score_points)
-      # else
-      #   insert_into_points_table(prediction[:prediction_id], 1, result_points, score_points)
-      # end
+      if existing_predictions_scored.include?(prediction[:prediction_id])
+        # update_points_table(prediction[:prediction_id], 1, result_points, score_points)
+      else
+        insert_into_points_table(prediction[:prediction_id], 1, result_points, score_points)
+      end
     end
     # For each scoring system
       # Calculate result points
