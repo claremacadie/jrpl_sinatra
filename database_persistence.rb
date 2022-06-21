@@ -182,14 +182,10 @@ class DatabasePersistence
   def predictions_for_match(match_id)
     sql = 'SELECT prediction_id, home_team_points, away_team_points FROM prediction WHERE match_id = $1;'
     result = query(sql, match_id)
-    predictions = result.map do |tuple| 
+    result.map do |tuple| 
       { prediction_id: tuple['prediction_id'].to_i,
         home_team_points: tuple['home_team_points'].to_i,
         away_team_points: tuple['away_team_points'].to_i }
-    end
-    predictions.map do |prediction|
-      { prediction_id: prediction[:prediction_id],
-        prediction_result_type: result_type(prediction[:home_team_points], prediction[:away_team_points]) }
     end
   end
 
@@ -204,15 +200,14 @@ class DatabasePersistence
   end
 
   def update_scoreboard(match_id)
-    # Find all prediction_id related to that match
+    # Find all prediction_id related to that match including prediction points
     predictions_for_match(match_id)
     
     # For each scoring system
       # Calculate result points
           # Determine result type - home win, away win, draw
     match_result_type = match_result_type(match_id)
-    #       # Determine prediction type
-    # prediction_types = predictions_for_match.each_with_object do |prediction, {}|
+   
 
     # end
           # Return 1 if result and prediction are the same type
