@@ -803,29 +803,29 @@ class CMSTest < Minitest::Test
   end
   
   def test_view_match_lockdown_no_pred_result_not_admin
-    get 'match/7', {}, user_11_session
+    get 'match/1', {}, user_11_session
     
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Match locked down!'
-    assert_includes last_response.body, 'Mexico: no prediction'
-    assert_includes last_response.body, 'Poland: no prediction'
-    assert_includes last_response.body, 'Mexico: 61'
-    assert_includes last_response.body, 'Poland: 62'
+    assert_includes last_response.body, 'Senegal: no prediction'
+    assert_includes last_response.body, 'Netherlands: no prediction'
+    assert_includes last_response.body, 'Senegal: 6'
+    assert_includes last_response.body, 'Netherlands: 3'
     refute_includes last_response.body, 'Add/Change prediction'
     refute_includes last_response.body, 'Add/Change match result'
   end
   
   def test_view_match_lockdown_no_pred_result_admin
-    get 'match/7', {}, admin_session
+    get 'match/1', {}, admin_session
     
     assert_equal 200, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_includes last_response.body, 'Match locked down!'
-    assert_includes last_response.body, 'Mexico: no prediction'
-    assert_includes last_response.body, 'Poland: no prediction'
-    assert_includes last_response.body, '61'
-    assert_includes last_response.body, '62'
+    assert_includes last_response.body, 'Senegal: no prediction'
+    assert_includes last_response.body, 'Netherlands: no prediction'
+    assert_includes last_response.body, '6'
+    assert_includes last_response.body, '3'
     assert_includes last_response.body, 'Add/Change match result'
     refute_includes last_response.body, 'Add/Change prediction'
   end
@@ -1149,7 +1149,7 @@ class CMSTest < Minitest::Test
     refute_includes last_response.body, '<td hidden>4</td>'
     refute_includes last_response.body, '<td hidden>5</td>'
     assert_includes last_response.body, '<td hidden>6</td>'
-    refute_includes last_response.body, '<td hidden>7</td>'
+    assert_includes last_response.body, '<td hidden>7</td>'
     assert_includes last_response.body, '<td hidden>8</td>'
     refute_includes last_response.body, '<td hidden>9</td>'
     refute_includes last_response.body, '<td hidden>10</td>'
@@ -1222,7 +1222,7 @@ class CMSTest < Minitest::Test
     assert_includes last_response.body, '<td hidden>4</td>'
     assert_includes last_response.body, '<td hidden>5</td>'
     refute_includes last_response.body, '<td hidden>6</td>'
-    assert_includes last_response.body, '<td hidden>7</td>'
+    refute_includes last_response.body, '<td hidden>7</td>'
     refute_includes last_response.body, '<td hidden>8</td>'
     assert_includes last_response.body, '<td hidden>9</td>'
     assert_includes last_response.body, '<td hidden>10</td>'
@@ -1879,7 +1879,7 @@ def test_filter_matches_group_stages_and_final
     refute_includes last_response.body, '<td hidden>4</td>'
     refute_includes last_response.body, '<td hidden>5</td>'
     assert_includes last_response.body, '<td hidden>6</td>'
-    refute_includes last_response.body, '<td hidden>7</td>'
+    assert_includes last_response.body, '<td hidden>7</td>'
     assert_includes last_response.body, '<td hidden>8</td>'
     refute_includes last_response.body, '<td hidden>9</td>'
     refute_includes last_response.body, '<td hidden>10</td>'
@@ -1962,7 +1962,7 @@ def test_filter_matches_group_stages_and_final
   def test_carousel_predicted
     get '/match/6', {}, user_11_session_predicted_criteria
 
-    assert_includes last_response.body, '<a href="/match/8">Next match'
+    assert_includes last_response.body, '<a href="/match/7">Next match'
     refute_includes last_response.body, 'Previous match'
   end
 

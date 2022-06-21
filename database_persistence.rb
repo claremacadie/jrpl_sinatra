@@ -171,13 +171,29 @@ class DatabasePersistence
     update_match_table(match_id, home_team_points, away_team_points, user_id)
   end
 
-  def predictions_for_match(match_id)
-    sql = 'SELECT prediction_id FROM prediction WHERE match_id = $1;'
-    result = query(sql, match_id)
-    result.map { |tuple| tuple['prediction_id'].to_i}
+  def result_type(home_points, away_points)
+    case home_points <=> away_points
+    when 1  then 'home_win'
+    when -1 then 'away_win'
+    else         'draw'
+    end
   end
 
-  def result_type(match_id)
+  def predictions_for_match(match_id)
+    sql = 'SELECT prediction_id, home_team_points, away_team_points FROM prediction WHERE match_id = $1;'
+    result = query(sql, match_id)
+    predictions = result.map do |tuple| 
+      { prediction_id: tuple['prediction_id'].to_i,
+        home_team_points: tuple['home_team_points'].to_i,
+        away_team_points: tuple['away_team_points'].to_i }
+    end
+    predictions.map do |prediction|
+      { prediction_id: prediction[:prediction_id],
+        prediction_type: result_type(prediction[:home_team_points], prediction[:away_team_points]) }
+    end
+  end
+
+  def match_result_type(match_id)
     sql = 'SELECT home_team_points, away_team_points FROM match WHERE match_id = $1;'
     result = query(sql, match_id)
     match_result = result.map do |tuple|
@@ -196,12 +212,16 @@ class DatabasePersistence
   def update_scoreboard(match_id)
     # Find all prediction_id related to that match
     predictions_for_match(match_id)
-    # For each scoring system
-      # Calculate result points
-          # Determine result type - home win, away win, draw
-    result_type = result_type(match_id)
     
-          # Determine prediction type
+    # # For each scoring system
+    #   # Calculate result points
+    #       # Determine result type - home win, away win, draw
+    # match_result_type = result_type(match_id)
+    
+    #       # Determine prediction type
+    # prediction_types = predictions_for_match.each_with_object do |prediction, {}|
+
+    # end
           # Return 1 if result and prediction are the same type
       # Calculate score points
         # if home prediction and away predictions is the same as result
