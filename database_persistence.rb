@@ -199,14 +199,27 @@ class DatabasePersistence
     result_type(match_result[:home_team_points], match_result[:away_team_points])
   end
 
+  def prediction_id_in_points_table
+    sql = 'SELECT prediction_id FROM points;'
+    result = query(sql)
+    result.map { |tuple| tuple['prediction_id'] }
+  end
+
   def update_scoreboard(match_id)
-    # Find all prediction_id related to that match including prediction points
+    match_result_type = match_result_type(match_id)
     predictions_for_match(match_id)
+    existing_predictions_scored = prediction_id_in_points_table()
     
+    # Official scoring
+    # For each prediction, work out result points and score points and update db
+      # if prediciton_id already exists in points, update record
+      # else create new record
+    # prediction_for_match.each do |prediction|
+    #   if prediction[:pre]
+    # end
     # For each scoring system
       # Calculate result points
           # Determine result type - home win, away win, draw
-    match_result_type = match_result_type(match_id)
    
 
     # end
