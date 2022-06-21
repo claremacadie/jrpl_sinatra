@@ -189,7 +189,7 @@ class DatabasePersistence
     end
     predictions.map do |prediction|
       { prediction_id: prediction[:prediction_id],
-        prediction_type: result_type(prediction[:home_team_points], prediction[:away_team_points]) }
+        prediction_result_type: result_type(prediction[:home_team_points], prediction[:away_team_points]) }
     end
   end
 
@@ -200,24 +200,17 @@ class DatabasePersistence
       { home_team_points: tuple['home_team_points'].to_i,
         away_team_points: tuple['away_team_points'].to_i }
     end.first
-    if match_result[:home_team_points] > match_result[:away_team_points]
-      'home_win'
-    elsif match_result[:home_team_points] < match_result[:away_team_points]
-      'away_win'
-    else
-      'draw'
-    end
+    result_type(match_result[:home_team_points], match_result[:away_team_points])
   end
 
   def update_scoreboard(match_id)
     # Find all prediction_id related to that match
     predictions_for_match(match_id)
     
-    # # For each scoring system
-    #   # Calculate result points
-    #       # Determine result type - home win, away win, draw
-    # match_result_type = result_type(match_id)
-    
+    # For each scoring system
+      # Calculate result points
+          # Determine result type - home win, away win, draw
+    match_result_type = match_result_type(match_id)
     #       # Determine prediction type
     # prediction_types = predictions_for_match.each_with_object do |prediction, {}|
 
