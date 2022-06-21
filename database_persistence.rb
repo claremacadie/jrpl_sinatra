@@ -301,6 +301,25 @@ class DatabasePersistence
   end
   # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
+  def load_scoreboard_data
+    sql = <<~SQL
+      SELECT 
+        users.user_id,
+        sum(points.result_points) AS result_points,
+        sum(points.score_points) AS score_points
+      FROM users
+      LEFT OUTER JOIN prediction ON users.user_id = prediction.user_id
+      INNER JOIN points ON prediction.prediction_id = points.prediction_id
+      GROUP BY users.user_id;
+    SQL
+    result = query(sql)
+    result.map do |tuple|
+      { user_id: tuple['user_id'],
+        result_points: tuple['result_points'],
+        score_points: tuple['score_points'] }
+    end
+  end
+
   private
 
   def query(statement, *params)

@@ -616,7 +616,7 @@ end
 
 get '/scoreboard' do
   require_signed_in_user
-
+  @scores = @storage.load_scoreboard_data
   erb :scoreboard
 end
 
