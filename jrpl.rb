@@ -580,6 +580,7 @@ post '/match/add_result' do
     @storage.add_result(
       match_id, home_points.to_i, away_points.to_i, session[:user_id]
     )
+    @storage.update_scoreboard(match_id)
     session[:message] = 'Result submitted.'
     redirect "/match/#{match_id}"
   end

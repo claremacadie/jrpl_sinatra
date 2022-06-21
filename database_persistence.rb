@@ -169,7 +169,46 @@ class DatabasePersistence
 
   def add_result(match_id, home_team_points, away_team_points, user_id)
     update_match_table(match_id, home_team_points, away_team_points, user_id)
-    # update_points_table(match_id, user_id)
+  end
+
+  def predictions_for_match(match_id)
+    sql = 'SELECT prediction_id FROM prediction WHERE match_id = $1;'
+    result = query(sql, match_id)
+    result.map { |tuple| tuple['prediction_id'].to_i}
+  end
+
+  def result_type(match_id)
+    sql = 'SELECT home_team_points, away_team_points FROM match WHERE match_id = $1;'
+    result = query(sql, match_id)
+    match_result = result.map do |tuple|
+      { home_team_points: tuple['home_team_points'].to_i,
+        away_team_points: tuple['away_team_points'].to_i }
+    end.first
+    if match_result[:home_team_points] > match_result[:away_team_points]
+      'home_win'
+    elsif match_result[:home_team_points] < match_result[:away_team_points]
+      'away_win'
+    else
+      'draw'
+    end
+  end
+
+  def update_scoreboard(match_id)
+    # Find all prediction_id related to that match
+    predictions_for_match(match_id)
+    # For each scoring system
+      # Calculate result points
+          # Determine result type - home win, away win, draw
+    result_type = result_type(match_id)
+    
+          # Determine prediction type
+          # Return 1 if result and prediction are the same type
+      # Calculate score points
+        # if home prediction and away predictions is the same as result
+      # If points already contains that prediction_id for that system, update record
+        # UPDATE TABLE points SET result points and score points WHERE preediction_id and scoring system id
+      # Otherwise, create new points record
+        # INSERT INTO points (prediction_id, scoring_system_id, result_points, score_points)
   end
 
   def tournament_stage_names
