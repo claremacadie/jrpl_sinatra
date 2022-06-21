@@ -613,6 +613,12 @@ post '/matches/filter' do
   end
 end
 
+get '/scoreboard' do
+  require_signed_in_user
+
+  erb :scoreboard
+end
+
 not_found do
   redirect '/'
 end
