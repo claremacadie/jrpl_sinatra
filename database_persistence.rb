@@ -305,18 +305,22 @@ class DatabasePersistence
     sql = <<~SQL
       SELECT 
         users.user_id,
-        sum(points.result_points) AS result_points,
-        sum(points.score_points) AS score_points
+        users.user_name,
+        COALESCE(sum(points.result_points), 0) AS result_points,
+        COALESCE(sum(points.score_points), 0) AS score_points,
+        COALESCE(sum(points.total_points), 0) AS total_points
       FROM users
       LEFT OUTER JOIN prediction ON users.user_id = prediction.user_id
-      INNER JOIN points ON prediction.prediction_id = points.prediction_id
-      GROUP BY users.user_id;
+      LEFT OUTER JOIN points ON prediction.prediction_id = points.prediction_id
+      GROUP BY users.user_id
+      ORDER BY total_points DESC, score_points DESC, result_points DESC, user_name;
     SQL
     result = query(sql)
     result.map do |tuple|
       { user_id: tuple['user_id'],
-        result_points: tuple['result_points'],
-        score_points: tuple['score_points'] }
+        user_name: tuple['user_name'],
+        result_points: tuple['result_points'].to_i,
+        score_points: tuple['score_points'].to_i }
     end
   end
 

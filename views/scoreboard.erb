@@ -1,2 +1,19 @@
 <h1>Scoreboard</h1>
-<%= @scores %>
+<table>
+  <thead>
+    <th>User</th>
+    <th>Result points</th>
+    <th>Score points</th>
+    <th>Total points</th>
+  </thead>
+  <tbody>
+    <% @scores.each do |user_data|%>
+      <tr>
+        <td><%= user_data[:user_name] %></td>
+        <td><%= user_data[:result_points] %></td>
+        <td><%= user_data[:score_points] %></td>
+        <td><%= user_data[:result_points] + user_data[:score_points] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
