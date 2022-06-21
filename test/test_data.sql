@@ -388,8 +388,8 @@ UPDATE tournament_role
     SET from_match_id = 62 WHERE name = 'Winner Semi-Final 2';
 
 INSERT INTO scoring_system (name) VALUES
-    ('Official'),
-    ('AutoQuiz');
+    ('official'),
+    ('autoquiz');
 
 INSERT INTO prediction (user_id, match_id, home_team_points, away_team_points, date_added) VALUES
     (11, 11, 77, 78, '2022-06-12 16:45:15'),
@@ -411,4 +411,6 @@ INSERT INTO prediction (user_id, match_id, home_team_points, away_team_points, d
 
 INSERT INTO points (prediction_id, scoring_system_id, result_points, score_points, total_points) VALUES 
     (7, 1, 1, 2, 3),
-    (8, 1, 1, 0, 1);
+    (8, 1, 1, 0, 1),
+    (7, 2, 2, 4, 6),
+    (8, 2, 2, 0, 2);

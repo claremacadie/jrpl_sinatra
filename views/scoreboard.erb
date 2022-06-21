@@ -1,4 +1,31 @@
 <h1>Scoreboard</h1>
+<form action="/toggle_scoring_system" action="get">
+  <input 
+    type="radio" 
+    id="scoring_system" 
+    name="scoring_system" 
+    value="official" 
+    <% if @scoring_system == 'official' %>
+    checked 
+    <% end %>
+  />
+  <label for="scoring_system">Official</label><br>
+  
+  <input 
+    type="radio" 
+    id="scoring_system" 
+    name="scoring_system" 
+    value="autoquiz" 
+    <% if @scoring_system == 'autoquiz' %>
+    checked 
+    <% end %>
+  />
+  <label for="scoring_system">AutoQuiz</label><br>
+
+  <button type="submit">Submit</button>
+</form>
+
+
 <table>
   <thead>
     <th>User</th>
@@ -7,7 +34,7 @@
     <th>Total points</th>
   </thead>
   <tbody>
-    <% @official_scores.each do |user_data|%>
+    <% @scores.each do |user_data|%>
       <tr>
         <td><%= user_data[:user_name] %></td>
         <td><%= user_data[:result_points] %></td>

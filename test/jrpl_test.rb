@@ -2024,4 +2024,13 @@ def test_filter_matches_group_stages_and_final
     assert_includes last_response.body.gsub(/\n/, ''), '<td>Mr. Median</td>        <td>1</td>        <td>2</td>        <td>3</td>'
     assert_includes last_response.body.gsub(/\n/, ''), '<td>Maccas</td>        <td>1</td>        <td>0</td>        <td>1</td>'
   end
+  
+  def test_autoquiz_scoreboard
+    get '/toggle_scoring_system', {scoring_system: 'autoquiz'}, user_11_session
+    
+    assert_equal 200, last_response.status
+    assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
+    assert_includes last_response.body, 'Scoreboard'
+    assert_includes last_response.body.gsub(/\n/, ''), '<td>Clare Mac</td>        <td>2</td>        <td>4</td>        <td>6</td>'
+  end
 end

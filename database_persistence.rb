@@ -317,7 +317,6 @@ class DatabasePersistence
         COALESCE(sum(system_points.total_points), 0) AS total_points
       FROM users
       LEFT OUTER JOIN prediction ON users.user_id = prediction.user_id
-      --LEFT OUTER JOIN points ON prediction.prediction_id = points.prediction_id
       LEFT OUTER JOIN 
         (SELECT * FROM points WHERE scoring_system_id = $1) AS system_points 
         ON prediction.prediction_id = system_points.prediction_id
