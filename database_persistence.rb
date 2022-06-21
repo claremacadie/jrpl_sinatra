@@ -301,21 +301,30 @@ class DatabasePersistence
   end
   # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
-  def load_scoreboard_data
+  def id_for_scoring_system(scoring_system)
+    sql = 'SELECT scoring_system_id FROM scoring_system WHERE name = $1;'
+    query(sql, scoring_system).map { |tuple| tuple['scoring_system_id']}.first
+  end
+
+  def load_scoreboard_data(scoring_system)
+    scoring_system_id = id_for_scoring_system(scoring_system)
     sql = <<~SQL
       SELECT 
         users.user_id,
         users.user_name,
-        COALESCE(sum(points.result_points), 0) AS result_points,
-        COALESCE(sum(points.score_points), 0) AS score_points,
-        COALESCE(sum(points.total_points), 0) AS total_points
+        COALESCE(sum(system_points.result_points), 0) AS result_points,
+        COALESCE(sum(system_points.score_points), 0) AS score_points,
+        COALESCE(sum(system_points.total_points), 0) AS total_points
       FROM users
       LEFT OUTER JOIN prediction ON users.user_id = prediction.user_id
-      LEFT OUTER JOIN points ON prediction.prediction_id = points.prediction_id
+      --LEFT OUTER JOIN points ON prediction.prediction_id = points.prediction_id
+      LEFT OUTER JOIN 
+        (SELECT * FROM points WHERE scoring_system_id = $1) AS system_points 
+        ON prediction.prediction_id = system_points.prediction_id
       GROUP BY users.user_id
       ORDER BY total_points DESC, score_points DESC, result_points DESC, user_name;
     SQL
-    result = query(sql)
+    result = query(sql, scoring_system_id)
     result.map do |tuple|
       { user_id: tuple['user_id'],
         user_name: tuple['user_name'],

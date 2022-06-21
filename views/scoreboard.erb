@@ -7,7 +7,7 @@
     <th>Total points</th>
   </thead>
   <tbody>
-    <% @scores.each do |user_data|%>
+    <% @official_scores.each do |user_data|%>
       <tr>
         <td><%= user_data[:user_name] %></td>
         <td><%= user_data[:result_points] %></td>
