@@ -615,7 +615,6 @@ post '/matches/filter' do
 end
 
 get '/scoreboard' do
-  require_signed_in_user
   @official_scores = @storage.load_scoreboard_data('Official')
   erb :scoreboard
 end
