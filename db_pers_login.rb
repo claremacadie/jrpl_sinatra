@@ -1,5 +1,4 @@
 module DBPersLogin
-
   def load_user_credentials
     sql = 'SELECT user_name, pword, email FROM users'
     result = query(sql)
