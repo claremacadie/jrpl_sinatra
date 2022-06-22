@@ -186,25 +186,8 @@ class DatabasePersistence
     end.first
   end
 
-  def prediction_id_in_points_table
-    sql = 'SELECT prediction_id FROM points;'
-    result = query(sql)
-    result.map { |tuple| tuple['prediction_id'].to_i }
-  end
-
-  def update_points_table(pred_id, scoring_system_id, result_pts, score_pts)
-    sql = update_points_table_query()
-    query(
-      sql,
-      result_pts,
-      score_pts,
-      result_pts + score_pts,
-      pred_id,
-      scoring_system_id
-    )
-  end
-
   def insert_points_table(pred_id, scoring_system_id, result_pts, score_pts)
+    delete_existing_points_entry(pred_id, scoring_system_id)
     sql = insert_into_points_table_query()
     query(
       sql,
@@ -279,7 +262,7 @@ class DatabasePersistence
 
   def id_for_scoring_system(scoring_system)
     sql = 'SELECT scoring_system_id FROM scoring_system WHERE name = $1;'
-    query(sql, scoring_system).map { |tuple| tuple['scoring_system_id'] }.first
+    query(sql, scoring_system).map { |tuple| tuple['scoring_system_id'] }.first.to_i
   end
 
   def load_scoreboard_data(scoring_system)
@@ -581,5 +564,10 @@ class DatabasePersistence
       FROM prediction
       WHERE match_id = $1;
     SQL
+  end
+
+  def delete_existing_points_entry(pred_id, scoring_system_id)
+    sql = 'DELETE FROM points WHERE prediction_id = $1 AND scoring_system_id = $2;'
+    query(sql, pred_id, scoring_system_id)
   end
 end

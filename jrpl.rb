@@ -418,15 +418,6 @@ def result_type(home_points, away_points)
   end
 end
 
-def add_pts_to_db(pred_id, scoring_id, result_pts, score_pts)
-  predictions_scored = @storage.prediction_id_in_points_table()
-  if predictions_scored.include?(pred_id)
-    @storage.update_points_table(pred_id, scoring_id, result_pts, score_pts)
-  else
-    @storage.insert_points_table(pred_id, scoring_id, result_pts, score_pts)
-  end
-end
-
 def update_official_scoring(result, match_type, predictions)
   scoring_id = @storage.id_for_scoring_system('official')
   predictions.each do |pred|
@@ -435,7 +426,7 @@ def update_official_scoring(result, match_type, predictions)
     home_score_pts = (result[:home_pts] == pred[:home_pts] ? 1 : 0)
     away_score_pts = (result[:away_pts] == pred[:away_pts] ? 1 : 0)
     score_pts = home_score_pts + away_score_pts
-    add_pts_to_db(pred[:pred_id], scoring_id, result_pts, score_pts)
+    @storage.insert_points_table(pred[:pred_id], scoring_id, result_pts, score_pts)
   end
 end
 
@@ -443,11 +434,11 @@ def update_autoquiz_scoring(result, match_type, predictions)
   scoring_id = @storage.id_for_scoring_system('autoquiz')
   predictions.each do |pred|
     pred_type = result_type(pred[:home_pts], pred[:away_pts])
-    result_pts = (match_type == pred_type ? 1 : 0)
+    result_pts = (match_type == pred_type ? 2 : 0)
     home_score_pts = (result[:home_pts] == pred[:home_pts] ? 2 : 0)
     away_score_pts = (result[:away_pts] == pred[:away_pts] ? 2 : 0)
     score_pts = home_score_pts + away_score_pts
-    add_pts_to_db(pred[:pred_id], scoring_id, result_pts, score_pts)
+    @storage.insert_points_table(pred[:pred_id], scoring_id, result_pts, score_pts)
   end
 end
 
