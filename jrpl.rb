@@ -410,6 +410,36 @@ def load_matches
   @storage.filter_matches(session[:user_id], session[:criteria], lockdown)
 end
 
+def result_type(home_points, away_points)
+  case home_points <=> away_points
+  when 1  then 'home_win'
+  when -1 then 'away_win'
+  else         'draw'
+  end
+end
+
+def update_scoreboard(match_id)
+  predictions = @storage.predictions_for_match(match_id)
+  result = @storage.match_result(match_id)
+  match_type = result_type(result[:home_team_points], result[:away_team_points])
+  existing_predictions_scored = @storage.prediction_id_in_points_table()
+  
+  # Official scoring:
+  scoring_id = 1
+  predictions.each do |prediction|
+    prediction_type = result_type(prediction[:home_team_points], prediction[:away_team_points])
+    result_points = ( match_type == prediction_type ? 1 : 0 )
+    home_score_points = ( result[:home_team_points] == prediction[:home_team_points] ? 1 : 0 )
+    away_score_points = ( result[:away_team_points] == prediction[:away_team_points] ? 1 : 0 )
+    score_points = home_score_points + away_score_points
+    if existing_predictions_scored.include?(prediction[:prediction_id])
+      @storage.update_points_table(prediction[:prediction_id], scoring_id, result_points, score_points)
+    else
+      @storage.insert_into_points_table(prediction[:prediction_id], scoring_id, result_points, score_points)
+    end
+  end
+end
+
 # Routes
 get '/' do
   user_signed_in?
@@ -580,7 +610,7 @@ post '/match/add_result' do
     @storage.add_result(
       match_id, home_points.to_i, away_points.to_i, session[:user_id]
     )
-    @storage.update_scoreboard(match_id)
+    update_scoreboard(match_id)
     session[:message] = 'Result submitted.'
     redirect "/match/#{match_id}"
   end

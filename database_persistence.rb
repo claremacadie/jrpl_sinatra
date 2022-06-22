@@ -171,14 +171,6 @@ class DatabasePersistence
     update_match_table(match_id, home_team_points, away_team_points, user_id)
   end
 
-  def result_type(home_points, away_points)
-    case home_points <=> away_points
-    when 1  then 'home_win'
-    when -1 then 'away_win'
-    else         'draw'
-    end
-  end
-
   def predictions_for_match(match_id)
     sql = 'SELECT prediction_id, home_team_points, away_team_points FROM prediction WHERE match_id = $1;'
     result = query(sql, match_id)
@@ -221,28 +213,6 @@ class DatabasePersistence
       ($1, $2, $3, $4, $5);
     SQL
     query(sql, prediction_id, scoring_system_id, result_points, score_points, result_points + score_points)
-  end
-
-  def update_scoreboard(match_id)
-    predictions = predictions_for_match(match_id)
-    result = match_result(match_id)
-    match_type = result_type(result[:home_team_points], result[:away_team_points])
-    existing_predictions_scored = prediction_id_in_points_table()
-    
-    # Official scoring:
-    scoring_id = 1
-    predictions.each do |prediction|
-      prediction_type = result_type(prediction[:home_team_points], prediction[:away_team_points])
-      result_points = ( match_type == prediction_type ? 1 : 0 )
-      home_score_points = ( result[:home_team_points] == prediction[:home_team_points] ? 1 : 0 )
-      away_score_points = ( result[:away_team_points] == prediction[:away_team_points] ? 1 : 0 )
-      score_points = home_score_points + away_score_points
-      if existing_predictions_scored.include?(prediction[:prediction_id])
-        update_points_table(prediction[:prediction_id], scoring_id, result_points, score_points)
-      else
-        insert_into_points_table(prediction[:prediction_id], scoring_id, result_points, score_points)
-      end
-    end
   end
 
   def tournament_stage_names
