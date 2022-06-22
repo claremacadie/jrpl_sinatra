@@ -179,12 +179,6 @@ class DatabasePersistence
     str ? str.to_i : nil
   end
 
-  def admin_id
-    sql = 'SELECT role_id FROM role WHERE name = $1;'
-    result = query(sql, 'Admin')
-    result.first['role_id'].to_i
-  end
-
   # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
   def tuple_to_matches_details_hash(tuple)
     { match_id: tuple['match_id'].to_i,

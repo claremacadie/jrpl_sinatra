@@ -1,7 +1,7 @@
 module LoginDBPers
   def assign_admin(user_id)
     sql = 'INSERT INTO user_role VALUES ($1, $2);'
-    query(sql, user_id, admin_id())
+    query(sql, user_id, admin_role_id())
   end
 
   def change_email(old_user_name, new_email)
@@ -80,7 +80,7 @@ module LoginDBPers
 
   def unassign_admin(user_id)
     sql = 'DELETE FROM user_role WHERE user_id = $1 AND role_id = $2;'
-    query(sql, user_id, admin_id())
+    query(sql, user_id, admin_role_id())
   end
 
   def upload_new_user_credentials(user_details)
@@ -91,7 +91,7 @@ module LoginDBPers
 
   def user_admin?(user_id)
     sql = 'SELECT * FROM user_role WHERE user_id = $1 AND role_id = $2;'
-    result = query(sql, user_id, admin_id())
+    result = query(sql, user_id, admin_role_id())
     !(result.ntuples == 0)
   end
 
@@ -116,6 +116,12 @@ module LoginDBPers
   end
 
   private
+
+  def admin_role_id
+    sql = 'SELECT role_id FROM role WHERE name = $1;'
+    result = query(sql, 'Admin')
+    result.first['role_id'].to_i
+  end
 
   def select_query_all_users
     <<~SQL
