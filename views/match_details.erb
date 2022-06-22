@@ -37,22 +37,22 @@
   <h2>Result</h2>
   <% if session[:user_roles]&.include?('Admin') %>
       <form action="/match/add_result" method="post">
-      <label for="home_team_points"><%= home_team_name(@match) %>:
+      <label for="home_pts"><%= home_team_name(@match) %>:
         <input 
           type="number" 
           min="0"
-          id="home_team_points" 
+          id="home_pts" 
           value="<%= home_team_points(@match) %>"
-          name="home_team_points"
+          name="home_pts"
         />
       </label>
-      <label for="away_team_points"><%= away_team_name(@match) %>:
+      <label for="away_pts"><%= away_team_name(@match) %>:
         <input 
           type="number" 
           min="0"
-          id="away_team_points" 
+          id="away_pts" 
           value="<%= away_team_points(@match) %>"
-          name="away_team_points"
+          name="away_pts"
         />
       </label>
       <input type="hidden" name="match_id" value="<%= @match[:match_id] %>">
