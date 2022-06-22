@@ -5,6 +5,7 @@ require_relative 'db_pers_login'
 require_relative 'db_pers_matches'
 require_relative 'db_pers_points'
 require_relative 'db_pers_predictions'
+require_relative 'db_pers_users'
 
 class DatabasePersistence
   include DBPersCookies
@@ -12,6 +13,7 @@ class DatabasePersistence
   include DBPersMatches
   include DBPersPoints
   include DBPersPredictions
+  include DBPersUsers
 
   def initialize(logger)
     @db = if ENV['RACK_ENV'] == 'test'
