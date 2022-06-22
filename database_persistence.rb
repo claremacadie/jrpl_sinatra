@@ -186,7 +186,7 @@ class DatabasePersistence
     end.first
   end
 
-  def insert_points_table(pred_id, scoring_system_id, result_pts, score_pts)
+  def add_user_points(pred_id, scoring_system_id, result_pts, score_pts)
     delete_existing_points_entry(pred_id, scoring_system_id)
     sql = insert_into_points_table_query()
     query(
@@ -262,7 +262,9 @@ class DatabasePersistence
 
   def id_for_scoring_system(scoring_system)
     sql = 'SELECT scoring_system_id FROM scoring_system WHERE name = $1;'
-    query(sql, scoring_system).map { |tuple| tuple['scoring_system_id'] }.first.to_i
+    query(sql, scoring_system).map do |tuple|
+      tuple['scoring_system_id']
+    end.first.to_i
   end
 
   def load_scoreboard_data(scoring_system)
@@ -567,7 +569,10 @@ class DatabasePersistence
   end
 
   def delete_existing_points_entry(pred_id, scoring_system_id)
-    sql = 'DELETE FROM points WHERE prediction_id = $1 AND scoring_system_id = $2;'
+    sql = <<~SQL
+      DELETE FROM points
+      WHERE prediction_id = $1 AND scoring_system_id = $2;
+    SQL
     query(sql, pred_id, scoring_system_id)
   end
 end

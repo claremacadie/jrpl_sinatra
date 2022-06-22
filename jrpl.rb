@@ -426,7 +426,7 @@ def update_official_scoring(result, match_type, predictions)
     home_score_pts = (result[:home_pts] == pred[:home_pts] ? 1 : 0)
     away_score_pts = (result[:away_pts] == pred[:away_pts] ? 1 : 0)
     score_pts = home_score_pts + away_score_pts
-    @storage.insert_points_table(pred[:pred_id], scoring_id, result_pts, score_pts)
+    @storage.add_user_points(pred[:pred_id], scoring_id, result_pts, score_pts)
   end
 end
 
@@ -438,7 +438,7 @@ def update_autoquiz_scoring(result, match_type, predictions)
     home_score_pts = (result[:home_pts] == pred[:home_pts] ? 2 : 0)
     away_score_pts = (result[:away_pts] == pred[:away_pts] ? 2 : 0)
     score_pts = home_score_pts + away_score_pts
-    @storage.insert_points_table(pred[:pred_id], scoring_id, result_pts, score_pts)
+    @storage.add_user_points(pred[:pred_id], scoring_id, result_pts, score_pts)
   end
 end
 
