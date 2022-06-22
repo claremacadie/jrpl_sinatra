@@ -1983,8 +1983,10 @@ def test_filter_matches_group_stages_and_final
   def test_locked_down_displayed_matches_list
     get '/matches/all', {}, user_11_session
 
-    assert_includes last_response.body.gsub(/\n/, ''), '</td>          <td>England</td>          <td>no prediction</td>          <td>no prediction</td>          <td>Iran</td>          <td>              Locked down          </td>'
-    assert_includes last_response.body.gsub(/\n/, ''), '<td>Morocco</td>          <td>no prediction</td>          <td>no prediction</td>          <td>Croatia</td>          <td>          </td>          <td>'
+    assert_includes last_response.body.gsub(/\n/, ''), '<td>England</td>          <td>no prediction</td>          <td>no prediction</td>          <td>Iran</td>            <td>Locked down</td>            <td>4</td>            <td>5</td>'
+    assert_includes last_response.body.gsub(/\n/, ''), '<td>Qatar</td>          <td>no prediction</td>          <td>no prediction</td>          <td>Ecuador</td>            <td>Locked down</td>            <td>no result</td>            <td>no result</td>          <td>'
+    assert_includes last_response.body.gsub(/\n/, ''), '<td>Denmark</td>          <td>71</td>          <td>72</td>          <td>Tunisia</td>            <td>Locked down</td>            <td>no result</td>            <td>no result</td>          <td>'
+    assert_includes last_response.body.gsub(/\n/, ''), '<td>Morocco</td>          <td>no prediction</td>          <td>no prediction</td>          <td>Croatia</td>            <td></td>            <td></td>            <td></td>          <td>'
   end
 
   def test_select_deslect_all_on_match_filter_form

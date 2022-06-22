@@ -12,6 +12,8 @@
       <th>Away prediction</th>
       <th>Away team</th>
       <th></th>
+      <th>Home result</th>
+      <th>Away result</th>
       <th></th>
     </thead>
     <tbody>
@@ -24,11 +26,15 @@
           <td><%= home_team_prediction(match) %></td>
           <td><%= away_team_prediction(match) %></td>
           <td><%= away_team_name(match) %></td>
-          <td>
-            <% if match_locked_down?(match) %>
-              Locked down
-            <% end %>
-          </td>
+          <% if match_locked_down?(match) %>
+            <td>Locked down</td>
+            <td><%= home_team_points(match) %></td>
+            <td><%= away_team_points(match) %></td>
+          <% else %>
+            <td></td>
+            <td></td>
+            <td></td>
+          <% end %>
           <td><a href="/match/<%= match[:match_id] %>">View match</a></td>
         </tr>
       <% end %>
