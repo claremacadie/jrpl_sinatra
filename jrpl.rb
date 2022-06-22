@@ -418,15 +418,16 @@ def result_type(home_points, away_points)
   end
 end
 
-def add_points_to_db(pred_id, preds_scored, scoring_id, result_pts, score_pts)
-  if preds_scored.include?(pred_id)
+def add_pts_to_db(pred_id, scoring_id, result_pts, score_pts)
+  predictions_scored = @storage.prediction_id_in_points_table()
+  if predictions_scored.include?(pred_id)
     @storage.update_points_table(pred_id, scoring_id, result_pts, score_pts)
   else
     @storage.insert_points_table(pred_id, scoring_id, result_pts, score_pts)
   end
 end
 
-def update_official_scoring(result, match_type, predictions, preds_scored)
+def update_official_scoring(result, match_type, predictions)
   scoring_id = @storage.id_for_scoring_system('official')
   predictions.each do |pred|
     pred_type = result_type(pred[:home_pts], pred[:away_pts])
@@ -434,13 +435,7 @@ def update_official_scoring(result, match_type, predictions, preds_scored)
     home_score_pts = ( result[:home_pts] == pred[:home_pts] ? 1 : 0 )
     away_score_pts = ( result[:away_pts] == pred[:away_pts] ? 1 : 0 )
     score_pts = home_score_pts + away_score_pts
-    add_points_to_db(
-      pred[:pred_id],
-      preds_scored,
-      scoring_id,
-      result_pts,
-      score_pts
-    )
+    add_pts_to_db( pred[:pred_id], scoring_id, result_pts, score_pts)
   end
 end
 
@@ -448,9 +443,8 @@ def update_scoreboard(match_id)
   result = @storage.match_result(match_id)
   match_type = result_type(result[:home_pts], result[:away_pts])
   predictions = @storage.predictions_for_match(match_id)
-  predictions_scored = @storage.prediction_id_in_points_table()
   
-  update_official_scoring(result, match_type, predictions, predictions_scored)
+  update_official_scoring(result, match_type, predictions)
 end
 
 # Routes
