@@ -435,7 +435,7 @@ def update_scoreboard(match_id)
     if existing_predictions_scored.include?(prediction[:prediction_id])
       @storage.update_points_table(prediction[:prediction_id], scoring_id, result_points, score_points)
     else
-      @storage.insert_into_points_table(prediction[:prediction_id], scoring_id, result_points, score_points)
+      @storage.insert_points_table(prediction[:prediction_id], scoring_id, result_points, score_points)
     end
   end
 end

@@ -167,15 +167,10 @@ class DatabasePersistence
     query(sql).first['min'].to_i
   end
 
-  def add_result(match_id, home_team_points, away_team_points, user_id)
-    sql = update_match_table_query()
-    query(sql, home_team_points, away_team_points, user_id, Time.now, match_id)
-  end
-
   def predictions_for_match(match_id)
-    sql = 'SELECT prediction_id, home_team_points, away_team_points FROM prediction WHERE match_id = $1;'
+    sql = predictions_for_match_query()
     result = query(sql, match_id)
-    result.map do |tuple| 
+    result.map do |tuple|
       { prediction_id: tuple['prediction_id'].to_i,
         home_team_points: tuple['home_team_points'].to_i,
         away_team_points: tuple['away_team_points'].to_i }
@@ -183,7 +178,7 @@ class DatabasePersistence
   end
 
   def match_result(match_id)
-    sql = 'SELECT home_team_points, away_team_points FROM match WHERE match_id = $1;'
+    sql = match_result_query()
     result = query(sql, match_id)
     result.map do |tuple|
       { home_team_points: tuple['home_team_points'].to_i,
@@ -197,23 +192,33 @@ class DatabasePersistence
     result.map { |tuple| tuple['prediction_id'].to_i }
   end
 
-  def update_points_table(prediction_id, scoring_system_id, result_points, score_points)
-    sql = <<~SQL
-      UPDATE points
-        SET result_points = $1, score_points = $2, total_points = $3
-      WHERE (prediction_id = $4 AND scoring_system_id = $5);
-    SQL
-    query(sql, result_points, score_points, result_points + score_points, prediction_id, scoring_system_id)
+  def update_points_table(pred_id, scoring_system_id, result_pts, score_pts)
+    sql = update_points_table_query()
+    query(
+      sql,
+      result_pts,
+      score_pts,
+      result_pts + score_pts,
+      pred_id,
+      scoring_system_id
+    )
   end
 
-  def insert_into_points_table(prediction_id, scoring_system_id, result_points, score_points)
-    sql = <<~SQL
-      INSERT INTO points 
-      (prediction_id, scoring_system_id, result_points, score_points, total_points)
-      VALUES
-      ($1, $2, $3, $4, $5);
-    SQL
-    query(sql, prediction_id, scoring_system_id, result_points, score_points, result_points + score_points)
+  def insert_points_table(pred_id, scoring_system_id, result_pts, score_pts)
+    sql = insert_into_points_table_query()
+    query(
+      sql,
+      pred_id,
+      scoring_system_id,
+      result_pts,
+      score_pts,
+      result_pts + score_pts
+    )
+  end
+
+  def add_result(match_id, home_team_points, away_team_points, user_id)
+    sql = update_match_table_query()
+    query(sql, home_team_points, away_team_points, user_id, Time.now, match_id)
   end
 
   def tournament_stage_names
@@ -274,26 +279,12 @@ class DatabasePersistence
 
   def id_for_scoring_system(scoring_system)
     sql = 'SELECT scoring_system_id FROM scoring_system WHERE name = $1;'
-    query(sql, scoring_system).map { |tuple| tuple['scoring_system_id']}.first
+    query(sql, scoring_system).map { |tuple| tuple['scoring_system_id'] }.first
   end
 
   def load_scoreboard_data(scoring_system)
     scoring_system_id = id_for_scoring_system(scoring_system)
-    sql = <<~SQL
-      SELECT 
-        users.user_id,
-        users.user_name,
-        COALESCE(sum(system_points.result_points), 0) AS result_points,
-        COALESCE(sum(system_points.score_points), 0) AS score_points,
-        COALESCE(sum(system_points.total_points), 0) AS total_points
-      FROM users
-      LEFT OUTER JOIN prediction ON users.user_id = prediction.user_id
-      LEFT OUTER JOIN 
-        (SELECT * FROM points WHERE scoring_system_id = $1) AS system_points 
-        ON prediction.prediction_id = system_points.prediction_id
-      GROUP BY users.user_id
-      ORDER BY total_points DESC, score_points DESC, result_points DESC, user_name;
-    SQL
+    sql = select_users_points_query()
     result = query(sql, scoring_system_id)
     result.map do |tuple|
       { user_id: tuple['user_id'],
@@ -534,7 +525,6 @@ class DatabasePersistence
     ].join(' ')
   end
 
-  
   def update_match_table_query
     <<~SQL
       UPDATE match
@@ -544,6 +534,52 @@ class DatabasePersistence
         result_posted_by = $3,
         result_posted_on = $4
       WHERE match_id = $5;
+    SQL
+  end
+
+  def update_points_table_query
+    <<~SQL
+      UPDATE points
+      SET result_points = $1, score_points = $2, total_points = $3
+      WHERE (prediction_id = $4 AND scoring_system_id = $5);
+    SQL
+  end
+
+  def insert_into_points_table_query
+    <<~SQL
+      INSERT INTO points
+      (prediction_id, scoring_system_id, result_points, score_points, total_points)
+      VALUES ($1, $2, $3, $4, $5);
+    SQL
+  end
+
+  def select_users_points_query
+    <<~SQL
+      SELECT
+        users.user_id,
+        users.user_name,
+        COALESCE(sum(system_points.result_points), 0) AS result_points,
+        COALESCE(sum(system_points.score_points), 0) AS score_points,
+        COALESCE(sum(system_points.total_points), 0) AS total_points
+      FROM users
+      LEFT OUTER JOIN prediction ON users.user_id = prediction.user_id
+      LEFT OUTER JOIN
+        (SELECT * FROM points WHERE scoring_system_id = $1) AS system_points
+        ON prediction.prediction_id = system_points.prediction_id
+      GROUP BY users.user_id
+      ORDER BY total_points DESC, score_points DESC, result_points DESC, user_name;
+    SQL
+  end
+
+  def match_result_query
+    'SELECT home_team_points, away_team_points FROM match WHERE match_id = $1;'
+  end
+
+  def predictions_for_match_query
+    <<~SQL
+      SELECT prediction_id, home_team_points, away_team_points
+      FROM prediction
+      WHERE match_id = $1;
     SQL
   end
 end
