@@ -4,7 +4,7 @@ require_relative 'login_db_pers'
 
 class DatabasePersistence
   include LoginDBPers
-  
+
   def initialize(logger)
     @db = if ENV['RACK_ENV'] == 'test'
             PG.connect(dbname: 'jrpl_test')
@@ -183,36 +183,6 @@ class DatabasePersistence
     sql = 'SELECT role_id FROM role WHERE name = $1;'
     result = query(sql, 'Admin')
     result.first['role_id'].to_i
-  end
-
-  def select_query_single_user
-    <<~SQL
-      SELECT users.user_id, users.user_name, users.email, string_agg(role.name, ', ') AS roles
-      FROM users
-      FULL OUTER JOIN user_role ON users.user_id = user_role.user_id
-      FULL OUTER JOIN role ON user_role.role_id = role.role_id
-      WHERE users.user_id = $1
-      GROUP BY users.user_id, users.user_name, users.email
-      ORDER BY users.user_name;
-    SQL
-  end
-
-  def select_query_users_details
-    <<~SQL
-      SELECT users.user_id, users.user_name, users.email, string_agg(role.name, ', ') AS roles
-      FROM users
-      FULL OUTER JOIN user_role ON users.user_id = user_role.user_id
-      FULL OUTER JOIN role ON user_role.role_id = role.role_id
-      GROUP BY users.user_id, users.user_name, users.email
-      ORDER BY users.user_name;
-    SQL
-  end
-
-  def tuple_to_users_details_hash(tuple)
-    { user_id: tuple['user_id'].to_i,
-      user_name: tuple['user_name'],
-      email: tuple['email'],
-      roles: tuple['roles'] }
   end
 
   # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
