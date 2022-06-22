@@ -2,10 +2,12 @@ require 'pg'
 
 require_relative 'login_db_pers'
 require_relative 'db_pers_matches'
+require_relative 'db_pers_predictions'
 
 class DatabasePersistence
   include LoginDBPers
   include DBPersMatches
+  include DBPersPredictions
 
   def initialize(logger)
     @db = if ENV['RACK_ENV'] == 'test'
@@ -18,27 +20,6 @@ class DatabasePersistence
 
   def disconnect
     @db.close
-  end
-
-  def delete_prediction(user_id, match_id)
-    sql = 'DELETE FROM prediction WHERE user_id = $1 AND match_id = $2;'
-    query(sql, user_id, match_id)
-  end
-
-  def add_prediction(user_id, match_id, home_team_points, away_team_points)
-    delete_prediction(user_id, match_id)
-    sql = insert_prediction_query
-    query(sql, user_id, match_id, home_team_points, away_team_points)
-  end
-
-  def predictions_for_match(match_id)
-    sql = predictions_for_match_query()
-    result = query(sql, match_id)
-    result.map do |tuple|
-      { pred_id: tuple['prediction_id'].to_i,
-        home_pts: tuple['home_team_points'].to_i,
-        away_pts: tuple['away_team_points'].to_i }
-    end
   end
 
   def add_user_points(pred_id, scoring_system_id, result_pts, score_pts)
@@ -91,14 +72,6 @@ class DatabasePersistence
     str ? str.to_i : nil
   end
 
-  def insert_prediction_query
-    <<~SQL
-      INSERT INTO prediction
-        (user_id, match_id, home_team_points, away_team_points)
-      VALUES ($1, $2, $3, $4);
-    SQL
-  end
-  
   def update_points_table_query
     <<~SQL
       UPDATE points
@@ -130,18 +103,6 @@ class DatabasePersistence
         ON prediction.prediction_id = system_points.prediction_id
       GROUP BY users.user_id
       ORDER BY total_points DESC, score_points DESC, result_points DESC, user_name;
-    SQL
-  end
-
-  def match_result_query
-    'SELECT home_team_points, away_team_points FROM match WHERE match_id = $1;'
-  end
-
-  def predictions_for_match_query
-    <<~SQL
-      SELECT prediction_id, home_team_points, away_team_points
-      FROM prediction
-      WHERE match_id = $1;
     SQL
   end
 

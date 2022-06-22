@@ -169,6 +169,10 @@ module DBPersMatches
     end
   end
 
+  def match_result_query
+    'SELECT home_team_points, away_team_points FROM match WHERE match_id = $1;'
+  end
+
   def order_clause
     'ORDER BY match.date, match.kick_off, match.match_id;'
   end
