@@ -419,7 +419,7 @@ def result_type(home_points, away_points)
 end
 
 def update_official_scoring(result, match_type, predictions, predictions_scored)
-  scoring_id = 1
+  scoring_id = @storage.id_for_scoring_system('official')
   predictions.each do |pred|
     prediction_type = result_type(pred[:home_pts], pred[:away_pts])
     result_pts = ( match_type == prediction_type ? 1 : 0 )
