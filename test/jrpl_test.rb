@@ -859,7 +859,7 @@ class CMSTest < Minitest::Test
   end
 
   def test_add_new_result
-    post '/match/add_result', {match_id: '3', home_team_points: '98', away_team_points: '99'}, admin_session
+    post '/match/add_result', {match_id: '3', home_pts: '98', away_pts: '99'}, admin_session
     
     assert_equal 302, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
@@ -871,7 +871,7 @@ class CMSTest < Minitest::Test
   end
 
   def test_add_new_result_not_admin
-    post '/match/add_result', {match_id: '3', home_team_points: '98', away_team_points: '99'}, user_11_session
+    post '/match/add_result', {match_id: '3', home_pts: '98', away_pts: '99'}, user_11_session
     assert_equal 302, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
     assert_equal 'You must be an administrator to do that.', session[:message]
@@ -882,7 +882,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_change_result
-    post '/match/add_result', {match_id: '2', home_team_points: '98', away_team_points: '99'}, admin_session
+    post '/match/add_result', {match_id: '2', home_pts: '98', away_pts: '99'}, admin_session
     
     assert_equal 302, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
@@ -894,7 +894,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_add_decimal_result
-    post '/match/add_result', {match_id: '3', home_team_points: '2.3', away_team_points: '3'}, admin_session_with_all_criteria
+    post '/match/add_result', {match_id: '3', home_pts: '2.3', away_pts: '3'}, admin_session_with_all_criteria
     
     assert_equal 422, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
@@ -902,7 +902,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_add_negative_result
-    post '/match/add_result', {match_id: 3, home_team_points: '-2', away_team_points: '3'}, admin_session_with_all_criteria
+    post '/match/add_result', {match_id: 3, home_pts: '-2', away_pts: '3'}, admin_session_with_all_criteria
     
     assert_equal 422, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
@@ -910,7 +910,7 @@ class CMSTest < Minitest::Test
   end
   
   def test_add_result_not_lockeddown_match
-    post '/match/add_result', {match_id: '64', home_team_points: '2', away_team_points: '3'}, admin_session_with_all_criteria
+    post '/match/add_result', {match_id: '64', home_pts: '2', away_pts: '3'}, admin_session_with_all_criteria
     
     assert_equal 422, last_response.status
     assert_equal 'text/html;charset=utf-8', last_response['Content-Type']
@@ -2003,7 +2003,7 @@ def test_filter_matches_group_stages_and_final
   end
   
   def test_scoreboard_change_result
-    post '/match/add_result', {match_id: 7, home_team_points: '2', away_team_points: '1'}, admin_session
+    post '/match/add_result', {match_id: 7, home_pts: '2', away_pts: '1'}, admin_session
     
     get '/scoreboard'
     assert_equal 200, last_response.status
@@ -2014,7 +2014,7 @@ def test_filter_matches_group_stages_and_final
   end
   
   def test_scoreboard_add_result
-    post '/match/add_result', {match_id: 6, home_team_points: '2', away_team_points: '1'}, admin_session
+    post '/match/add_result', {match_id: 6, home_pts: '2', away_pts: '1'}, admin_session
     
     get '/scoreboard'
     assert_equal 200, last_response.status

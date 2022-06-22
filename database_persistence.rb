@@ -171,9 +171,9 @@ class DatabasePersistence
     sql = predictions_for_match_query()
     result = query(sql, match_id)
     result.map do |tuple|
-      { prediction_id: tuple['prediction_id'].to_i,
-        home_team_points: tuple['home_team_points'].to_i,
-        away_team_points: tuple['away_team_points'].to_i }
+      { pred_id: tuple['prediction_id'].to_i,
+        home_pts: tuple['home_team_points'].to_i,
+        away_pts: tuple['away_team_points'].to_i }
     end
   end
 
@@ -181,8 +181,8 @@ class DatabasePersistence
     sql = match_result_query()
     result = query(sql, match_id)
     result.map do |tuple|
-      { home_team_points: tuple['home_team_points'].to_i,
-        away_team_points: tuple['away_team_points'].to_i }
+      { home_pts: tuple['home_team_points'].to_i,
+        away_pts: tuple['away_team_points'].to_i }
     end.first
   end
 
@@ -347,8 +347,8 @@ class DatabasePersistence
     { match_id: tuple['match_id'].to_i,
       match_date: tuple['date'],
       kick_off: tuple['kick_off'],
-      home_team_points: convert_str_to_int(tuple['home_team_points']),
-      away_team_points: convert_str_to_int(tuple['away_team_points']),
+      home_pts: convert_str_to_int(tuple['home_team_points']),
+      away_pts: convert_str_to_int(tuple['away_team_points']),
       home_team_prediction: convert_str_to_int(tuple['home_team_prediction']),
       away_team_prediction: convert_str_to_int(tuple['away_team_prediction']),
       home_team_name: tuple['home_team_name'],
