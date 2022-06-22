@@ -168,7 +168,8 @@ class DatabasePersistence
   end
 
   def add_result(match_id, home_team_points, away_team_points, user_id)
-    update_match_table(match_id, home_team_points, away_team_points, user_id)
+    sql = update_match_table_query()
+    query(sql, home_team_points, away_team_points, user_id, Time.now, match_id)
   end
 
   def predictions_for_match(match_id)
@@ -534,8 +535,8 @@ class DatabasePersistence
   end
 
   
-  def update_match_table(match_id, home_team_points, away_team_points, user_id)
-    sql = <<~SQL
+  def update_match_table_query
+    <<~SQL
       UPDATE match
       SET
         home_team_points = $1,
@@ -544,6 +545,5 @@ class DatabasePersistence
         result_posted_on = $4
       WHERE match_id = $5;
     SQL
-    query(sql, home_team_points, away_team_points, user_id, Time.now, match_id)
   end
 end
