@@ -1,12 +1,12 @@
 require 'pg'
 
-require_relative 'login_db_pers'
+require_relative 'db_pers_login'
 require_relative 'db_pers_matches'
 require_relative 'db_pers_points'
 require_relative 'db_pers_predictions'
 
 class DatabasePersistence
-  include LoginDBPers
+  include DBPersLogin
   include DBPersMatches
   include DBPersPoints
   include DBPersPredictions

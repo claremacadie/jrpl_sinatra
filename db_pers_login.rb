@@ -1,4 +1,4 @@
-module LoginDBPers
+module DBPersLogin
   def assign_admin(user_id)
     sql = 'INSERT INTO user_role VALUES ($1, $2);'
     query(sql, user_id, admin_role_id())
