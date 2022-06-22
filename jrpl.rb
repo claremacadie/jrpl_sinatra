@@ -7,10 +7,12 @@ require 'tilt/erubis'
 
 require_relative 'database_persistence'
 require_relative 'loginable'
+require_relative 'jrpl_route_errors'
 require_relative 'jrpl_route_helpers'
 require_relative 'jrpl_view_helpers'
 
 include Loginable
+include RouteErrors
 include RouteHelpers
 
 # Constant definitions

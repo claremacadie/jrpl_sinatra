@@ -1,5 +1,5 @@
 module DBPersPoints
-  def add_user_points(pred_id, scoring_system_id, result_pts, score_pts)
+  def add_points(pred_id, scoring_system_id, result_pts, score_pts)
     delete_existing_points_entry(pred_id, scoring_system_id)
     sql = insert_into_points_table_query()
     query(
