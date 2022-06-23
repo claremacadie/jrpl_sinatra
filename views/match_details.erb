@@ -1,34 +1,34 @@
 <h1>Match details</h1>
-<p hidden>Match id: <%= @match[:match_id] %></p>
-<p>Date: <%= @match[:match_date] %></p>
-<p>Kick-off: <%= @match[:kick_off] %></p>
+<p hidden>Match id: <%== @match[:match_id] %></p>
+<p>Date: <%== @match[:match_date] %></p>
+<p>Kick-off: <%== @match[:kick_off] %></p>
 
 <h2>Prediction</h2>
 <% if @match[:locked_down] %>
   <p>Match locked down!</p>
-  <p><%= home_team_name(@match) %>: <%= home_team_prediction(@match) %></p>
-  <p><%= away_team_name(@match) %>: <%= away_team_prediction(@match) %></p>
+  <p><%== home_team_name(@match) %>: <%== home_team_prediction(@match) %></p>
+  <p><%== away_team_name(@match) %>: <%== away_team_prediction(@match) %></p>
 <% else %>
   <form action="/match/add_prediction" method="post">
-    <label for="home_team_prediction"><%= home_team_name(@match) %>:
+    <label for="home_team_prediction"><%== home_team_name(@match) %>:
       <input 
         type="number" 
         min="0"
         id="home_team_prediction" 
-        placeholder="<%= home_team_prediction(@match) %>"
+        placeholder="<%== home_team_prediction(@match) %>"
         name="home_team_prediction"
       />
     </label>
-    <label for="away_team_prediction"><%= away_team_name(@match) %>:
+    <label for="away_team_prediction"><%== away_team_name(@match) %>:
       <input 
         type="number" 
         min="0"
         id="away_team_prediction" 
-        placeholder="<%= away_team_prediction(@match) %>"
+        placeholder="<%== away_team_prediction(@match) %>"
         name="away_team_prediction"
       />
     </label>
-    <input type="hidden" name="match_id" value="<%= @match[:match_id] %>">
+    <input type="hidden" name="match_id" value="<%== @match[:match_id] %>">
     <button type="submit">Add/Change prediction</button>
   </form>
 <% end %>
@@ -37,37 +37,37 @@
   <h2>Result</h2>
   <% if session[:user_roles]&.include?('Admin') %>
       <form action="/match/add_result" method="post">
-      <label for="home_pts"><%= home_team_name(@match) %>:
+      <label for="home_pts"><%== home_team_name(@match) %>:
         <input 
           type="number" 
           min="0"
           id="home_pts" 
-          value="<%= home_team_points(@match) %>"
+          value="<%== home_team_points(@match) %>"
           name="home_pts"
         />
       </label>
-      <label for="away_pts"><%= away_team_name(@match) %>:
+      <label for="away_pts"><%== away_team_name(@match) %>:
         <input 
           type="number" 
           min="0"
           id="away_pts" 
-          value="<%= away_team_points(@match) %>"
+          value="<%== away_team_points(@match) %>"
           name="away_pts"
         />
       </label>
-      <input type="hidden" name="match_id" value="<%= @match[:match_id] %>">
+      <input type="hidden" name="match_id" value="<%== @match[:match_id] %>">
       <button type="submit">Add/Change match result</button>
     </form>
   <% else %>
-    <p><%= home_team_name(@match) %>: <%= home_team_points(@match) %></p>
-    <p><%= away_team_name(@match) %>: <%= away_team_points(@match) %></p>
+    <p><%== home_team_name(@match) %>: <%== home_team_points(@match) %></p>
+    <p><%== away_team_name(@match) %>: <%== away_team_points(@match) %></p>
   <% end %>
 <% end %>
 
 <% unless previous_match(@match[:match_id]).nil? %>
-  <a href="/match/<%= previous_match(@match[:match_id]) %>">Previous match</a>
+  <a href="/match/<%== previous_match(@match[:match_id]) %>">Previous match</a>
 <% end %>
 
 <% unless next_match(@match[:match_id]).nil? %>
-  <a href="/match/<%= next_match(@match[:match_id]) %>">Next match</a>
+  <a href="/match/<%== next_match(@match[:match_id]) %>">Next match</a>
 <% end %>

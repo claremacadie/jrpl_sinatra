@@ -10,18 +10,18 @@
   <tbody>
     <% @users.each do |user| %>
       <tr>
-        <td><%= user[:user_name] %></td>
-        <td><%= user[:email] %></td>
+        <td><%== user[:user_name] %></td>
+        <td><%== user[:email] %></td>
         <td>
           <form class="reset_pword" action="/users/reset_pword" method="post">
-            <input type="hidden" name="user_name" value="<%= user[:user_name] %>"/>
+            <input type="hidden" name="user_name" value="<%== user[:user_name] %>"/>
             <button type="submit">Reset password</button>
           </form>
         </td>
-        <td><%= user[:roles] %></td>
+        <td><%== user[:roles] %></td>
         <td>
           <form class="toggle_admin" action="/users/toggle_admin" method="post">
-            <input type="hidden" name="user_id" value="<%= user[:user_id] %>"/>
+            <input type="hidden" name="user_id" value="<%== user[:user_id] %>"/>
             <% if user[:roles]&.include?('Admin') %>
               <input type="hidden" name="button" value="revoke_admin"/>
               <button type="submit">Revoke Admin</button>

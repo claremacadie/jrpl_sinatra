@@ -18,6 +18,7 @@ LOCKDOWN_BUFFER = 30 * 60 # 30 minutes
 configure do
   enable :sessions
   set :session_secret, 'secret'
+  set :erb, escape_html: true
 end
 
 configure(:development) do

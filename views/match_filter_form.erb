@@ -72,19 +72,19 @@
     <input 
       type="checkbox" 
       id="<% stage.downcase.split.join('_') %>" 
-      name="<%= stage %>"
+      name="<%== stage %>"
       value="tournament_stage"
       <% if session[:criteria][:tournament_stages].include?(stage) %>
       checked 
       <% end %>
     />
-    <label for="<% stage.downcase.split.join('_') %>"><%= stage %></label><br>
+    <label for="<% stage.downcase.split.join('_') %>"><%== stage %></label><br>
   <% end %>
       <div>
     <input type="checkbox" id="select-all">
     <label for="final">Select/Deselect All</label>
     </div>
 
-  <input type="hidden" name="criteria" value="<%= @criteria %>" />
+  <input type="hidden" name="criteria" value="<%== @criteria %>" />
   <button type="submit">Search matches</button>
 <form>
