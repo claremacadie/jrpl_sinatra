@@ -1,1 +1,24 @@
 JRPL is a spectator sports prediction league.
+
+JRPL was developed using the ruby web application library 'Sinatra'.
+This uses the Rack server interface.
+PostgreSQL is used to store the database behind the application.
+
+To run this application locally on your machine:
+  - Copy the files into their own project directory
+  - Open up a Command Line Interface application (e.g. iTerm, VSCode, SublimeText)
+  - Navigate to the jrpl project directory
+  - Boot the server with: $ bundle exec ruby jrpl.ruby
+  - Open a browser and navigate to: http://localhost:4567
+
+Once you open the application:
+  - The administrator has a username of 'Maccas', password 'a'
+  - Non-administrator user is 'Clare Mac', password 'a'
+
+To run the tests:
+  - Open a separate CLI
+  - Navigate to the jrpl project directory
+  - Run: $ ruby test/jrpl_test.rb
+
+To run rubocop (to check for coding style violations):
+  - Run: $ rubocop filename.rb
