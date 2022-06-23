@@ -7,6 +7,7 @@ require 'tilt/erubis'
 
 require_relative 'database_persistence'
 require_relative 'loginable'
+require_relative 'login_cookies'
 require_relative 'jrpl_route_errors'
 require_relative 'jrpl_route_helpers'
 require_relative 'jrpl_view_helpers'
@@ -35,6 +36,7 @@ end
 helpers do
   # Route helper methods
   include Loginable
+  include LoginCookies
   include RouteErrors
   include RouteHelpers
 
