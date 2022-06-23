@@ -12,6 +12,7 @@ require_relative 'jrpl_test_matches_filter'
 require_relative 'jrpl_test_predictions'
 require_relative 'jrpl_test_results'
 require_relative 'jrpl_test_scoreboard'
+require_relative 'jrpl_test_user_account'
 require_relative 'jrpl_test_view_match'
 
 SimpleCov.start
@@ -25,6 +26,7 @@ class CMSTest < Minitest::Test
   include TestPredictions
   include TestResults
   include TestScoreboard
+  include TestUserAccount
   include TestViewMatch
 
   def app
