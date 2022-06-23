@@ -40,7 +40,10 @@ module LoginCookies
 
   def signin_with_cookie
     return false unless cookies[:series_id] && cookies[:token]
-    user_id = @storage.user_id_from_cookies(cookies[:series_id], cookies[:token])
+    user_id = @storage.user_id_from_cookies(
+      cookies[:series_id],
+      cookies[:token]
+    )
     return false unless user_id
     setup_user_session_data(user_id)
     reset_cookie_token()
