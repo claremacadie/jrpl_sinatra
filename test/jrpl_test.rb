@@ -5,6 +5,7 @@ require 'rack/test'
 require 'simplecov'
 
 require_relative '../jrpl'
+require_relative 'jrpl_test_administer_accounts'
 require_relative 'jrpl_test_carousel'
 require_relative 'jrpl_test_login'
 require_relative 'jrpl_test_matches_all'
@@ -19,6 +20,7 @@ SimpleCov.start
 
 class CMSTest < Minitest::Test
   include Rack::Test::Methods
+  include TestAdministerAccounts
   include TestCarousel
   include TestLogin
   include TestMatchesAll
